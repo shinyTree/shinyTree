@@ -17,4 +17,9 @@ shinyServer(function(input, output, session) {
       )
     )
   })
+  
+  observe({
+    print("TREE")
+    print(str(input$tree))
+  })
 })
