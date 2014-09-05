@@ -1,55 +1,72 @@
 context("test_list_to_tags")
+
+# Wrap a tag with an data-jstree attribute
+jst <- function(t, attrib="{}"){
+  return (tagAppendAttributes(t, `data-jstree`=attrib))
+}
+
 test_that("named list works", {  
   li <- list(abc = 123, def = 456)
-  expect_equal(listToTags(li), 
-               tags$ul(
-                 tags$li("abc", `data-jstree`="{}"), 
-                 tags$li("def", `data-jstree`="{}")
+  expect_equal(shinyTree:::listToTags(li),
+               jst(tags$ul(
+                 jst(tags$li("abc")), 
+                 jst(tags$li("def"))
                )
-              )
-})
-
-test_that("unnamed list works", {
-  li <- list()
-  li[[1]] <- 123
-  li[[2]] <- 456
-  expect_equal(listToTags(li), tags$ul(tags$li("123"), tags$li("456")))
+              ))
 })
 
 test_that("opened attributes work", {
   li <- structure(list(a=1, b=2), stopened=TRUE)
-  expect_equal(listToTags(li),
-    tags$ul(tags$li("a"), tags$li("b"), `data-jstree`="{\"opened\": true}")
+  expect_equal(shinyTree:::listToTags(li),
+    jst(tags$ul(
+      jst(tags$li("a")), 
+      jst(tags$li("b"))),       
+      "{\"opened\": true}")
   )
 })
 
 test_that("nested opened attributes work", {
   li <- list(abc = "hi", def=structure(list(a=1, b=2), stopened=TRUE))
-  expect_equal(listToTags(li), 
-    tags$ul(tags$li("abc"), tags$li("def", 
-      tags$ul(`data-jstree`="{\"opened\": true}", tags$li("a"), tags$li("b"))
-    ))
-  )
+  expect_equal(shinyTree:::listToTags(li),
+    jst(tags$ul(
+      jst(tags$li("abc")), 
+      jst(tags$li("def", 
+        jst(tags$ul(
+          jst(tags$li("a")), 
+          jst(tags$li("b"))
+        ), "{\"opened\": true}")
+        ), "{\"opened\": true}"))
+      )
+    )
 })
 
 test_that("selected attributes work", {
   li <- structure(list(a=1, b=2), stselected=TRUE)
-  expect_equal(listToTags(li),
-               tags$ul(tags$li("a"), tags$li("b"), `data-jstree`="{\"selected\": true}")
+  expect_equal(shinyTree:::listToTags(li),
+               jst(tags$ul(
+                 jst(tags$li("a")), 
+                 jst(tags$li("b"))), 
+                 "{\"selected\": true}")
+               
   )
 })
 
 test_that("disabled attributes work", {
   li <- structure(list(a=1, b=2), stdisabled=TRUE)
-  expect_equal(listToTags(li),
-               tags$ul(tags$li("a"), tags$li("b"), `data-jstree`="{\"disabled\": true}")
+  expect_equal(shinyTree:::listToTags(li),
+               jst(tags$ul(
+                 jst(tags$li("a")), 
+                 jst(tags$li("b"))),
+                 "{\"disabled\": true}")
   )
 })
 
 test_that("multiple modifications work", {
   li <- structure(list(a=1, b=2), stopened=TRUE, stselected=TRUE, stdisabled=TRUE)
-  expect_equal(listToTags(li),
-               tags$ul(tags$li("a"), tags$li("b"), `data-jstree`=
-                         "{\"opened\": true,\"selected\": true,\"disabled\": true}")
+  expect_equal(shinyTree:::listToTags(li),
+               jst(tags$ul(
+                 jst(tags$li("a")), 
+                 jst(tags$li("b"))),
+                 "{\"opened\": true,\"selected\": true,\"disabled\": true}")
   )
 })

@@ -1,5 +1,9 @@
 listToTags <- function(myList, parent=tags$ul()){
   
+  # Handle parent tag attributes
+  attribJSON <- getJSON(myList)
+  parent <- tagAppendAttributes(parent, `data-jstree`=attribJSON)
+  
   # There's probably an *apply way to do this. Whatevs.
   for (i in 1:length(myList)){
     name <- names(myList)[i]
@@ -7,34 +11,7 @@ listToTags <- function(myList, parent=tags$ul()){
       name <- ""
     }
   
-    attrib <- NULL
-    
-    # Handle 'opened' attribute
-    opened <- attr(myList[[i]], "stopened")
-    if (!is.null(opened) && opened){
-      attrib <- c(attrib, "\"opened\": true")
-    }
-    
-    # Handle 'selected' attribute
-    selected <- attr(myList[[i]], "stselected")
-    if (!is.null(selected) && selected){
-      attrib <- c(attrib, "\"selected\": true")
-    }
-    
-    # Handle 'disabled' attribute
-    disabled <- attr(myList[[i]], "stdisabled")
-    if (!is.null(disabled) && disabled){
-      attrib <- c(attrib, "\"disabled\": true")
-    }
-    
-    # Handle 'icon' attribute
-    icon <- attr(myList[[i]], "sticon")
-    if (!is.null(icon)){
-      icon <- paste0("fa fa-",icon)
-      attrib <- c(attrib, paste0("\"icon\": \"", icon, "\""))
-    }
-    
-    attribJSON <- paste0("{",paste(attrib, collapse = ","),"}")
+    attribJSON <- getJSON(myList[[i]])
     
     if (is.list(myList[[i]])){
       parent <- tagAppendChild(parent, tags$li(name, listToTags(myList[[i]]), 
@@ -44,4 +21,35 @@ listToTags <- function(myList, parent=tags$ul()){
     }
   }
   return(parent)
+}
+
+getJSON <- function(node){
+  attrib <- NULL
+  
+  # Handle 'opened' attribute
+  opened <- attr(node, "stopened")
+  if (!is.null(opened) && opened){
+    attrib <- c(attrib, "\"opened\": true")
+  }
+  
+  # Handle 'selected' attribute
+  selected <- attr(node, "stselected")
+  if (!is.null(selected) && selected){
+    attrib <- c(attrib, "\"selected\": true")
+  }
+  
+  # Handle 'disabled' attribute
+  disabled <- attr(node, "stdisabled")
+  if (!is.null(disabled) && disabled){
+    attrib <- c(attrib, "\"disabled\": true")
+  }
+  
+  # Handle 'icon' attribute
+  icon <- attr(node, "sticon")
+  if (!is.null(icon)){
+    icon <- paste0("fa fa-",icon)
+    attrib <- c(attrib, paste0("\"icon\": \"", icon, "\""))
+  }
+  
+  paste0("{",paste(attrib, collapse = ","),"}")  
 }
