@@ -4,6 +4,8 @@ shinyTree
 The `shinyTree` package enables Shiny application developers to use the 
 [jsTree](http://jstree.com) library in their applications.
 
+![shiny tree screenshot](https://trestletech.github.io/shinyTree/images/st.png)
+
 Installation
 ------------
 
