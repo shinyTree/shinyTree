@@ -1,12 +1,16 @@
 #' Create a Shiny Tree
+#' 
+#' This creates a spot in your Shiny UI for a shinyTree which can then be filled
+#' in using \code{\link{renderTree}}
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #'   make the selection of multiple nodes in the tree easier.
-#' @param selected The input ID associated with tree's currently selected
-#'   elements. The names of the node(s) that are currently selected in the tree
+#' @param selected The input ID associated with tree's currently selected 
+#'   elements. The names of the node(s) that are currently selected in the tree 
 #'   will be available in an input by this name.
+#' @seealso \code{\link{renderTree}}
 #' @export
-jsTree <- function(outputId, checkbox=FALSE, selected=NULL){
+shinyTree <- function(outputId, checkbox=FALSE, selected=NULL){
   if (is.null(selected)) {
     selected <- ""
   } else {

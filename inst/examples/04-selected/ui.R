@@ -16,6 +16,6 @@ shinyUI(
       "Currently Selected:",
       verbatimTextOutput("selTxt"),
       hr(),
-      jsTree("tree", selected="treeSel")
+      shinyTree("tree", selected="treeSel")
     )
   ))

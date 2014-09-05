@@ -14,6 +14,6 @@ shinyUI(
     ),
     mainPanel(
       # Show a simple table.
-      jsTree("tree", checkbox = TRUE)
+      shinyTree("tree", checkbox = TRUE)
   ))
 )
