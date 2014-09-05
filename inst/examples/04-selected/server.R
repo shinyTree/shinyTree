@@ -24,9 +24,4 @@ shinyServer(function(input, output, session) {
       sel
     }    
   })
-  
-  observe({
-    #input$tree
-  })
-  
 })
