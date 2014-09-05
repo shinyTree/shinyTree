@@ -6,14 +6,16 @@ library(shinyTree)
 shinyUI(
   pageWithSidebar(
     # Application title
-    headerPanel("shinyTree with checkbox controls"),
+    headerPanel("shinyTree with 'selected' input"),
     
     sidebarPanel(
-      helpText(HTML("An example of a shinyTree with the <code>checkbox</code> parameter enabled to allow users to more easily make multiple selections in the tree.
+      helpText(HTML("An example of using shinyTree's <code>selected</code> parameter to monitor which cells are currently selected.
                   <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
-      # Show a simple table.
-      jsTree("tree", checkbox = TRUE)
+      "Currently Selected:",
+      verbatimTextOutput("selTxt"),
+      hr(),
+      jsTree("tree", selected="treeSel")
+    )
   ))
-)

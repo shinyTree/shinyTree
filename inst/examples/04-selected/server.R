@@ -15,4 +15,18 @@ shinyServer(function(input, output, session) {
       )
     )
   })
+  
+  output$selTxt <- renderText({
+    sel <- input$treeSel
+    if (is.null(sel)){
+      "None"
+    } else{
+      sel
+    }    
+  })
+  
+  observe({
+    #input$tree
+  })
+  
 })

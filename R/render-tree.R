@@ -5,8 +5,6 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE){
   return(function(shinysession, name, ...) {
     tree <- func()
     
-    
-    
     HTML(as.character(listToTags(tree)))
   })
 }

@@ -1,5 +1,5 @@
 library(shiny)
-library(shinyAce)
+library(shinyTree)
 
 #' Define server logic required to generate a simple tree
 #' @author Jeff Allen \email{jeff@@trestletech.com}

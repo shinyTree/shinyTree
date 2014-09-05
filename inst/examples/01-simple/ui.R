@@ -6,11 +6,11 @@ library(shinyTree)
 shinyUI(
   pageWithSidebar(
     # Application title
-    headerPanel("Simple Shiny Tree!"),
+    headerPanel("Simple shinyTree!"),
     
     sidebarPanel(
-      helpText(HTML("A simple Shiny Tree editor.
-                  <p>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
+      helpText(HTML("A simple Shiny Tree example.
+                  <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       # Show a simple table.

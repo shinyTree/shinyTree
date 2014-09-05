@@ -4,6 +4,55 @@ shinyTree
 The `shinyTree` package enables Shiny application developers to use the 
 [jsTree](http://jstree.com) library in their applications.
 
+Installation
+------------
+
+You can install the latest development version of the code using the devtools R package.
+
+```
+# Install devtools, if you haven't already.
+install.packages("devtools")
+
+library(devtools)
+install_github("trestletech/shinyTree")
+```
+
+
+Getting Started
+---------------
+
+#### 01-simple
+
+```
+library(shiny)
+runApp(system.file("examples/01-simple", package="shinyTree"))
+```
+
+#### 02-attributes
+
+```
+library(shiny)
+runApp(system.file("examples/02-attributes", package="shinyTree"))
+```
+
+
+#### 03-checkbox
+
+```
+library(shiny)
+runApp(system.file("examples/03-checkbox", package="shinyTree"))
+```
+
+
+#### 04-selected
+
+```
+library(shiny)
+runApp(system.file("examples/04-selected", package="shinyTree"))
+```
+
+
+
 Known Bugs
 ----------
 
