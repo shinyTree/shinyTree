@@ -23,7 +23,7 @@ install_github("trestletech/shinyTree")
 Getting Started
 ---------------
 
-#### 01-simple
+#### 01-simple ([Live Demo](https://trestletech.shinyapps.io/st-01-simple/))
 
 ```
 library(shiny)
@@ -32,7 +32,7 @@ runApp(system.file("examples/01-simple", package="shinyTree"))
 
 A simple example to demonstrate the usage of the shinyTree package.
 
-#### 02-attributes
+#### 02-attributes ([Live Demo](https://trestletech.shinyapps.io/st-02-attributes/))
 
 ```
 library(shiny)
@@ -41,7 +41,7 @@ runApp(system.file("examples/02-attributes", package="shinyTree"))
 
 Manage properties of your tree by adding attributes to your list when rendering.
 
-#### 03-checkbox
+#### 03-checkbox ([Live Demo](https://trestletech.shinyapps.io/st-03-checkbox/))
 
 ```
 library(shiny)
@@ -50,7 +50,7 @@ runApp(system.file("examples/03-checkbox", package="shinyTree"))
 
 Use checkboxes to allow users to more easily manage which nodes are selected.
 
-#### 04-selected
+#### 04-selected ([Live Demo](https://trestletech.shinyapps.io/st-04-selected/))
 
 ```
 library(shiny)
@@ -59,7 +59,7 @@ runApp(system.file("examples/04-selected", package="shinyTree"))
 
 An example demonstrating how to set an `input` to the value of the currently selected node in the tree.
 
-#### 05-structure
+#### 05-structure ([Live Demo](https://trestletech.shinyapps.io/st-05-structure/))
 
 ```
 library(shiny)
