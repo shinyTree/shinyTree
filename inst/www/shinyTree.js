@@ -10,7 +10,10 @@ var shinyTree = function(){
       $elem.html(data);
       var plugins = [];
       if ($elem.data('st-checkbox') === 'TRUE'){
-        plugins = ['checkbox'];
+        plugins.push('checkbox');
+      }
+      if ($elem.data('st-search') === 'TRUE'){
+        plugins.push('search');
       }
       
       var tree = $.jstree.create(el, {plugins: plugins});
@@ -108,4 +111,21 @@ var shinyTree = function(){
   });
   
   Shiny.inputBindings.register(treeInput); 
+  
+  var exports = {};
+  
+  exports.initSearch = function(treeId, searchId){
+    $(function(){
+      var to = false;
+      $('#' + searchId).keyup(function () {
+        if(to) { clearTimeout(to); }
+        to = setTimeout(function () {
+          var v = $('#' + searchId).val();
+          $('#' + treeId).data('shinyTree').search(v);
+        }, 250);
+      });
+    });    
+  }
+  
+  return exports;
 }()
