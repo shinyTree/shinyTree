@@ -69,6 +69,17 @@ runApp(system.file("examples/05-structure", package="shinyTree"))
 Demonstrates the low-level usage of a shinyTree as an input in which all attributes describing the state of the tree can be read.
 
 
+#### 06-search ([Live Demo](https://trestletech.shinyapps.io/st-06-search/))
+
+```
+library(shiny)
+runApp(system.file("examples/06-search", package="shinyTree"))
+```
+
+An example showing the use of the search plugin to allow users to more easily navigate the nodes in your tree.
+
+
+
 Known Bugs
 ----------
 
