@@ -11,9 +11,11 @@
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #'   a search box above the produced tree. Alternatively, you can set the parameter
 #'   to the ID of the text input you wish to use as the search field.
+#' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
+#'   tree.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, selected=NULL, checkbox=FALSE, search=FALSE){
+shinyTree <- function(outputId, selected=NULL, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE){
   if (is.null(selected)) {
     selected <- ""
   } else {
@@ -50,6 +52,7 @@ shinyTree <- function(outputId, selected=NULL, checkbox=FALSE, search=FALSE){
     div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
         `data-st-search`=is.character(search), 
-        `data-st-selected`=selected)
+        `data-st-selected`=selected,
+        `data-st-dnd`=dragAndDrop)
   )
 }

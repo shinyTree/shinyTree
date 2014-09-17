@@ -78,7 +78,14 @@ runApp(system.file("examples/06-search", package="shinyTree"))
 
 An example showing the use of the search plugin to allow users to more easily navigate the nodes in your tree.
 
+#### 07-drag-and-drop ([Live Demo](https://trestletech.shinyapps.io/st-07-drag-and-drop/))
 
+```
+library(shiny)
+runApp(system.file("examples/07-drag-and-drop", package="shinyTree"))
+```
+
+An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
 
 Known Bugs
 ----------

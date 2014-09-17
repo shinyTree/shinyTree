@@ -14,12 +14,14 @@ var shinyTree = function(){
       }
       if ($elem.data('st-search') === 'TRUE'){
         plugins.push('search');
+      }      
+      if ($elem.data('st-dnd') === 'TRUE'){
+        plugins.push('dnd');
       }
       
-      var tree = $.jstree.create(el, {plugins: plugins});
-      // Can't seem to find a way to recover this tree reference using their API,
-      // so we'll just store the object here.
-      $elem.data('shinyTree', tree);
+      var tree = $(el).jstree({'core' : {
+        "check_callback" : ($elem.data('st-dnd') === 'TRUE')
+      },plugins: plugins});
       
       var selectedId = $elem.data('st-selected')
       if (selectedId) {
@@ -78,7 +80,7 @@ var shinyTree = function(){
         return arrToObj(toReturn);
       }
       
-      var tree = $(el).data('shinyTree');
+      var tree = $.jstree.reference(el);
       if (tree){ // May not be loaded yet.
         var js = tree.get_json();
         var pruned =  prune(js, ['state', 'text']);
@@ -104,6 +106,10 @@ var shinyTree = function(){
         // Initialize the data.
         callback();
       })
+      
+      $(el).on("move_node.jstree", function(e){
+        callback();
+      })
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
@@ -121,7 +127,7 @@ var shinyTree = function(){
         if(to) { clearTimeout(to); }
         to = setTimeout(function () {
           var v = $('#' + searchId).val();
-          $('#' + treeId).data('shinyTree').search(v);
+          $.jstree.reference('#' + treeId).search(v);
         }, 250);
       });
     });    
