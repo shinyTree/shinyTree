@@ -19,9 +19,19 @@ test_that("opened attributes work", {
   li <- structure(list(a=1, b=2), stopened=TRUE)
   expect_equal(shinyTree:::listToTags(li),
     jst(tags$ul(
-      jst(tags$li("a")), 
-      jst(tags$li("b"))),       
+      jst(tags$li("a")),
+      jst(tags$li("b"))),
       "{\"opened\": true}")
+  )
+})
+
+test_that("class attributes work", {
+  li <- structure(list(a=1, b=2), stclass="class-a")
+  expect_equal(shinyTree:::listToTags(li),
+               jst(tags$ul(
+                 jst(tags$li("a")), 
+                 jst(tags$li("b")),
+                 class="class-a"))
   )
 })
 

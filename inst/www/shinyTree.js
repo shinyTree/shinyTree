@@ -45,7 +45,9 @@ var shinyTree = function(){
     },
     getValue: function(el, keys) {
       /**
-       * Prune an object recursively to only include the specified keys
+       * Prune an object recursively to only include the specified keys.
+       * 'li_attr' is a special key that will actually map to 'li_attrs.class' and
+       * will be called 'class' in the output.
        **/
       var prune = function(arr, keys){
         var arrToObj = function(ar){
@@ -67,11 +69,20 @@ var shinyTree = function(){
           var clean = {};
           $.each(obj, function(key, val){
             if (keys.indexOf(key) >= 0){
-              if (typeof obj[key] === 'string'){
+              if (key === 'li_attr'){ // We don't really want, just the class attr
+                if (!val.class){
+                  // Skip without adding element.
+                  return;
+                }
+                val = val.class;
+                key = 'class';
+              }
+              
+              if (typeof val === 'string'){
                 // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing.
-                clean[key] = obj[key].trim();
+                clean[key] = val.trim();
               } else {
-                clean[key] = obj[key]; 
+                clean[key] = val; 
               }
             }
           });
@@ -83,7 +94,7 @@ var shinyTree = function(){
       var tree = $.jstree.reference(el);
       if (tree){ // May not be loaded yet.
         var js = tree.get_json();
-        var pruned =  prune(js, ['state', 'text']);
+        var pruned =  prune(js, ['state', 'text', 'li_attr']);
         return pruned;
       }
       
