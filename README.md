@@ -87,6 +87,15 @@ runApp(system.file("examples/07-drag-and-drop", package="shinyTree"))
 
 An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
 
+#### 08-class ([Live Demo](https://trestletech.shinyapps.io/st-08-class/))
+
+```
+library(shiny)
+runApp(system.file("examples/08-class", package="shinyTree"))
+```
+
+An example demonstrating the use of the ability to style nodes using custom classes.
+
 Known Bugs
 ----------
 
