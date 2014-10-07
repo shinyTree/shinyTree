@@ -6,10 +6,10 @@ library(shinyTree)
 shinyServer(function(input, output, session) {
   output$tree <- renderTree({
     list(
-      root1 = structure("123", stselected=TRUE, stclass="red-node"),
-      root2 = list(
+      root1 = structure("", stclass="red-node"),
+      root2 = structure(list(
         SubListA = list(leaf1 = "", leaf2 = "")
-      )
+      ), stclass="blue-node")
     )
   })
 })

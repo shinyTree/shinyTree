@@ -1,5 +1,9 @@
 
 .red-node {
-  color: white;
-  background-color: red !important;
+  color: #F00;
+  font-weight: bold;
+}
+
+.blue-node {
+  color: #00F;
 }
