@@ -1,8 +1,16 @@
 listToTags <- function(myList, parent=tags$ul()){
   
+  
   # Handle parent tag attributes
-  attribJSON <- getJSON(myList)
-  parent <- tagAppendAttributes(parent, `data-jstree`=attribJSON)
+  el <- list(parent)
+  if (!is.null(attr(myList, "stclass"))){
+    el[["class"]] <- attr(myList, "stclass")
+  }  
+  attribJSON <- getJSON(myList)  
+  if (!is.null(attribJSON)){
+    el[["data-jstree"]] <- attribJSON
+  }
+  parent <- do.call(tagAppendAttributes, el)
   
   # There's probably an *apply way to do this. Whatevs.
   for (i in 1:length(myList)){
@@ -14,10 +22,18 @@ listToTags <- function(myList, parent=tags$ul()){
     attribJSON <- getJSON(myList[[i]])
     
     if (is.list(myList[[i]])){
-      parent <- tagAppendChild(parent, tags$li(name, listToTags(myList[[i]]), 
-                                               `data-jstree`=attribJSON))
+      el <- list(name, listToTags(myList[[i]]), 
+                 `data-jstree`=attribJSON)
+      if (!is.null(attr(myList[[i]], "stclass"))){
+        el[["class"]] <- attr(myList[[i]], "stclass")
+      }
+      parent <- tagAppendChild(parent, do.call(tags$li, el))
     } else{
-      parent <- tagAppendChild(parent, tags$li(name, `data-jstree`=attribJSON))
+      el <- list(name, `data-jstree`=attribJSON)
+      if (!is.null(attr(myList[[i]], "stclass"))){
+        el[["class"]] <- attr(myList[[i]], "stclass")
+      }
+      parent <- tagAppendChild(parent, do.call(tags$li, el))
     }
   }
   return(parent)
