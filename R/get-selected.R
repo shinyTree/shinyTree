@@ -36,6 +36,25 @@ get_selected_names <- function(tree, ancestry=NULL, vec=list()){
   return(vec)
 }
 
-get_selected_slices <- function(tree){
+get_selected_slices <- function(tree, ancestry=NULL, vec=list()){
+  if (is.list(tree)){
+    for (i in 1:length(tree)){
+      anc <- c(ancestry, names(tree)[i])
+      vec <- get_selected_slices(tree[[i]], anc, vec)
+    }    
+  }
   
+  a <- attr(tree, "stselected", TRUE)
+  if (!is.null(a) && a == TRUE){
+    # Get the element name
+    ancList <- 0
+    
+    for (i in length(ancestry):1){
+      nl <- list()
+      nl[ancestry[i]] <- list(ancList)
+      ancList <- nl
+    }
+    vec[length(vec)+1] <- list(ancList)
+  }
+  return(vec)
 }
