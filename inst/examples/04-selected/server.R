@@ -22,6 +22,6 @@ shinyServer(function(input, output, session) {
       "None"
     } else{
       unlist(get_selected(tree))
-    }    
+    }
   })
 })
