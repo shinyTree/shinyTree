@@ -1,0 +1,12 @@
+
+ v 0.2.0
+--------------------------------------------------------------------------------
+
+- BREAKING CHANGE: Model the `input$list`-style lists after the list structure
+  provided to `renderTree`, meaning that they are now a simple are list with the
+  same `st`- prefixed attributes. See `inst/examples/05-structure`.
+
+ v 0.1.0
+--------------------------------------------------------------------------------
+
+- Initial Release

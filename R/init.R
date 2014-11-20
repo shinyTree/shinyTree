@@ -13,8 +13,7 @@ initResourcePaths <- function() {
 # Parse incoming shinyTable input from the client
 .onLoad <- function(libname, pkgname){
   shiny::registerInputHandler("shinyTable", function(val, shinysession, name){
-    val
-    
+    jsonToAttr(val)    
   })
 }
 
@@ -25,6 +24,7 @@ jsonToAttr <- function(json){
     # This is a top-level list, not a node.
     for (i in 1:length(json)){
       ret[[json[[i]]$text]] <- jsonToAttr(json[[i]])
+      ret[[json[[i]]$text]] <- supplementAttr(ret[[json[[i]]$text]], json[[i]])
     }
     return(ret)
   }
@@ -32,6 +32,22 @@ jsonToAttr <- function(json){
   if (length(json$children) > 0){
     return(jsonToAttr(json[["children"]]))
   } else {
-    return("")
+    ret <- 0
+    ret <- supplementAttr(ret, json)    
+    return(ret)
   }
+}
+
+supplementAttr <- function(ret, json){
+  # Only add attributes if non-default
+  if (json$state$selected != FALSE){
+    attr(ret, "stselected") <- json$state$selected
+  }
+  if (json$state$disabled != FALSE){
+    attr(ret, "stdisabled") <- json$state$disabled
+  }
+  if (json$state$opened != FALSE){
+    attr(ret, "stopened") <- json$state$opened
+  }
+  ret
 }
