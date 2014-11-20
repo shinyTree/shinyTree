@@ -1,7 +1,7 @@
 Package: shinyTree
 Type: Package
 Title: jsTree bindings for Shiny
-Version: 0.1.0
+Version: 0.2.0
 Date: 2014-08-01
 Author: Trestle Technology, LLC.
 Maintainer: Jeff Allen <jeff@trestletech.com>
