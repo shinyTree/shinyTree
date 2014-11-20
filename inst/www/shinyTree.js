@@ -32,7 +32,7 @@ var shinyTree = function(){
       return $(scope).find(".shiny-tree");
     },
     getType: function(){
-      return "shinyTable"
+      return "shinyTree"
     },
     getValue: function(el, keys) {
       /**
