@@ -9,13 +9,13 @@ shinyUI(
     headerPanel("shinyTree with 'selected' input"),
     
     sidebarPanel(
-      helpText(HTML("An example of using shinyTree's <code>selected</code> parameter to monitor which cells are currently selected.
+      helpText(HTML("An example of using shinyTree's <code>get_selected</code> function to extract the cells which are currently selected.
                   <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       "Currently Selected:",
       verbatimTextOutput("selTxt"),
       hr(),
-      shinyTree("tree", selected="treeSel")
+      shinyTree("tree")
     )
   ))

@@ -5,6 +5,8 @@
 - BREAKING CHANGE: Model the `input$list`-style lists after the list structure
   provided to `renderTree`, meaning that they are now a simple are list with the
   same `st`- prefixed attributes. See `inst/examples/05-structure`.
+- BREAKING CHANGE: removed `selected` attribute from `shinyTree()` in favor of
+  `get_selected()`. See `inst/examples/04-selected/`.
 
  v 0.1.0
 --------------------------------------------------------------------------------

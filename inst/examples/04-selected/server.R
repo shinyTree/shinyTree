@@ -17,11 +17,11 @@ shinyServer(function(input, output, session) {
   })
   
   output$selTxt <- renderText({
-    sel <- input$treeSel
-    if (is.null(sel)){
+    tree <- input$tree
+    if (is.null(tree)){
       "None"
     } else{
-      sel
+      unlist(get_selected(tree))
     }    
   })
 })
