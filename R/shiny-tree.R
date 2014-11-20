@@ -3,9 +3,6 @@
 #' This creates a spot in your Shiny UI for a shinyTree which can then be filled
 #' in using \code{\link{renderTree}}
 #' @param outputId The ID associated with this element
-#' @param selected The input ID associated with tree's currently selected 
-#'   elements. The names of the node(s) that are currently selected in the tree 
-#'   will be available in an input by this name.
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #'   make the selection of multiple nodes in the tree easier.
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
@@ -15,16 +12,7 @@
 #'   tree.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, selected=NULL, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE){
-  if (is.null(selected)) {
-    selected <- ""
-  } else {
-    if (!is.character(selected)) {
-      stop("`selected` must either be NULL or a character value.") 
-    }
-  }
-  
-  
+shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE){
   searchEl <- div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -51,8 +39,7 @@ shinyTree <- function(outputId, selected=NULL, checkbox=FALSE, search=FALSE, dra
     searchEl,
     div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
-        `data-st-search`=is.character(search), 
-        `data-st-selected`=selected,
+        `data-st-search`=is.character(search),
         `data-st-dnd`=dragAndDrop)
   )
 }

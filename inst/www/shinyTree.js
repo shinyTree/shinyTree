@@ -22,18 +22,6 @@ var shinyTree = function(){
       var tree = $(el).jstree({'core' : {
         "check_callback" : ($elem.data('st-dnd') === 'TRUE')
       },plugins: plugins});
-      
-      var selectedId = $elem.data('st-selected')
-      if (selectedId) {
-        $elem.on("changed.jstree", function(e, data) {
-          // Get $elements
-          var $sels = $('#' + data.selected.join(',#'))
-          // Remove descendant nodes in the clone before getting text.
-          // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing.
-          var names = $sels.map(function(i, el){return $(el).clone().find('ul').remove().end().text().trim(); }).get()
-          Shiny.onInputChange(selectedId, names)
-        });
-      }
     }
   });
   Shiny.outputBindings.register(treeOutput, 'shinyTree.treeOutput');
@@ -42,6 +30,9 @@ var shinyTree = function(){
   $.extend(treeInput, {
     find: function(scope) {
       return $(scope).find(".shiny-tree");
+    },
+    getType: function(){
+      return "shinyTable"
     },
     getValue: function(el, keys) {
       /**
