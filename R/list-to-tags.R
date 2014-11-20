@@ -1,6 +1,5 @@
 listToTags <- function(myList, parent=tags$ul()){
   
-  
   # Handle parent tag attributes
   el <- list(parent)
   if (!is.null(attr(myList, "stclass"))){
