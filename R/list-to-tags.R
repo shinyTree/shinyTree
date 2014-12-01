@@ -1,4 +1,4 @@
-listToTags <- function(myList, parent=tags$ul()){
+listToTags <- function(myList, parent=shiny::tags$ul()){
   
   # Handle parent tag attributes
   el <- list(parent)
@@ -9,7 +9,7 @@ listToTags <- function(myList, parent=tags$ul()){
   if (!is.null(attribJSON)){
     el[["data-jstree"]] <- attribJSON
   }
-  parent <- do.call(tagAppendAttributes, el)
+  parent <- do.call(shiny::tagAppendAttributes, el)
   
   # There's probably an *apply way to do this. Whatevs.
   for (i in 1:length(myList)){
@@ -26,13 +26,13 @@ listToTags <- function(myList, parent=tags$ul()){
       if (!is.null(attr(myList[[i]], "stclass"))){
         el[["class"]] <- attr(myList[[i]], "stclass")
       }
-      parent <- tagAppendChild(parent, do.call(tags$li, el))
+      parent <- shiny::tagAppendChild(parent, do.call(shiny::tags$li, el))
     } else{
       el <- list(name, `data-jstree`=attribJSON)
       if (!is.null(attr(myList[[i]], "stclass"))){
         el[["class"]] <- attr(myList[[i]], "stclass")
       }
-      parent <- tagAppendChild(parent, do.call(tags$li, el))
+      parent <- shiny::tagAppendChild(parent, do.call(shiny::tags$li, el))
     }
   }
   return(parent)

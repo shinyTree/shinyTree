@@ -13,31 +13,31 @@
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE){
-  searchEl <- div("")
+  searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
-    searchEl <- tags$input(id=search, class="input", type="text", value="")
+    searchEl <- shiny::tags$input(id=search, class="input", type="text", value="")
   }
   if (is.character(search)){
     # Either the search field we just created or the given text field ID
-    searchEl <- tagAppendChild(searchEl, tags$script(type="text/javascript", HTML(
+    searchEl <- shiny::tagAppendChild(searchEl, shiny::tags$script(type="text/javascript", shiny::HTML(
       paste0("shinyTree.initSearch('",outputId,"','",search,"');"))))
   }
   
-  tagList(
-    singleton(tags$head(
+  shiny::tagList(
+    shiny::singleton(shiny::tags$head(
       initResourcePaths(),
-      tags$link(rel = 'stylesheet',
+      shiny::tags$link(rel = 'stylesheet',
                 type = 'text/css',
                 href = 'shinyTree/jsTree-3.0.2/themes/default/style.min.css'),
-      tags$link(rel = "stylesheet", 
+      shiny::tags$link(rel = "stylesheet", 
                 type = "text/css", 
                 href = "shared/font-awesome/css/font-awesome.min.css"),
-      tags$script(src = 'shinyTree/jsTree-3.0.2/jstree.min.js'),
-      tags$script(src = 'shinyTree/shinyTree.js')
+      shiny::tags$script(src = 'shinyTree/jsTree-3.0.2/jstree.min.js'),
+      shiny::tags$script(src = 'shinyTree/shinyTree.js')
     )),
     searchEl,
-    div(id=outputId, class="shiny-tree", 
+    shiny::div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
         `data-st-search`=is.character(search),
         `data-st-dnd`=dragAndDrop)
