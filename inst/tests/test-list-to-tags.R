@@ -1,5 +1,7 @@
 context("test_list_to_tags")
 
+library(shiny)
+
 # Wrap a tag with an data-jstree attribute
 jst <- function(t, attrib="{}"){
   return (tagAppendAttributes(t, `data-jstree`=attrib))

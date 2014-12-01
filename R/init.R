@@ -7,11 +7,12 @@ initResourcePaths <- function() {
       directoryPath = system.file('www', package='shinyTree'))
     .global$loaded <- TRUE
   }
-  HTML("")
+  shiny::HTML("")
 }
 
 # Parse incoming shinyTree input from the client
-.onLoad <- function(libname, pkgname){
+#' @importFrom methods loadMethod
+.onAttach <- function(libname, pkgname){
   shiny::registerInputHandler("shinyTree", function(val, shinysession, name){
     jsonToAttr(val)    
   })
