@@ -1,11 +1,12 @@
 Package: shinyTree
 Type: Package
 Title: jsTree bindings for Shiny
-Version: 0.2.0
-Date: 2014-08-01
-Author: Trestle Technology, LLC.
+Version: 0.2.1
+Date: 2014-12-2
+Author: Ivan Bozhanov, Trestle Technology, LLC.
 Maintainer: Jeff Allen <cran@trestletechnology.net>
-Description: jsTree bindings to enable a rich, editable tree in Shiny.
+Description: This package exposes bindings to jsTree -- a JavaScript library 
+  that supports interactive trees -- to enable a rich, editable trees in Shiny.
 License: MIT + file LICENSE
 Depends:
     R (>= 2.15.1),
