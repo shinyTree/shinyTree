@@ -7,6 +7,9 @@ var shinyTree = function(){
     renderValue: function(el, data) {
       // Wipe the existing tree and create a new one.
       $elem = $('#' + el.id)
+      
+      $elem.jstree('destroy');
+      
       $elem.html(data);
       var plugins = [];
       if ($elem.data('st-checkbox') === 'TRUE'){
