@@ -9,7 +9,6 @@ Authors@R: c(
   person("Bozhanov", "Ivan", role=c("ctb", "cph"), comment = "jsTree"),
   person(family="The Dojo Foundation", role=c("ctb", "cph"), comment="require.js"),
   person(family="jQuery Foundation, Inc.", role=c("ctb", "cph")))
-Maintainer: Jeff Allen <cran@trestletechnology.net>
 Description: This package exposes bindings to jsTree -- a JavaScript library
     that supports interactive trees -- to enable a rich, editable trees in
     Shiny.
