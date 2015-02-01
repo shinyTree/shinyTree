@@ -4,9 +4,10 @@ Title: jsTree bindings for Shiny
 Version: 0.2.2
 Date: 2015-01-28
 Authors@R: c(
-  person(family="Trestle Technology, LLC", role=c("aut", "cre"), email="cran@trestletechnology.net"),
+  person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
+  person("Jeff", "Allen", role="cre", email="cran@trestletechnology.net"),
   person(family="Institut de Radioprotection et de Sûreté Nucléaire", role=c("cph", "cre"), email = "yann.richet@irsn.fr"),
-  person("Bozhanov", "Ivan", role=c("ctb", "cph"), comment = "jsTree"),
+  person("Ivan", "Bozhanov", role=c("ctb", "cph"), comment = "jsTree"),
   person(family="The Dojo Foundation", role=c("ctb", "cph"), comment="require.js"),
   person(family="jQuery Foundation, Inc.", role=c("ctb", "cph")))
 Description: This package exposes bindings to jsTree -- a JavaScript library
