@@ -1,6 +1,6 @@
 Package: shinyTree
 Type: Package
-Title: jsTree bindings for Shiny
+Title: jsTree Bindings For Shiny
 Version: 0.2.2
 Date: 2015-01-28
 Authors@R: c(
@@ -10,7 +10,7 @@ Authors@R: c(
   person("Ivan", "Bozhanov", role=c("ctb", "cph"), comment = "jsTree"),
   person(family="The Dojo Foundation", role=c("ctb", "cph"), comment="require.js"),
   person(family="jQuery Foundation, Inc.", role=c("ctb", "cph")))
-Description: This package exposes bindings to jsTree -- a JavaScript library
+Description: Exposes bindings to jsTree -- a JavaScript library
     that supports interactive trees -- to enable a rich, editable trees in
     Shiny.
 License: MIT + file LICENSE
