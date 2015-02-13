@@ -1,6 +1,6 @@
 Package: shinyTree
 Type: Package
-Title: jsTree Bindings For Shiny
+Title: jsTree Bindings for Shiny
 Version: 0.2.2
 Date: 2015-01-28
 Authors@R: c(
