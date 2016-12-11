@@ -12,7 +12,7 @@
 #'   tree.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE){
+shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, theme="default"){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -24,22 +24,29 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE)
       paste0("shinyTree.initSearch('",outputId,"','",search,"');"))))
   }
   
+  if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
+  
+  # define theme tags (default, default-dark, or proton)
+  theme.tags<-shiny::tags$link(rel = 'stylesheet',
+                               type = 'text/css',
+                               href = paste('shinyTree/jsTree-3.3.3/themes/',theme,'/style.min.css',sep=""))
+  
   shiny::tagList(
     shiny::singleton(shiny::tags$head(
       initResourcePaths(),
-      shiny::tags$link(rel = 'stylesheet',
-                type = 'text/css',
-                href = 'shinyTree/jsTree-3.0.2/themes/default/style.min.css'),
+      theme.tags,
       shiny::tags$link(rel = "stylesheet", 
                 type = "text/css", 
                 href = "shared/font-awesome/css/font-awesome.min.css"),
-      shiny::tags$script(src = 'shinyTree/jsTree-3.0.2/jstree.min.js'),
+      shiny::tags$script(src = 'shinyTree/jsTree-3.3.3/jstree.min.js'),
       shiny::tags$script(src = 'shinyTree/shinyTree.js')
     )),
     searchEl,
     shiny::div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
         `data-st-search`=is.character(search),
-        `data-st-dnd`=dragAndDrop)
+        `data-st-dnd`=dragAndDrop,
+        `data-st-theme`=theme
+        )
   )
 }
