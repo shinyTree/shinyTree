@@ -23,7 +23,8 @@ var shinyTree = function(){
       }
       
       var tree = $(el).jstree({'core' : {
-        "check_callback" : ($elem.data('st-dnd') === 'TRUE')
+        "check_callback" : ($elem.data('st-dnd') === 'TRUE'),
+        'themes': {'name': $elem.data('st-theme'), 'responsive': true }
       },plugins: plugins});
     }
   });
