@@ -10,6 +10,7 @@
 #'   to the ID of the text input you wish to use as the search field.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #'   tree.
+#' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, theme="default"){

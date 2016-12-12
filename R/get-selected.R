@@ -11,11 +11,13 @@
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
 #' @export
-get_selected <- function(tree, format=c("names", "slices")){
-  format <- match.arg(format, c("names", "slices"), FALSE)
+get_selected <- function(tree, format=c("names", "slices", "classid")){
+  format <- match.arg(format, c("names", "slices", "classid"), FALSE)
   switch(format,
          "names"=get_selected_names(tree),
-         "slices"=get_selected_slices(tree))  
+         "slices"=get_selected_slices(tree),
+         "classid"=get_selected_classid(tree)
+         )  
 }
 
 get_selected_names <- function(tree, ancestry=NULL, vec=list()){
@@ -37,6 +39,7 @@ get_selected_names <- function(tree, ancestry=NULL, vec=list()){
 }
 
 get_selected_slices <- function(tree, ancestry=NULL, vec=list()){
+  
   if (is.list(tree)){
     for (i in 1:length(tree)){
       anc <- c(ancestry, names(tree)[i])
@@ -58,3 +61,22 @@ get_selected_slices <- function(tree, ancestry=NULL, vec=list()){
   }
   return(vec)
 }
+
+get_selected_classid <- function(tree, ancestry=NULL, vec=list()){
+    if (is.list(tree)){
+      for (i in 1:length(tree)){
+        anc <- c(ancestry, names(tree)[i])
+        vec <- get_selected_classid(tree[[i]], anc, vec)
+      }
+    }
+    
+    a <- attr(tree, "stselected", TRUE)
+    if (!is.null(a) && a == TRUE){
+      # Get the element name
+      el <- tail(ancestry,n=1)
+      vec[length(vec)+1] <- el
+      attr(vec[[length(vec)]], "stclass") <- attr(tree, "stclass", TRUE)
+      attr(vec[[length(vec)]], "stid") <- attr(tree, "stid", TRUE)
+    }
+    return(vec)
+  }
