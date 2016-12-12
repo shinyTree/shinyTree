@@ -41,8 +41,8 @@ jsonToAttr <- function(json){
 
 supplementAttr <- function(ret, json){
   # Only add attributes if non-default
-  cat("JSON string:\n")
-  cat(str(json))
+  #cat("JSON string:\n")
+  #cat(str(json))
   
   if (json$state$selected != FALSE){
     attr(ret, "stselected") <- json$state$selected
