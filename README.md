@@ -16,7 +16,7 @@ You can install the latest development version of the code using the devtools R 
 install.packages("devtools")
 
 library(devtools)
-install_github("trestletech/shinyTree")
+install_github("schaffman5/shinyTree")
 ```
 
 
