@@ -94,6 +94,25 @@ library(shiny)
 runApp(system.file("examples/08-class", package="shinyTree"))
 ```
 
+An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
+
+#### 09-themes
+
+```
+library(shiny)
+runApp(system.file("examples/09-themes", package="shinyTree"))
+```
+
+An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
+
+#### 10-node-ids
+
+```
+library(shiny)
+runApp(system.file("examples/10-node-ids", package="shinyTree"))
+```
+
+
 An example demonstrating the use of the ability to style nodes using custom classes.
 
 Known Bugs
