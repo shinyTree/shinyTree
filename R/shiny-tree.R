@@ -4,12 +4,12 @@
 #' in using \code{\link{renderTree}}
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
-#'   make the selection of multiple nodes in the tree easier.
+#' make the selection of multiple nodes in the tree easier.
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
-#'   a search box above the produced tree. Alternatively, you can set the parameter
-#'   to the ID of the text input you wish to use as the search field.
+#' a search box above the produced tree. Alternatively, you can set the parameter
+#' to the ID of the text input you wish to use as the search field.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
-#'   tree.
+#' tree.
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @seealso \code{\link{renderTree}}
 #' @export

@@ -77,6 +77,7 @@ get_selected_classid <- function(tree, ancestry=NULL, vec=list()){
       vec[length(vec)+1] <- el
       attr(vec[[length(vec)]], "stclass") <- attr(tree, "stclass", TRUE)
       attr(vec[[length(vec)]], "stid") <- attr(tree, "stid", TRUE)
+      attr(vec[[length(vec)]], "id") <- attr(tree, "id", TRUE)
     }
     return(vec)
   }
