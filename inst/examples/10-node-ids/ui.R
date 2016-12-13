@@ -2,7 +2,7 @@ library(shiny)
 library(shinyTree)
 
 #' Define UI for application that demonstrates a simple Tree editor
-#' @author Jeff Allen \email{jeff@@trestletech.com}
+#' @author Mike Schaffer \email{mschaff@gmail.com}
 shinyUI(
   pageWithSidebar(
     # Application title

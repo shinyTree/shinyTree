@@ -1,4 +1,5 @@
 var shinyTree = function(){
+
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
     find: function(scope) {
@@ -116,12 +117,13 @@ var shinyTree = function(){
       }
       
       var tree = $.jstree.reference(el);
-      if (tree){ // May not be loaded yet.
-        var js = tree.get_json();
-        var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
-        return pruned;
+      if (tree) { // May not be loaded yet.
+        if(tree.get_container().find("li").length>0) { // The tree may be initialized but empty
+          var js = tree.get_json();
+          var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
+          return pruned;
+        }
       }
-      
     },
     setValue: function(el, value) {},
     subscribe: function(el, callback) {
@@ -148,6 +150,13 @@ var shinyTree = function(){
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
+    },
+    receiveMessage: function(el, message) {
+      // This receives messages of type "updateTree" from the server.
+      if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
+          $(el).jstree(true).settings.core.data = JSON.parse(message.data);
+          $(el).jstree(true).refresh(true);
+      }
     }
   });
   

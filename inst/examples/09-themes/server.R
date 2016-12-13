@@ -2,7 +2,7 @@ library(shiny)
 library(shinyTree)
 
 #' Define server logic required to generate a simple tree
-#' @author Jeff Allen \email{jeff@@trestletech.com}
+#' @author Mike Schaffer \email{mschaff@gmail.com}
 shinyServer(function(input, output, session) {
   log <- c(paste0(Sys.time(), ": Interact with the tree to see the logs here..."))
   
