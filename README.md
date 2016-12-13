@@ -114,7 +114,7 @@ runApp(system.file("examples/10-node-ids", package="shinyTree"))
 
 An example demonstrating the ability to label and return node identifiers and classes.
 
-#### 10-node-ids
+#### 11-tree-update
 
 ```
 library(shiny)
