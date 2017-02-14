@@ -8,6 +8,7 @@ shinyUI(
 							label = "Select a tree",
 							choices = list("",
 							               "A" = "A",
+							               "A_closed" = "A_closed",
 										        "B" = "B"),
 							selected = NULL)
 			),
