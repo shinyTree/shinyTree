@@ -1,4 +1,5 @@
 var shinyTree = function(){
+
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
     find: function(scope) {
@@ -23,7 +24,8 @@ var shinyTree = function(){
       }
       
       var tree = $(el).jstree({'core' : {
-        "check_callback" : ($elem.data('st-dnd') === 'TRUE')
+        "check_callback" : ($elem.data('st-dnd') === 'TRUE'),
+        'themes': {'name': $elem.data('st-theme'), 'responsive': true }
       },plugins: plugins});
     }
   });
@@ -61,37 +63,67 @@ var shinyTree = function(){
             obj.children = arrToObj(prune(obj.children, keys));
           }
           var clean = {};
+          
           $.each(obj, function(key, val){
-            if (keys.indexOf(key) >= 0){
-              if (key === 'li_attr'){ // We don't really want, just the class attr
-                if (!val.class){
-                  // Skip without adding element.
-                  return;
-                }
-                val = val.class;
-                key = 'class';
-              }
+            if (keys.indexOf(key) >= 0) {
+              //console.log(key + ": " + val)
               
-              if (typeof val === 'string'){
-                // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing.
-                clean[key] = val.trim();
+              if (key === 'li_attr') { // We don't really want, just the stid and class attr
+                if (val.stid){
+                  //console.log("stid (li_attr): " + val.stid)
+                  if (typeof val.stid === 'string'){
+                    // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing
+                    clean["stid"] = val.stid.trim();
+                  } else {
+                    clean["stid"] = val.stid; 
+                  }
+                }
+                
+                if (val.class) {
+                  //console.log("stclass (li_attr): " + val.class)
+                  if (typeof val.class === 'string'){
+                    // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing
+                    clean["stclass"] = val.class.trim();
+                  } else {
+                    clean["stclass"] = val.class; 
+                  }
+                }
+                
+                //if (!val.class){
+                //  console.log(key + ": " + val)
+                //  // Skip without adding element.
+                //  return;
+                //}
+                
+                //if (val.class){
+                //  val = val.class;
+                //  key = 'class';
+                //}
               } else {
-                clean[key] = val; 
+              
+                if (typeof val === 'string'){
+                  // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing.
+                  clean[key] = val.trim();
+                } else {
+                  clean[key] = val; 
+                }
               }
             }
           });
+          
           toReturn.push(clean);
         });
         return arrToObj(toReturn);
       }
       
       var tree = $.jstree.reference(el);
-      if (tree){ // May not be loaded yet.
-        var js = tree.get_json();
-        var pruned =  prune(js, ['state', 'text', 'li_attr']);
-        return pruned;
+      if (tree) { // May not be loaded yet.
+        if(tree.get_container().find("li").length>0) { // The tree may be initialized but empty
+          var js = tree.get_json();
+          var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
+          return pruned;
+        }
       }
-      
     },
     setValue: function(el, value) {},
     subscribe: function(el, callback) {
@@ -118,6 +150,13 @@ var shinyTree = function(){
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
+    },
+    receiveMessage: function(el, message) {
+      // This receives messages of type "updateTree" from the server.
+      if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
+          $(el).jstree(true).settings.core.data = JSON.parse(message.data);
+          $(el).jstree(true).refresh(true);
+      }
     }
   });
   

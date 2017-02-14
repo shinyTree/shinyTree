@@ -16,7 +16,7 @@ You can install the latest development version of the code using the devtools R 
 install.packages("devtools")
 
 library(devtools)
-install_github("trestletech/shinyTree")
+install_github("schaffman5/shinyTree")
 ```
 
 
@@ -95,6 +95,34 @@ runApp(system.file("examples/08-class", package="shinyTree"))
 ```
 
 An example demonstrating the use of the ability to style nodes using custom classes.
+
+#### 09-themes
+
+```
+library(shiny)
+runApp(system.file("examples/09-themes", package="shinyTree"))
+```
+
+An example demonstrating the use of built-in tree themes.
+
+#### 10-node-ids
+
+```
+library(shiny)
+runApp(system.file("examples/10-node-ids", package="shinyTree"))
+```
+
+An example demonstrating the ability to label and return node identifiers and classes.
+
+#### 11-tree-update
+
+```
+library(shiny)
+runApp(system.file("examples/11-tree-update", package="shinyTree"))
+```
+
+An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization.
+
 
 Known Bugs
 ----------
