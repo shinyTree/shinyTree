@@ -9,7 +9,8 @@ shinyUI(
 							choices = list("",
 							               "A" = "A",
 							               "A_closed" = "A_closed",
-										        "B" = "B"),
+							               "B" = "B", 
+							               "List" ="List"),
 							selected = NULL)
 			),
 			mainPanel(
