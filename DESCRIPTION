@@ -25,4 +25,5 @@ Suggests:
     testthat
 BugReports: https://github.com/trestletech/shinyTree/issues
 Roxygen: list(wrap = TRUE)
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
+Encoding: UTF-8
