@@ -18,4 +18,3 @@ get_selected(tree, format = c("names", "slices", "classid"))
 Extract the nodes from the tree that are selected in a more
 convenient format. You can choose which format you prefer.
 }
-

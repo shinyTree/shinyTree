@@ -20,4 +20,3 @@ converted into a \code{\link{shinyTree}}.
 \seealso{
 \code{\link{shinyTree}}
 }
-
