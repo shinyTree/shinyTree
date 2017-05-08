@@ -43,6 +43,3 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   }
   flatList
 }
-
-
-

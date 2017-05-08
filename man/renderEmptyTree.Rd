@@ -13,4 +13,3 @@ Renders a tree with no defined nodes.
 \seealso{
 \code{\link{shinyTree}}
 }
-
