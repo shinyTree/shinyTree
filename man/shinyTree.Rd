@@ -11,13 +11,15 @@ shinyTree(outputId, checkbox = FALSE, search = FALSE, dragAndDrop = FALSE,
   \item{outputId}{The ID associated with this element}
   \item{checkbox}{If \code{TRUE}, will enable checkboxes
   next to each node to make the selection of multiple nodes
-  in the tree easier.} \item{search}{If \code{TRUE}, will
-  enable search functionality in the tree by adding a search
-  box above the produced tree. Alternatively, you can set the
-  parameter to the ID of the text input you wish to use as the
-  search field.} \item{dragAndDrop}{If \code{TRUE}, will allow
-  the user to rearrange the nodes in the tree.} \item{theme}
-  {jsTree theme, one of \code{default}, \code{default-dark},
+  in the tree easier.}
+  \item{search}{If \code{TRUE}, will enable search 
+  functionality in the tree by adding a search box above the 
+  produced tree. Alternatively, you can set theparameter to 
+  the ID of the text input you wish to use as the search 
+  field.}
+  \item{dragAndDrop}{If \code{TRUE}, will allow the user to 
+  rearrange the nodes in the tree.}
+  \item{theme}{jsTree theme, one of \code{default}, \code{default-dark},
   or \code{proton}.}
 }
 \description{
@@ -27,4 +29,3 @@ can then be filled in using \code{\link{renderTree}}
 \seealso{
 \code{\link{renderTree}}
 }
-

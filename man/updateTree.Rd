@@ -15,4 +15,3 @@ updateTree(session, treeId, data = NULL)
 Extract the nodes from the tree that are selected in a more
 convenient format. You can choose which format you prefer.
 }
-
