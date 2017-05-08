@@ -7,12 +7,14 @@
 get_selected(tree, format = c("names", "slices", "classid"))
 }
 \arguments{
-  \item{tree}{The \code{input$tree} shinyTree you want to
-  inspect.} \item{format}{In which format you want the output.
-  Use \code{names} to get a simple list of the names (with
-  attributes describing the node's ancestry), or \code{slices}
-  to get a list of lists, each of which is a slice of the list
-  used to get down to the selected node.}
+\item{tree}{The \code{input$tree} shinyTree you want to 
+inspect.}
+
+\item{format}{In which format you want the output. Use 
+\code{names} to get a simple list of the names (with attributes
+describing the node's ancestry), or \code{slices} to get a list
+of lists, each of which is a slice of the list used to get down
+to the selected node.}
 }
 \description{
 Extract the nodes from the tree that are selected in a more
