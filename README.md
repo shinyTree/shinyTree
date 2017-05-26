@@ -96,6 +96,16 @@ runApp(system.file("examples/08-class", package="shinyTree"))
 
 An example demonstrating the use of the ability to style nodes using custom classes.
 
+#### 09-api
+
+```
+library(shiny)
+runApp(system.file("examples/09-api", package="shinyTree"))
+```
+
+An example demonstrating how to extend the operations on the tree to the rest of
+the [jsTree's core functionality](https://www.jstree.com/api/).
+
 Known Bugs
 ----------
 
