@@ -16,8 +16,6 @@ jsFun <- "
 #' @author McClelland Legge \email{McClelland.Legge@@gmail.com}
 shinyUI(
   pageWithSidebar(
-    useShinyjs(),
-    extendShinyjs(text = jsFun),
     headerPanel("shinyTree with Core jsTree Function"),
     
     sidebarPanel(      
@@ -27,6 +25,8 @@ shinyUI(
     ),
     
     mainPanel(
+      useShinyjs(),
+      extendShinyjs(text = jsFun),
       shinyTree("tree", checkbox = TRUE)
     )
   ))
