@@ -11,9 +11,11 @@
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
+#' @param themeIcons If \code{TRUE}, will show theme icons for each item.
+#' @param themeDots If \code{TRUE}, will include level dots.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, theme="default"){
+shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, theme="default", themeIcons=TRUE, themeDots=TRUE){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -47,7 +49,9 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
         `data-st-checkbox`=checkbox, 
         `data-st-search`=is.character(search),
         `data-st-dnd`=dragAndDrop,
-        `data-st-theme`=theme
+        `data-st-theme`=theme,
+        `data-st-theme-icons`=themeIcons,
+        `data-st-theme-dots`=themeDots
         )
   )
 }
