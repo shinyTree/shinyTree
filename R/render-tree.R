@@ -13,7 +13,10 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE){
   func <- shiny::exprToFunction(expr, env, quoted)
   return(function(shinysession, name, ...) {
     tree <- func()
-    
-    shiny::HTML(as.character(listToTags(tree)))
+    if(inherits(expr, "Node")){
+      shiny::HTML(as.character(datatreeToTags(tree)))  
+    } else {
+      shiny::HTML(as.character(listToTags(tree)))  
+    }
   })
 }

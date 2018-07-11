@@ -68,3 +68,48 @@ getJSON <- function(node){
   
   paste0("{",paste(attrib, collapse = ","),"}")  
 }
+
+
+datatreeToTags <- function(datatreeNode, parent=shiny::tags$ul()){
+  
+  # Handle parent tag attributes
+  el <- list(parent)
+  if (!is.null(attr(datatreeNode, "stclass"))){
+    el[["class"]] <- attr(datatreeNode, "stclass")
+  }  
+  attribJSON <- getJSON(datatreeNode)  
+  if (!is.null(attribJSON)){
+    el[["data-jstree"]] <- attribJSON
+  }
+  parent <- do.call(shiny::tagAppendAttributes, el)
+  
+  # There's probably an *apply way to do this. Whatevs.
+  if(length(datatreeNode$children) > 0){
+    for (i in 1:length(datatreeNode$children)){
+      
+      name <- names(datatreeNode$children)[i]
+      
+      if (is.null(name)){
+        name <- ""
+      }
+      
+      attribJSON <- getJSON(datatreeNode$children[[i]])
+      
+      if (length(datatreeNode$children[[i]]) > 0){
+        el <- list(name, datatreeToTags(datatreeNode$children[[i]]), 
+                   `data-jstree`=attribJSON)
+        if (!is.null(attr(datatreeNode$children[[i]], "stclass"))){
+          el[["class"]] <- attr(datatreeNode$children[[i]], "stclass")
+        }
+        parent <- shiny::tagAppendChild(parent, do.call(shiny::tags$li, el))
+      } else{
+        el <- list(name, `data-jstree`=attribJSON)
+        if (!is.null(attr(datatreeNode$children[[i]], "stclass"))){
+          el[["class"]] <- attr(datatreeNode$children[[i]], "stclass")
+        }
+        parent <- shiny::tagAppendChild(parent, do.call(shiny::tags$li, el))
+      }
+    }
+  }
+  return(parent)
+}
