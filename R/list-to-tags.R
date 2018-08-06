@@ -1,3 +1,12 @@
+
+fixIconName <- function(icon){
+  if(!is.null(icon)){
+    paste0("fa fa-",icon)
+  }else{
+    NULL
+  }
+}
+
 listToTags <- function(myList, parent=shiny::tags$ul()){
   
   # Handle parent tag attributes
@@ -71,8 +80,16 @@ getJSON <- function(node){
   # Handle 'icon' attribute
   icon <- attr(node, "sticon")
   if (!is.null(icon)){
-    icon <- paste0("fa fa-",icon)
-    attrib <- c(attrib, paste0("\"icon\": \"", icon, "\""))
+    attrib <- c(attrib, paste0("\"icon\": \"", fixIconName(icon), "\""))
+  }
+
+  # Handle 'type' attribute
+  type <- attr(node, "sttype")
+  if (!is.null(type)){
+    attrib <- c(attrib, paste0("\"type\": \"", type, "\""))
+  }
+
+
   }
   
   paste0("{",paste(attrib, collapse = ","),"}")  
