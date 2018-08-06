@@ -25,18 +25,31 @@ Rlist2json <- function(nestedList) {
 
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   for (name in names(nestedList)) {
-    flatList = c(flatList,
-                 list(
-                   list(
-                     id = as.character(length(flatList) + 1),
-                     text = name,
-                     parent = parent,
-                     state = list(
-                       opened   = isTRUE(attr(nestedList[[name]], "stopened")),
-                       selected = isTRUE(attr(nestedList[[name]], "stselected"))
-                     )
-                   )
-                 ))
+    additionalAttributeNames <- c("icon","type")
+    additionalAttributes<- lapply(additionalAttributeNames,function(attribute){
+      if(attribute == "icon"){
+        fixIconName(attr(nestedList[[name]],paste0("st",attribute)))
+      }else{
+        attr(nestedList[[name]],paste0("st",attribute))
+      }
+    })
+    names(additionalAttributes) <-  additionalAttributeNames
+    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+
+    nodeData <- append(
+      list(
+        id = as.character(length(flatList) + 1),
+        text = name,
+        parent = parent,
+        state = list(
+          opened   = isTRUE(attr(nestedList[[name]], "stopened")),
+          selected = isTRUE(attr(nestedList[[name]], "stselected"))
+        )
+      ),
+      additionalAttributes
+    )
+
+    flatList = c(flatList,list(nodeData))
     if (is.list(nestedList[[name]]))
       flatList =
         get_flatList(nestedList[[name]], flatList, parent = as.character(length(flatList)))
