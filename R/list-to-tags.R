@@ -88,9 +88,6 @@ getJSON <- function(node){
   if (!is.null(type)){
     attrib <- c(attrib, paste0("\"type\": \"", type, "\""))
   }
-
-
-  }
   
   paste0("{",paste(attrib, collapse = ","),"}")  
 }
