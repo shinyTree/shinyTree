@@ -1,4 +1,5 @@
 var shinyTree = function(){
+  sttypes = null;
 
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
