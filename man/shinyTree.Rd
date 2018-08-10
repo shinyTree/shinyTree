@@ -4,8 +4,9 @@
 \alias{shinyTree}
 \title{Create a Shiny Tree}
 \usage{
-shinyTree(outputId, checkbox = FALSE, search = FALSE, dragAndDrop = FALSE,
-  theme = "default")
+shinyTree(outputId, checkbox = FALSE, search = FALSE,
+  dragAndDrop = FALSE, types = NULL, theme = "default",
+  themeIcons = TRUE, themeDots = TRUE)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
@@ -20,7 +21,13 @@ to the ID of the text input you wish to use as the search field.}
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
 
+\item{types}{If \code{TRUE}, enables jstree types functionality}
+
 \item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
+
+\item{themeIcons}{If \code{TRUE}, will show theme icons for each item.}
+
+\item{themeDots}{If \code{TRUE}, will include level dots.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled

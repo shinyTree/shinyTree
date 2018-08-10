@@ -10,6 +10,7 @@
 #' describing the node's ancestry), or \code{slices} to get a list
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
+#' @importFrom utils tail head
 #' @export
 get_selected <- function(tree, format=c("names", "slices", "classid")){
   format <- match.arg(format, c("names", "slices", "classid"), FALSE)
