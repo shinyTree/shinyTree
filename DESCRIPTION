@@ -1,9 +1,11 @@
 Package: shinyTree
 Type: Package
 Title: jsTree Bindings for Shiny
-Version: 0.2.5
+Version: 0.3.0.9000
 Date: 2017-11-05
 Authors@R: c(
+  person(family="Eli Lilly & Company", role="ctb", email="bellma@lilly.com"),
+  person("Michael", "Bell", role="aut", email="bellma@lilly.com"),
   person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
   person("Jeff", "Allen", role="cre", email="cran@trestletechnology.net"),
   person(family="Institut de Radioprotection et de Sûreté Nucléaire", role=c("cph"), email = "yann.richet@irsn.fr"),
@@ -20,10 +22,10 @@ Depends:
     R (>= 2.15.1),
     methods
 Imports:
-    shiny (>= 0.9.0)
+    utils, jsonlite, shiny (>= 0.9.0)
 Suggests:
     testthat
 BugReports: https://github.com/trestletech/shinyTree/issues
 Roxygen: list(wrap = TRUE)
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Encoding: UTF-8
