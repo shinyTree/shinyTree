@@ -22,6 +22,6 @@ shinyUI(
       shinyTree("tree3", theme="proton"),
       hr(),
       "Theme: proton without icons and dots",
-      shinyTree("tree4", theme="proton", theme_icons = FALSE, theme_dots = FALSE)
+      shinyTree("tree4", theme="proton", themeIcons = FALSE, themeDots = FALSE)
     )
   ))

@@ -125,6 +125,16 @@ runApp(system.file("examples/11-tree-update", package="shinyTree"))
 
 An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization.
 
+#### 12-types
+
+```
+library(shiny)
+runApp(system.file("examples/12-types", package="shinyTree"))
+```
+
+An example demonstrating node types with custom icons.
+
+
 
 Known Bugs
 ----------

@@ -48,7 +48,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
                 href = "shared/font-awesome/css/font-awesome.min.css"),
       shiny::tags$script(src = 'shinyTree/jsTree-3.3.3/jstree.min.js'),
       shiny::tags$script(src = 'shinyTree/shinyTree.js'),
-      shiny::tags$script(HTML(types))
+      shiny::tags$script(shiny::HTML(types))
     )),
     searchEl,
     shiny::div(id=outputId, class="shiny-tree", 
