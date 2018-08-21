@@ -129,7 +129,6 @@ var shinyTree = function(){
           var js = tree.get_json();
           var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
           callbackCounter++;
-          console.log(callbackCounter)
           pruned.callbackCounter = callbackCounter;
           return pruned;
         }
