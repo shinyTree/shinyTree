@@ -21,6 +21,7 @@ get_selected <- function(tree, format=c("names", "slices", "classid")){
          )  
 }
 
+#' @importFrom utils head tail
 get_selected_names <- function(tree, ancestry=NULL, vec=list()){
   if (is.list(tree)){
     for (i in 1:length(tree)){

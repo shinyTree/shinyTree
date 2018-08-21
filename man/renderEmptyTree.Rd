@@ -4,7 +4,7 @@
 \alias{renderEmptyTree}
 \title{Render an empty ShinyTree}
 \usage{
-renderEmptyTree(env = parent.frame(), quoted = FALSE)
+renderEmptyTree()
 }
 \arguments{
 \item{env}{The environment in which \code{expr} should be evaluated.}
