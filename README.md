@@ -1,10 +1,12 @@
+[![Build Status](https://travis-ci.org/shinyTree/shinyTree.svg?branch=master)](https://travis-ci.org/shinyTree/shinyTree)
+
 shinyTree
 ==========
 
 The `shinyTree` package enables Shiny application developers to use the 
 [jsTree](http://jstree.com) library in their applications.
 
-![shiny tree screenshot](https://trestletech.github.io/shinyTree/images/st.png)
+![shiny tree screenshot](https://shinyTree.github.io/shinyTree/images/st.png)
 
 Installation
 ------------
@@ -16,7 +18,7 @@ You can install the latest development version of the code using the devtools R 
 install.packages("devtools")
 
 library(devtools)
-install_github("schaffman5/shinyTree")
+install_github("shinyTree/shinyTree")
 ```
 
 
@@ -50,7 +52,7 @@ runApp(system.file("examples/03-checkbox", package="shinyTree"))
 
 Use checkboxes to allow users to more easily manage which nodes are selected.
 
-#### 04-selected ([Live Demo](https://trestletech.shinyapps.io/st-04-selected/))
+#### 04-selected ([Live Demo](https://shinyTree.shinyapps.io/st-04-selected/))
 
 ```
 library(shiny)
@@ -123,11 +125,21 @@ runApp(system.file("examples/11-tree-update", package="shinyTree"))
 
 An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization.
 
+#### 12-types
+
+```
+library(shiny)
+runApp(system.file("examples/12-types", package="shinyTree"))
+```
+
+An example demonstrating node types with custom icons.
+
+
 
 Known Bugs
 ----------
 
-See the [Issues page](https://github.com/trestletech/shinyTree/issues) for information on outstanding issues. 
+See the [Issues page](https://github.com/shinyTree/shinyTree/issues) for information on outstanding issues. 
 
 License
 -------
