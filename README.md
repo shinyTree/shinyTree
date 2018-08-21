@@ -134,7 +134,14 @@ runApp(system.file("examples/12-types", package="shinyTree"))
 
 An example demonstrating node types with custom icons.
 
+#### 13-icons
 
+```
+library(shiny)
+runApp(system.file("examples/13-types", package="shinyTree"))
+```
+
+An example demonstrating various ways to set icons.
 
 Known Bugs
 ----------
