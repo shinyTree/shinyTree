@@ -22,9 +22,10 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE){
 #' 
 #' Renders a tree with no defined nodes.
 #' \code{\link{shinyTree}}.
+#'
 #' @seealso \code{\link{shinyTree}}
 #' @export
-renderEmptyTree <- function(env = parent.frame(), quoted = FALSE){
-  return(function(shinysession, name, ...) {
+renderEmptyTree <- function() {
+  return(function(shinysession, name) {
   })
 }
