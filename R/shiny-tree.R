@@ -10,12 +10,13 @@
 #' to the ID of the text input you wish to use as the search field.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
+#' @param types If \code{TRUE}, enables jstree types functionality
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, theme="default", themeIcons=TRUE, themeDots=TRUE){
+shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, types=NULL,theme="default", themeIcons=TRUE, themeDots=TRUE){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -34,6 +35,10 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
                                type = 'text/css',
                                href = paste('shinyTree/jsTree-3.3.3/themes/',theme,'/style.min.css',sep=""))
   
+  
+  if(!is.null(types)){
+    types <- paste("sttypes =",types)
+  }
   shiny::tagList(
     shiny::singleton(shiny::tags$head(
       initResourcePaths(),
@@ -42,13 +47,15 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
                 type = "text/css", 
                 href = "shared/font-awesome/css/font-awesome.min.css"),
       shiny::tags$script(src = 'shinyTree/jsTree-3.3.3/jstree.min.js'),
-      shiny::tags$script(src = 'shinyTree/shinyTree.js')
+      shiny::tags$script(src = 'shinyTree/shinyTree.js'),
+      shiny::tags$script(HTML(types))
     )),
     searchEl,
     shiny::div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
         `data-st-search`=is.character(search),
         `data-st-dnd`=dragAndDrop,
+        `data-st-types`=!is.null(types),
         `data-st-theme`=theme,
         `data-st-theme-icons`=themeIcons,
         `data-st-theme-dots`=themeDots

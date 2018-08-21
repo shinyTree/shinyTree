@@ -1,4 +1,5 @@
 var shinyTree = function(){
+  sttypes = null;
 
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
@@ -22,11 +23,16 @@ var shinyTree = function(){
       if ($elem.data('st-dnd') === 'TRUE'){
         plugins.push('dnd');
       }
+      if ($elem.data('st-types') === 'TRUE'){
+        plugins.push('types');
+      }
       
-      var tree = $(el).jstree({'core' : {
-        "check_callback" : ($elem.data('st-dnd') === 'TRUE'),
+      var tree = $(el).jstree({'core' : { 
+        "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
         'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') }
-      },plugins: plugins});
+          },
+          "types" : sttypes,
+          plugins: plugins});
     }
   });
   Shiny.outputBindings.register(treeOutput, 'shinyTree.treeOutput');
