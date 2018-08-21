@@ -41,6 +41,9 @@ jsonToAttr <- function(json){
 
 supplementAttr <- function(ret, json){
   # Only add attributes if non-default
+  #cat("JSON string:\n")
+  #cat(str(json))
+  
   if (json$state$selected != FALSE){
     attr(ret, "stselected") <- json$state$selected
   }
@@ -49,6 +52,15 @@ supplementAttr <- function(ret, json){
   }
   if (json$state$opened != FALSE){
     attr(ret, "stopened") <- json$state$opened
+  }
+  if (exists('stid', where=json)) {
+    attr(ret, "stid") <- json$stid
+  }
+  if (exists('stclass', where=json)) {
+    attr(ret, "stclass") <- json$stclass
+  }
+  if (exists('id', where=json)) {
+    attr(ret, "id") <- json$id
   }
   ret
 }
