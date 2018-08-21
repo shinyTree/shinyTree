@@ -4,7 +4,7 @@
 \alias{renderEmptyTree}
 \title{Render an empty ShinyTree}
 \usage{
-renderEmptyTree(env = parent.frame(), quoted = FALSE)
+renderEmptyTree()
 }
 \description{
 Renders a tree with no defined nodes.
