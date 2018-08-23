@@ -1,4 +1,5 @@
 var shinyTree = function(){
+  callbackCounter = 0;
   sttypes = null;
 
   var treeOutput = new Shiny.OutputBinding();
@@ -8,7 +9,7 @@ var shinyTree = function(){
     },
     renderValue: function(el, data) {
       // Wipe the existing tree and create a new one.
-      $elem = $('#' + el.id)
+      $elem = $('#' + el.id);
       
       $elem.jstree('destroy');
       
@@ -127,6 +128,8 @@ var shinyTree = function(){
         if(tree.get_container().find("li").length>0) { // The tree may be initialized but empty
           var js = tree.get_json();
           var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
+          callbackCounter++;
+          pruned.callbackCounter = callbackCounter;
           return pruned;
         }
       }
