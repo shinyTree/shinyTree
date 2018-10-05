@@ -1,3 +1,8 @@
+ v 0.2.6
+--------------------------------------------------------------------------------
+
+- Many improvements to expose more jsTree options.
+- Tree can now be correctly updated (see new examples).
 
  v 0.2.0
 --------------------------------------------------------------------------------
