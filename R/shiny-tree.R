@@ -10,7 +10,7 @@
 #' to the ID of the text input you wish to use as the search field.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
-#' @param types If \code{TRUE}, enables jstree types functionality
+#' @param types enables jstree types functionality when sent proper json (please see the types example)
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
