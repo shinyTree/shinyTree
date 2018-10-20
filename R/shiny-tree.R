@@ -19,6 +19,8 @@
 #' @param unique If \code{TRUE}, will ensure that no node name exists more than once.
 #' @param wholerow If \code{TRUE}, will highlight the whole selected row.
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu.
+#' @param state If \code{TRUE}, will enable the state plugin and will store the tree nodes in the 
+#' browser, so opened and selected nodes will remain after a page refresh. The key used is 'jstree'
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, 

@@ -39,6 +39,9 @@ tree.}
 \item{wholerow}{If \code{TRUE}, will highlight the whole selected row.}
 
 \item{searchtime}{Determines the reaction time of the search algorithm. Default is 1000ms.}
+
+\item{state}{If \code{TRUE}, will enable the state plugin and will store the tree nodes in the 
+browser, so opened and selected nodes will remain after a page refresh. The key used is 'jstree'}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled

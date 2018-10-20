@@ -43,10 +43,10 @@ var shinyTree = function(){
         plugins.push('wholerow');
       }
 	  
-      var tree = $(el).jstree({'core' : { 
-        "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-        'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') },
-		"state" : { "key" : "jstree" },
+      var tree = $(el).jstree({'core' : {
+          "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
+          'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') },
+		      "state" : { "key" : "jstree" },
           },
           "types" : sttypes,
           plugins: plugins});
