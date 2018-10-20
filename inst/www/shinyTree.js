@@ -27,10 +27,26 @@ var shinyTree = function(){
       if ($elem.data('st-types') === 'TRUE'){
         plugins.push('types');
       }
-      
+      if ($elem.data('st-contextmenu') === 'TRUE'){
+        plugins.push('contextmenu');
+      }
+      if ($elem.data('st-state') === 'TRUE'){
+        plugins.push('state');
+      }
+      if ($elem.data('st-unique') === 'TRUE'){
+        plugins.push('unique');
+      }
+      if ($elem.data('st-sort') === 'TRUE'){
+        plugins.push('sort');
+      }
+      if ($elem.data('st-wholerow') === 'TRUE'){
+        plugins.push('wholerow');
+      }
+	  
       var tree = $(el).jstree({'core' : { 
         "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-        'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') }
+        'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') },
+		"state" : { "key" : "jstree" },
           },
           "types" : sttypes,
           plugins: plugins});
@@ -156,6 +172,18 @@ var shinyTree = function(){
       $(el).on("move_node.jstree", function(e){
         callback();
       })
+
+	  $(el).on("set_state.jstree", function(e) {
+        callback();
+      });
+      
+      $(el).on("search.jstree", function(e){
+        callback();
+      });
+	  
+      $(el).on("clear_search.jstree", function(e){
+        callback();
+      });    
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
@@ -173,7 +201,7 @@ var shinyTree = function(){
   
   var exports = {};
   
-  exports.initSearch = function(treeId, searchId){
+  exports.initSearch = function(treeId, searchId, searchtime){
     $(function(){
       var to = false;
       $('#' + searchId).keyup(function () {
@@ -181,10 +209,10 @@ var shinyTree = function(){
         to = setTimeout(function () {
           var v = $('#' + searchId).val();
           $.jstree.reference('#' + treeId).search(v);
-        }, 250);
+        }, searchtime);
       });
     });    
-  }
+  };
   
   return exports;
 }()

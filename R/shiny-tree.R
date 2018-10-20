@@ -8,15 +8,25 @@
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #' a search box above the produced tree. Alternatively, you can set the parameter
 #' to the ID of the text input you wish to use as the search field.
+#' @param searchtime Determines the reaction time of the search algorithm. Default is 1000ms.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
-#' @param types If \code{TRUE}, enables jstree types functionality
+#' @param types enables jstree types functionality when sent proper json (please see the types example)
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
+#' @param sort If \code{TRUE}, will sort the nodes in alphabetical/numerical order.
+#' @param unique If \code{TRUE}, will ensure that no node name exists more than once.
+#' @param wholerow If \code{TRUE}, will highlight the whole selected row.
+#' @param contextmenu If \code{TRUE}, will enable a contextmenu.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, types=NULL,theme="default", themeIcons=TRUE, themeDots=TRUE){
+shinyTree <- function(outputId, checkbox=FALSE, 
+                        search=FALSE, dragAndDrop=FALSE, 
+                        types=NULL, theme="default", themeIcons=TRUE, 
+                        themeDots=TRUE, contextmenu=TRUE,
+                        sort=TRUE, unique=TRUE, wholerow=TRUE, searchtime=1000,
+                        state = TRUE){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -25,7 +35,8 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
   if (is.character(search)){
     # Either the search field we just created or the given text field ID
     searchEl <- shiny::tagAppendChild(searchEl, shiny::tags$script(type="text/javascript", shiny::HTML(
-      paste0("shinyTree.initSearch('",outputId,"','",search,"');"))))
+      paste0("shinyTree.initSearch('",outputId,"','",search,"', ", searchtime,");")
+      )))
   }
   
   if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
@@ -34,11 +45,11 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
   theme.tags<-shiny::tags$link(rel = 'stylesheet',
                                type = 'text/css',
                                href = paste('shinyTree/jsTree-3.3.3/themes/',theme,'/style.min.css',sep=""))
-  
-  
+
   if(!is.null(types)){
     types <- paste("sttypes =",types)
   }
+  
   shiny::tagList(
     shiny::singleton(shiny::tags$head(
       initResourcePaths(),
@@ -58,7 +69,12 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
         `data-st-types`=!is.null(types),
         `data-st-theme`=theme,
         `data-st-theme-icons`=themeIcons,
-        `data-st-theme-dots`=themeDots
+        `data-st-theme-dots`=themeDots,
+        `data-st-contextmenu`=contextmenu,
+        `data-st-sort`=sort,
+        `data-st-unique`=unique,
+        `data-st-wholerow`=wholerow,
+        `data-st-state`=state
         )
   )
 }

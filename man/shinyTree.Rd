@@ -5,7 +5,9 @@
 \title{Create a Shiny Tree}
 \usage{
 shinyTree(outputId, checkbox = FALSE, search = FALSE, dragAndDrop = FALSE,
-  types = NULL, theme = "default", themeIcons = TRUE, themeDots = TRUE)
+  types = NULL, theme = "default", themeIcons = TRUE, themeDots = TRUE,
+  contextmenu = TRUE, sort = TRUE, unique = TRUE, wholerow = TRUE,
+  searchtime = 1000, state = TRUE)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
@@ -20,13 +22,23 @@ to the ID of the text input you wish to use as the search field.}
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
 
-\item{types}{If \code{TRUE}, enables jstree types functionality}
+\item{types}{enables jstree types functionality when sent proper json (please see the types example)}
 
 \item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
 
 \item{themeIcons}{If \code{TRUE}, will show theme icons for each item.}
 
 \item{themeDots}{If \code{TRUE}, will include level dots.}
+
+\item{contextmenu}{If \code{TRUE}, will enable a contextmenu.}
+
+\item{sort}{If \code{TRUE}, will sort the nodes in alphabetical/numerical order.}
+
+\item{unique}{If \code{TRUE}, will ensure that no node name exists more than once.}
+
+\item{wholerow}{If \code{TRUE}, will highlight the whole selected row.}
+
+\item{searchtime}{Determines the reaction time of the search algorithm. Default is 1000ms.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
