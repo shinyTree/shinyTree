@@ -20,13 +20,14 @@ initResourcePaths <- function() {
     #3. The user tries to make the same change.
     #Because the tree would otherwise send the same json message twice, shiny blocks the message. By havng an incrementing
     #callbackCounter, the app is assured to receive the message
-    val$callbackCounter <- NULL
-    jsonToAttr(val)   
+    val$callbackCounter <- NULL #set to null to avoid problems with jsonToAttr
+    jsonToAttr(val)    
   })
 }
 
 jsonToAttr <- function(json){
   ret <- list()
+  
   if (! "text" %in% names(json)){
     # This is a top-level list, not a node.
     for (i in 1:length(json)){
@@ -35,6 +36,7 @@ jsonToAttr <- function(json){
     }
     return(ret)
   }
+  
   if (length(json$children) > 0){
     return(jsonToAttr(json[["children"]]))
   } else {
