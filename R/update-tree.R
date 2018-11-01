@@ -31,6 +31,29 @@ fixIconName <- function(icon){
   }
 }
 
+library(stringr)
+
+#fix icon retains backward compatibility for icon entries that are not fully specified
+fixIconName <- function(icon){
+  if(is.null(icon)){
+    NULL
+  }else if(grepl("[/\\]",icon)){ #ie. "/images/ball.jpg"
+    icon
+  }else{
+    iconGroup <- str_subset(icon,"(\\S+) \\1-") #ie "fa fa-file"
+    if(length(iconGroup) > 0){
+      icon
+    }else{
+      iconGroup <- str_match(icon,"(fa|glyphicon)-") #ie "fa-file"
+      if(length(iconGroup) > 1 && !is.na(iconGroup[2])){
+        paste(iconGroup[2],icon)
+      }else{ #ie. just "file"
+        paste0("fa fa-",icon)
+      }
+    }
+  }
+}
+
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   for (name in names(nestedList)) {
     additionalAttributeNames <- c("icon","type")
