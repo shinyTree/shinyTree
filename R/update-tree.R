@@ -23,6 +23,14 @@ Rlist2json <- function(nestedList) {
   json <- as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
+fixIconName <- function(icon){
+  if(!is.null(icon)){
+    paste0("fa fa-",icon)
+  }else{
+    NULL
+  }
+}
+
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   for (name in names(nestedList)) {
     additionalAttributeNames <- c("icon","type")
