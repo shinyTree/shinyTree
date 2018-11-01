@@ -18,7 +18,8 @@ shinyServer(function(input, output, session) {
             ),
         SubListB = structure(list(
           leafA = structure("",sttype="default",sticon="glyphicon glyphicon-leaf"),
-          leafB = structure("",sttype="default",sticon="shinyTree/icon.png")
+          leafB = structure("",sttype="default",sticon="shinyTree/icon.png"),
+          leafC = structure("",sttype="default",sticon="map-signs")
           ),stopened=TRUE,sttype="root")
       ),
       sttype="root",stopened=TRUE
