@@ -36,6 +36,12 @@ get_selected_names <- function(tree, ancestry=NULL, vec=list()){
     el <- tail(ancestry,n=1)
     vec[length(vec)+1] <- el
     attr(vec[[length(vec)]], "ancestry") <- head(ancestry, n=length(ancestry)-1)
+    #save attributes that start with "st" (ShinyTree)
+    lapply(names(attributes(tree)),function(attribute){
+        if(grepl("^st",attribute)){
+            attr(vec[[length(vec)]], attribute) <<- attr(tree,attribute)
+        }
+    })
   }
   return(vec)
 }

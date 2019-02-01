@@ -56,17 +56,24 @@ fixIconName <- function(icon){
 
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   for (name in names(nestedList)) {
-    additionalAttributeNames <- c("icon","type")
-    additionalAttributes<- lapply(additionalAttributeNames,function(attribute){
-      if(attribute == "icon"){
-        fixIconName(attr(nestedList[[name]],paste0("st",attribute)))
+    additionalAttributes <- list(
+      "icon" = fixIconName(attr(nestedList[[name]],"sticon")),
+      "type" = attr(nestedList[[name]],"sttype")
+    )
+    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+    
+    data <- lapply(names(attributes(nestedList[[name]])),function(key){
+      if(key %in% c("icon","type","names","stopened","stselected","sttype")){
+        NULL
       }else{
-        attr(nestedList[[name]],paste0("st",attribute))
+        attr(nestedList[[name]],key)
       }
     })
-    names(additionalAttributes) <-  additionalAttributeNames
-    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
-
+    if(!is.null(data) && length(data) > 0){
+      names(data) <- names(attributes(nestedList[[name]]))
+      data <- data[which(sapply(data,Negate(is.null)))]
+    }
+    
     nodeData <- append(
       list(
         id = as.character(length(flatList) + 1),
@@ -75,7 +82,8 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
         state = list(
           opened   = isTRUE(attr(nestedList[[name]], "stopened")),
           selected = isTRUE(attr(nestedList[[name]], "stselected"))
-        )
+        ),
+        data = data
       ),
       additionalAttributes
     )
