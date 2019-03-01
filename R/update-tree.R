@@ -23,8 +23,6 @@ Rlist2json <- function(nestedList) {
   json <- as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
-library(stringr)
-
 #fix icon retains backward compatibility for icon entries that are not fully specified
 fixIconName <- function(icon){
   if(is.null(icon)){
