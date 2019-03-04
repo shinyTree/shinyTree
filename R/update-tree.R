@@ -20,9 +20,10 @@ updateTree <- function(session, treeId, data=NULL) {
 
 #' @importFrom jsonlite toJSON
 Rlist2json <- function(nestedList) {
-  json <- as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
+  as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
+#' @importFrom stringr str_subset str_match
 #fix icon retains backward compatibility for icon entries that are not fully specified
 fixIconName <- function(icon){
   if(is.null(icon)){
