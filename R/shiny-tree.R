@@ -38,6 +38,11 @@ shinyTree <- function(outputId, checkbox=FALSE,
                       sort=FALSE, unique=FALSE, wholerow=FALSE, searchtime=1000,
                       state = FALSE){
 
+  if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
+    message("The plugins contextmenu and checkbox cannot be used together.")
+    message("Set checkbox to FALSE")
+    checkbox = FALSE
+  }
   
   searchEl <- shiny::div("")
   if (search == TRUE){

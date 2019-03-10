@@ -156,7 +156,6 @@ var shinyTree = function(){
         callback();
       });   
       
-      
       // new callbacks for contextmenue
       $(el).on("create_node.jstree", function(e){
         callback();
@@ -179,43 +178,6 @@ var shinyTree = function(){
       $(el).on("paste.jstree", function(e){
         callback();
       });
-      
-      
-      /*
-      $(el).on("redraw.jstree", function(e){
-        callback();
-      });   
-      $(el).on("model.jstree", function(e){
-        callback();
-      });   
-      $(el).on("refresh.jstree", function(e){
-        callback();
-      });
-      
-      $(el).on("set_id.jstree", function(e){
-        callback();
-      });   
-      $(el).on("set_text.jstree", function(e){
-        callback();
-      });   
-      
-      $(el).on("model.jstree", function(e){
-        callback();
-      });   
-      $(el).on("enable_node.jstree", function(e){
-        callback();
-      });   
-      $(el).on("disable_node.jstree", function(e){
-        callback();
-      });    
-      $(el).on("activate_node.jstree", function(e){
-        callback();
-      });    
-      */
-      
-      
-      
-      
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
