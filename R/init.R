@@ -28,16 +28,16 @@ initResourcePaths <- function() {
 jsonToAttr <- function(json){
   ret <- list()
   
-  if (! "text" %in% names(json)){
+  if (!"text" %in% names(json)) {
     # This is a top-level list, not a node.
-    for (i in 1:length(json)){
+    for (i in 1:length(json)) {
       ret[[json[[i]]$text]] <- jsonToAttr(json[[i]])
       ret[[json[[i]]$text]] <- supplementAttr(ret[[json[[i]]$text]], json[[i]])
     }
     return(ret)
   }
   
-  if (length(json$children) > 0){
+  if (length(json$children) > 0) {
     return(jsonToAttr(json[["children"]]))
   } else {
     ret <- 0
@@ -47,27 +47,29 @@ jsonToAttr <- function(json){
 }
 
 supplementAttr <- function(ret, json){
-  # Only add attributes if non-default
-  #cat("JSON string:\n")
-  #cat(str(json))
-  
-  if (json$state$selected != FALSE){
-    attr(ret, "stselected") <- json$state$selected
+  if (json$state$selected != FALSE) {
+    ## If checkbox is TRUE and a new node is created, emits error if this if-test is not included
+    if (!is.null(attr(ret, "stselected"))) {
+      attr(ret, "stselected") <- json$state$selected
+    }
   }
-  if (json$state$disabled != FALSE){
-    attr(ret, "stdisabled") <- json$state$disabled
+  if (json$state$disabled != FALSE) {
+    # if (!is.null(attr(ret, "disabled"))) {
+      attr(ret, "stdisabled") <- json$state$disabled
+    # }
   }
-  if (json$state$opened != FALSE){
-    attr(ret, "stopened") <- json$state$opened
+  if (json$state$opened != FALSE) {
+    # if (!is.null(attr(ret, "opened"))) {
+      attr(ret, "stopened") <- json$state$opened
+    # }
   }
-  if (exists('stid', where=json)) {
-    attr(ret, "stid") <- json$stid
-  }
-  if (exists('stclass', where=json)) {
-    attr(ret, "stclass") <- json$stclass
-  }
-  if (exists('id', where=json)) {
-    attr(ret, "id") <- json$id
+
+  if (exists('id', where = json)) {
+    ## This happens when a new node is created on a parent with no children.
+    ## Or a new node is created on a parent that is closed.
+    if (!is.null(attr(ret, "id"))) {
+      attr(ret, "id") <- json$id
+    }
   }
   ret
 }

@@ -1,34 +1,44 @@
 #' Create a Shiny Tree
 #' 
-#' This creates a spot in your Shiny UI for a shinyTree which can then be filled
-#' in using \code{\link{renderTree}}
+#' This creates a spot in your Shiny UI for a shinyTree which can then be
+#' filled in using \code{\link{renderTree}}
 #' @param outputId The ID associated with this element
-#' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
+#' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to
 #' make the selection of multiple nodes in the tree easier.
-#' @param search If \code{TRUE}, will enable search functionality in the tree by adding
-#' a search box above the produced tree. Alternatively, you can set the parameter
-#' to the ID of the text input you wish to use as the search field.
-#' @param searchtime Determines the reaction time of the search algorithm. Default is 1000ms.
-#' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
-#' tree.
-#' @param types enables jstree types functionality when sent proper json (please see the types example)
-#' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
+#' @param search If \code{TRUE}, will enable search functionality in the tree
+#' by adding a search box above the produced tree. Alternatively, you can set
+#' the parameter to the ID of the text input you wish to use as the search
+#' field.
+#' @param searchtime Determines the reaction time of the search algorithm.
+#' Default is 1000ms.
+#' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the
+#' nodes in the tree.
+#' @param types enables jstree types functionality when sent proper json
+#' (please see the types example)
+#' @param theme jsTree theme, one of \code{default}, \code{default-dark},
+#' or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
-#' @param sort If \code{TRUE}, will sort the nodes in alphabetical/numerical order.
-#' @param unique If \code{TRUE}, will ensure that no node name exists more than once.
+#' @param sort If \code{TRUE}, will sort the nodes in alphabetical/numerical
+#' order.
+#' @param unique If \code{TRUE}, will ensure that no node name exists more
+#' than once.
 #' @param wholerow If \code{TRUE}, will highlight the whole selected row.
+#' @param state If \code{TRUE}, will enable the state plugin and will store
+#' the tree nodes in the browser, so opened and selected nodes will remain
+#' after a page refresh. The key used is 'jstree'
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu.
-#' @param state If \code{TRUE}, will enable the state plugin and will store the tree nodes in the 
-#' browser, so opened and selected nodes will remain after a page refresh. The key used is 'jstree'
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, 
-                        search=FALSE, dragAndDrop=FALSE, 
-                        types=NULL, theme="default", themeIcons=TRUE, 
-                        themeDots=TRUE, contextmenu=TRUE,
-                        sort=TRUE, unique=TRUE, wholerow=TRUE, searchtime=1000,
-                        state = TRUE){
+                      search=FALSE, dragAndDrop=FALSE, 
+                      types=NULL, theme="default", themeIcons=TRUE, 
+                      themeDots=TRUE, 
+                      contextmenu=FALSE,
+                      sort=FALSE, unique=FALSE, wholerow=FALSE, searchtime=1000,
+                      state = FALSE){
+
+  
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -41,12 +51,15 @@ shinyTree <- function(outputId, checkbox=FALSE,
       )))
   }
   
-  if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
+  if (!theme %in% c("default","default-dark","proton")) {
+    stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep=""))
+  }
   
   # define theme tags (default, default-dark, or proton)
   theme.tags<-shiny::tags$link(rel = 'stylesheet',
                                type = 'text/css',
-                               href = paste('shinyTree/jsTree-3.3.3/themes/',theme,'/style.min.css',sep=""))
+                               href = paste('shinyTree/jsTree-3.3.7/themes/',
+                                            theme,'/style.min.css',sep=""))
 
   if(!is.null(types)){
     types <- paste("sttypes =",types)
@@ -58,8 +71,8 @@ shinyTree <- function(outputId, checkbox=FALSE,
       theme.tags,
       shiny::tags$link(rel = "stylesheet", 
                 type = "text/css", 
-                href = "shared/font-awesome/css/font-awesome.min.css"),
-      shiny::tags$script(src = 'shinyTree/jsTree-3.3.3/jstree.min.js'),
+                href = "shared/fontawesome/css/all.min.css"),
+      shiny::tags$script(src = 'shinyTree/jsTree-3.3.7/jstree.min.js'),
       shiny::tags$script(src = 'shinyTree/shinyTree.js'),
       shiny::tags$script(shiny::HTML(types))
     )),

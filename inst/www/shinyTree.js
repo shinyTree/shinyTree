@@ -42,14 +42,23 @@ var shinyTree = function(){
       if ($elem.data('st-wholerow') === 'TRUE'){
         plugins.push('wholerow');
       }
+      
+      // changed plugin? whats it for exactly?
+      //plugins.push('changed');
 	  
-      var tree = $(el).jstree({'core' : {
-          "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-          'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') },
-		      "state" : { "key" : "jstree" },
+      var tree = $(el).jstree({
+        'core' : {
+          "check_callback" : true, 
+          'themes': {
+            'name': $elem.data('st-theme'), 
+            'responsive': true, 
+            'icons': ($elem.data('st-theme-icons') === 'TRUE'), 
+            'dots': ($elem.data('st-theme-dots') === 'TRUE')
           },
-          "types" : sttypes,
-          plugins: plugins});
+		      "state" : { "key" : "jstree" },
+        },
+        "types" : sttypes,
+        plugins: plugins});
     }
   });
   Shiny.outputBindings.register(treeOutput, 'shinyTree.treeOutput');
@@ -60,7 +69,7 @@ var shinyTree = function(){
       return $(scope).find(".shiny-tree");
     },
     getType: function(){
-      return "shinyTree"
+      return "shinyTree";
     },
     getValue: function(el, keys) {
       /**
@@ -73,7 +82,7 @@ var shinyTree = function(){
           var obj = {};
           $.each(ar, function(i, el){
             obj['' + i] = el;
-          })
+          });
           return obj;
         }
         
@@ -103,25 +112,12 @@ var shinyTree = function(){
                 }
                 
                 if (val.class) {
-                  //console.log("stclass (li_attr): " + val.class)
                   if (typeof val.class === 'string'){
-                    // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing
                     clean["stclass"] = val.class.trim();
                   } else {
                     clean["stclass"] = val.class; 
                   }
                 }
-                
-                //if (!val.class){
-                //  console.log(key + ": " + val)
-                //  // Skip without adding element.
-                //  return;
-                //}
-                
-                //if (val.class){
-                //  val = val.class;
-                //  key = 'class';
-                //}
               } else {
               
                 if (typeof val === 'string'){
@@ -155,35 +151,88 @@ var shinyTree = function(){
       $(el).on("open_node.jstree", function(e) {
         callback();
       });
-      
       $(el).on("close_node.jstree", function(e) {
         callback();
       });
-      
+      $(el).on("move_node.jstree", function(e){
+        callback();
+      });
       $(el).on("changed.jstree", function(e) {
         callback();
       });
-      
       $(el).on("ready.jstree", function(e){
-        // Initialize the data.
-        callback();
-      })
-      
-      $(el).on("move_node.jstree", function(e){
-        callback();
-      })
-
-	  $(el).on("set_state.jstree", function(e) {
         callback();
       });
-      
+	    $(el).on("set_state.jstree", function(e) {
+        callback();
+      });
       $(el).on("search.jstree", function(e){
         callback();
       });
-	  
       $(el).on("clear_search.jstree", function(e){
         callback();
+      });   
+      
+      
+      // new callbacks for contextmenue
+      $(el).on("create_node.jstree", function(e){
+        callback();
+      });   
+      $(el).on("rename_node.jstree", function(e){
+        callback();
+      });   
+      $(el).on("delete_node.jstree", function(e){
+        callback();
       });    
+      $(el).on("copy_node.jstree", function(e){
+        callback();
+      });        
+      $(el).on("cut.jstree", function(e){
+        callback();
+      });        
+      $(el).on("copy.jstree", function(e){
+        callback();
+      });    
+      $(el).on("paste.jstree", function(e){
+        callback();
+      });
+      
+      $(el).on("redraw.jstree", function(e){
+        callback();
+      });   
+      $(el).on("model.jstree", function(e){
+        callback();
+      });   
+      $(el).on("refresh.jstree", function(e){
+        callback();
+      });
+      
+      /*
+      
+      $(el).on("set_id.jstree", function(e){
+        callback();
+      });   
+      $(el).on("set_text.jstree", function(e){
+        callback();
+      });   
+      
+      $(el).on("model.jstree", function(e){
+        callback();
+      });   
+      $(el).on("enable_node.jstree", function(e){
+        callback();
+      });   
+      $(el).on("disable_node.jstree", function(e){
+        callback();
+      });    
+      $(el).on("activate_node.jstree", function(e){
+        callback();
+      });    
+      */
+      
+      
+      
+      
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
@@ -192,11 +241,10 @@ var shinyTree = function(){
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
-          $(el).jstree(true).refresh(true, true);
+          $(el).jstree(true).refresh(true, false);
       }
     }
   });
-  
   Shiny.inputBindings.register(treeInput); 
   
   var exports = {};
@@ -215,4 +263,4 @@ var shinyTree = function(){
   };
   
   return exports;
-}()
+}();

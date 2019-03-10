@@ -6,25 +6,28 @@
 \usage{
 shinyTree(outputId, checkbox = FALSE, search = FALSE, dragAndDrop = FALSE,
   types = NULL, theme = "default", themeIcons = TRUE, themeDots = TRUE,
-  contextmenu = TRUE, sort = TRUE, unique = TRUE, wholerow = TRUE,
-  searchtime = 1000, state = TRUE)
+  contextmenu = FALSE, sort = FALSE, unique = FALSE, wholerow = FALSE,
+  searchtime = 1000, state = FALSE)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
 
-\item{checkbox}{If \code{TRUE}, will enable checkboxes next to each node to 
+\item{checkbox}{If \code{TRUE}, will enable checkboxes next to each node to
 make the selection of multiple nodes in the tree easier.}
 
-\item{search}{If \code{TRUE}, will enable search functionality in the tree by adding
-a search box above the produced tree. Alternatively, you can set the parameter
-to the ID of the text input you wish to use as the search field.}
+\item{search}{If \code{TRUE}, will enable search functionality in the tree
+by adding a search box above the produced tree. Alternatively, you can set
+the parameter to the ID of the text input you wish to use as the search
+field.}
 
-\item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
-tree.}
+\item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the
+nodes in the tree.}
 
-\item{types}{enables jstree types functionality when sent proper json (please see the types example)}
+\item{types}{enables jstree types functionality when sent proper json
+(please see the types example)}
 
-\item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
+\item{theme}{jsTree theme, one of \code{default}, \code{default-dark},
+or \code{proton}.}
 
 \item{themeIcons}{If \code{TRUE}, will show theme icons for each item.}
 
@@ -32,20 +35,24 @@ tree.}
 
 \item{contextmenu}{If \code{TRUE}, will enable a contextmenu.}
 
-\item{sort}{If \code{TRUE}, will sort the nodes in alphabetical/numerical order.}
+\item{sort}{If \code{TRUE}, will sort the nodes in alphabetical/numerical
+order.}
 
-\item{unique}{If \code{TRUE}, will ensure that no node name exists more than once.}
+\item{unique}{If \code{TRUE}, will ensure that no node name exists more
+than once.}
 
 \item{wholerow}{If \code{TRUE}, will highlight the whole selected row.}
 
-\item{searchtime}{Determines the reaction time of the search algorithm. Default is 1000ms.}
+\item{searchtime}{Determines the reaction time of the search algorithm.
+Default is 1000ms.}
 
-\item{state}{If \code{TRUE}, will enable the state plugin and will store the tree nodes in the 
-browser, so opened and selected nodes will remain after a page refresh. The key used is 'jstree'}
+\item{state}{If \code{TRUE}, will enable the state plugin and will store
+the tree nodes in the browser, so opened and selected nodes will remain
+after a page refresh. The key used is 'jstree'}
 }
 \description{
-This creates a spot in your Shiny UI for a shinyTree which can then be filled
-in using \code{\link{renderTree}}
+This creates a spot in your Shiny UI for a shinyTree which can then be
+filled in using \code{\link{renderTree}}
 }
 \seealso{
 \code{\link{renderTree}}

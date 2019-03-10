@@ -12,29 +12,40 @@ updateTree <- function(session, treeId, data=NULL) {
     data<-Rlist2json(data)
   }
   message <- list(type="updateTree",data=data)
-  if(!is.null(message)) {
+  ## This if-condition could be omitted, since message will never be NULL, also if data is NULL
+  ## Or we test for is.null(data)
+  # if(!is.null(message)) {
     session$sendInputMessage(treeId, message)
-  }
+  # }
 }
 
 
 #' @importFrom jsonlite toJSON
 Rlist2json <- function(nestedList) {
-  json <- as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
+  as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
+# TODO - This recursive function could be written in C/C++ to speed things up (Especially if tree gets large)
+# can fixIconName be included in C function then?
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
   for (name in names(nestedList)) {
-    additionalAttributeNames <- c("icon","type")
-    additionalAttributes<- lapply(additionalAttributeNames,function(attribute){
-      if(attribute == "icon"){
-        fixIconName(attr(nestedList[[name]],paste0("st",attribute)))
+    additionalAttributes <- list(
+      "icon" = fixIconName(attr(nestedList[[name]],"sticon")),
+      "type" = attr(nestedList[[name]],"sttype")
+    )
+    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+
+    data <- lapply(names(attributes(nestedList[[name]])),function(key){
+      if(key %in% c("icon","type","names","stopened","stselected","sttype")){
+        NULL
       }else{
-        attr(nestedList[[name]],paste0("st",attribute))
+        attr(nestedList[[name]],key)
       }
     })
-    names(additionalAttributes) <-  additionalAttributeNames
-    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+    if(!is.null(data) && length(data) > 0){
+      names(data) <- names(attributes(nestedList[[name]]))
+      data <- data[which(sapply(data,Negate(is.null)))]
+    }
 
     nodeData <- append(
       list(
@@ -44,7 +55,8 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
         state = list(
           opened   = isTRUE(attr(nestedList[[name]], "stopened")),
           selected = isTRUE(attr(nestedList[[name]], "stselected"))
-        )
+        ),
+        data = data
       ),
       additionalAttributes
     )
@@ -52,7 +64,42 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
     flatList = c(flatList,list(nodeData))
     if (is.list(nestedList[[name]]))
       flatList =
-        get_flatList(nestedList[[name]], flatList, parent = as.character(length(flatList)))
+      get_flatList(nestedList[[name]], flatList, parent = as.character(length(flatList)))
   }
   flatList
 }
+
+
+# get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
+#   for (name in names(nestedList)) {
+#     additionalAttributeNames <- c("icon","type")
+#     additionalAttributes<- lapply(additionalAttributeNames,function(attribute){
+#       if(attribute == "icon"){
+#         fixIconName(attr(nestedList[[name]],paste0("st",attribute)))
+#       }else{
+#         attr(nestedList[[name]],paste0("st",attribute))
+#       }
+#     })
+#     names(additionalAttributes) <-  additionalAttributeNames
+#     additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+# 
+#     nodeData <- append(
+#       list(
+#         id = as.character(length(flatList) + 1),
+#         text = name,
+#         parent = parent,
+#         state = list(
+#           opened   = isTRUE(attr(nestedList[[name]], "stopened")),
+#           selected = isTRUE(attr(nestedList[[name]], "stselected"))
+#         )
+#       ),
+#       additionalAttributes
+#     )
+# 
+#     flatList = c(flatList,list(nodeData))
+#     if (is.list(nestedList[[name]]))
+#       flatList =
+#         get_flatList(nestedList[[name]], flatList, parent = as.character(length(flatList)))
+#   }
+#   flatList
+# }

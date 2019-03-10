@@ -13,8 +13,9 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE){
   func <- shiny::exprToFunction(expr, env, quoted)
   return(function(shinysession, name, ...) {
     tree <- func()
-    
-    shiny::HTML(as.character(listToTags(tree)))
+    ##shiny::HTML(as.character(listToTags(tree)))
+    updateTree(shinysession,name,tree) 
+	NULL
   })
 }
 
