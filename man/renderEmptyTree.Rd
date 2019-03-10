@@ -8,7 +8,6 @@ renderEmptyTree()
 }
 \description{
 Renders a tree with no defined nodes.
-\code{\link{shinyTree}}.
 }
 \seealso{
 \code{\link{shinyTree}}

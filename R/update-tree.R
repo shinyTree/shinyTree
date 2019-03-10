@@ -25,6 +25,38 @@ Rlist2json <- function(nestedList) {
   as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
+
+#fix icon retains backward compatibility for icon entries that are not fully specified
+fixIconName <- function(icon){
+  if (is.null(icon)) {
+    NULL
+  } else if (grepl("[/\\]",icon)) { #ie. "/images/ball.jpg"
+    icon
+  } else{
+    iconGroup <-  grep(pattern = "(\\S+) \\1-", x = icon, value=TRUE) #ie "fa fa-file"
+    if (length(iconGroup) > 0L) {
+      icon
+    } else {
+      icoGr = regmatches(x = icon, regexpr("(\\S+)-", icon))
+      if (length(icoGr)==0) {
+        icoGr = "fa fa-"
+      } else if (icoGr == "fa-") {
+        icoGr = "fa "
+      } else if (icoGr == "glyphicon-") {
+        icoGr = "glyphicon "
+      } else {
+        icoGr = "fa fa-"
+      }
+      if (!is.na(icoGr)) {
+        paste0(icoGr, icon)
+      } else { #ie. just "file"
+        paste0("fa fa-", icon)
+      }
+      
+    }
+  }
+}
+
 # TODO - This recursive function could be written in C/C++ to speed things up (Especially if tree gets large)
 # can fixIconName be included in C function then?
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {

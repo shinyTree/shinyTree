@@ -11,7 +11,8 @@ treedata =     list(
 ui <- fluidPage(
   actionButton("update", "Update Tree"),
   shinyTree("tree2", contextmenu = TRUE, dragAndDrop = T, search = T, 
-            themeIcons = TRUE, themeDots = TRUE, unique = T, checkbox = T,
+            #state=T,
+            # themeIcons = TRUE, themeDots = TRUE, unique = T, checkbox = F,
             types = "{
                'red-node': {'a_attr' : { 'style' : 'color:red' }},
                'blue-node': {'a_attr' : { 'style' : 'color:blue' }}
@@ -27,12 +28,12 @@ server <- function(input, output, session) {
     treedata
   })
   observeEvent(input$update, {
-    tree <- input$tree2
-    updateTree(session, "tree2", tree)
+    updateTree(session, "tree2", treedata)
   })
   
   output$sel_names <- renderPrint({
     req(input$tree2)
+    # browser()
     get_selected(input$tree2, "names")
   })
   output$sel_slices <- renderPrint({

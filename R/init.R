@@ -49,9 +49,9 @@ jsonToAttr <- function(json){
 supplementAttr <- function(ret, json){
   if (json$state$selected != FALSE) {
     ## If checkbox is TRUE and a new node is created, emits error if this if-test is not included
-    if (!is.null(attr(ret, "stselected"))) {
+    # if (!is.null(attr(ret, "stselected"))) {
       attr(ret, "stselected") <- json$state$selected
-    }
+    # }
   }
   if (json$state$disabled != FALSE) {
     # if (!is.null(attr(ret, "disabled"))) {
@@ -63,7 +63,6 @@ supplementAttr <- function(ret, json){
       attr(ret, "stopened") <- json$state$opened
     # }
   }
-
   if (exists('id', where = json)) {
     ## This happens when a new node is created on a parent with no children.
     ## Or a new node is created on a parent that is closed.

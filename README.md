@@ -134,6 +134,32 @@ runApp(system.file("examples/12-types", package="shinyTree"))
 
 An example demonstrating node types with custom icons.
 
+#### 13-icons
+
+```
+library(shiny)
+runApp(system.file("examples/13-icons", package="shinyTree"))
+```
+
+An example demonstrating various ways to use icons on nodes.
+
+#### 14-files
+
+```
+library(shiny)
+runApp(system.file("examples/14-files", package="shinyTree"))
+```
+
+Demonstrates how to create a file browser tree.
+
+#### 15-files
+
+```
+library(shiny)
+runApp(system.file("examples/15-data", package="shinyTree"))
+```
+
+Demonstrates how to attach and retreive metadata from a node.
 
 
 Known Bugs

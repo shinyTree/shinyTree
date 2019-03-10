@@ -10,6 +10,7 @@
 #' describing the node's ancestry), or \code{slices} to get a list
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
+#' @importFrom utils tail head
 #' @export
 get_selected <- function(tree, format=c("names", "slices", "classid")){
   format <- match.arg(format, c("names", "slices", "classid"), FALSE)
@@ -17,7 +18,7 @@ get_selected <- function(tree, format=c("names", "slices", "classid")){
          "names"=get_selected_names(tree),
          "slices"=get_selected_slices(tree),
          "classid"=get_selected_classid(tree)
-         )  
+  )  
 }
 
 #' @importFrom utils head tail
@@ -35,11 +36,11 @@ get_selected_names <- function(tree, ancestry=NULL, vec=list()){
     el <- tail(ancestry,n=1)
     vec[length(vec)+1] <- el
     attr(vec[[length(vec)]], "ancestry") <- head(ancestry, n=length(ancestry)-1)
-    #save attributes that start with "st" (ShinyTree)		
-	lapply(names(attributes(tree)),function(attribute){		
-		if(grepl("^st",attribute)){
-            attr(vec[[length(vec)]], attribute) <<- attr(tree,attribute)		
-        }		
+    #save attributes that start with "st" (ShinyTree)
+    lapply(names(attributes(tree)),function(attribute){
+      if(grepl("^st",attribute)){
+        attr(vec[[length(vec)]], attribute) <<- attr(tree,attribute)
+      }
     })
   }
   return(vec)
@@ -70,21 +71,21 @@ get_selected_slices <- function(tree, ancestry=NULL, vec=list()){
 }
 
 get_selected_classid <- function(tree, ancestry=NULL, vec=list()){
-    if (is.list(tree)){
-      for (i in 1:length(tree)){
-        anc <- c(ancestry, names(tree)[i])
-        vec <- get_selected_classid(tree[[i]], anc, vec)
-      }
+  if (is.list(tree)){
+    for (i in 1:length(tree)){
+      anc <- c(ancestry, names(tree)[i])
+      vec <- get_selected_classid(tree[[i]], anc, vec)
     }
-    
-    a <- attr(tree, "stselected", TRUE)
-    if (!is.null(a) && a == TRUE){
-      # Get the element name
-      el <- tail(ancestry,n=1)
-      vec[length(vec)+1] <- el
-      attr(vec[[length(vec)]], "stclass") <- attr(tree, "stclass", TRUE)
-      attr(vec[[length(vec)]], "stid") <- attr(tree, "stid", TRUE)
-      attr(vec[[length(vec)]], "id") <- attr(tree, "id", TRUE)
-    }
-    return(vec)
   }
+  
+  a <- attr(tree, "stselected", TRUE)
+  if (!is.null(a) && a == TRUE){
+    # Get the element name
+    el <- tail(ancestry,n=1)
+    vec[length(vec)+1] <- el
+    attr(vec[[length(vec)]], "stclass") <- attr(tree, "stclass", TRUE)
+    attr(vec[[length(vec)]], "stid") <- attr(tree, "stid", TRUE)
+    attr(vec[[length(vec)]], "id") <- attr(tree, "id", TRUE)
+  }
+  return(vec)
+}

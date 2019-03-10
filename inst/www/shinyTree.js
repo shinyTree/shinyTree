@@ -74,60 +74,43 @@ var shinyTree = function(){
     getValue: function(el, keys) {
       /**
        * Prune an object recursively to only include the specified keys.
-       * 'li_attr' is a special key that will actually map to 'li_attrs.class' and
-       * will be called 'class' in the output.
+       * Then add any data.
        **/
-      var prune = function(arr, keys){
+       var treeid = elem = $('#' + el.id);
+       var fixOutput = function(arr, keys){
         var arrToObj = function(ar){
           var obj = {};
           $.each(ar, function(i, el){
+            //add the data for this node
+            var data = {}
+            $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
+              if (typeof val === 'string'){
+                data[key] = val.trim();
+              } else {
+                data[key] = val; 
+              }
+            });
+            el.data = data;
             obj['' + i] = el;
-          });
+          })
           return obj;
         }
         
         var toReturn = [];
-        // Ensure 'children' property is retained.
-        keys.push('children');
-        
         $.each(arr, function(i, obj){
           if (obj.children && obj.children.length > 0){
-            obj.children = arrToObj(prune(obj.children, keys));
+            obj.children = arrToObj(fixOutput(obj.children, keys));
           }
+
           var clean = {};
-          
           $.each(obj, function(key, val){
             if (keys.indexOf(key) >= 0) {
-              //console.log(key + ": " + val)
-              
-              if (key === 'li_attr') { // We don't really want, just the stid and class attr
-                if (val.stid){
-                  //console.log("stid (li_attr): " + val.stid)
-                  if (typeof val.stid === 'string'){
-                    // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing
-                    clean["stid"] = val.stid.trim();
-                  } else {
-                    clean["stid"] = val.stid; 
-                  }
-                }
-                
-                if (val.class) {
-                  if (typeof val.class === 'string'){
-                    clean["stclass"] = val.class.trim();
-                  } else {
-                    clean["stclass"] = val.class; 
-                  }
-                }
-              } else {
-              
                 if (typeof val === 'string'){
-                  // TODO: We don't really want to trim but have to b/c of Shiny's pretty-printing.
                   clean[key] = val.trim();
                 } else {
                   clean[key] = val; 
                 }
               }
-            }
           });
           
           toReturn.push(clean);
@@ -139,10 +122,10 @@ var shinyTree = function(){
       if (tree) { // May not be loaded yet.
         if(tree.get_container().find("li").length>0) { // The tree may be initialized but empty
           var js = tree.get_json();
-          var pruned =  prune(js, ['id', 'state', 'text', 'li_attr']);
+          var fixed = fixOutput(js, ['id', 'state', 'text','children']);
           callbackCounter++;
-          pruned.callbackCounter = callbackCounter;
-          return pruned;
+          fixed.callbackCounter = callbackCounter;
+          return fixed;
         }
       }
     },
@@ -197,6 +180,8 @@ var shinyTree = function(){
         callback();
       });
       
+      
+      /*
       $(el).on("redraw.jstree", function(e){
         callback();
       });   
@@ -206,8 +191,6 @@ var shinyTree = function(){
       $(el).on("refresh.jstree", function(e){
         callback();
       });
-      
-      /*
       
       $(el).on("set_id.jstree", function(e){
         callback();
@@ -241,7 +224,7 @@ var shinyTree = function(){
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
-          $(el).jstree(true).refresh(true, false);
+          $(el).jstree(true).refresh(true, true);
       }
     }
   });
