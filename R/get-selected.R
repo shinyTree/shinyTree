@@ -10,6 +10,7 @@
 #' describing the node's ancestry), or \code{slices} to get a list
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
+#' @importFrom utils tail head
 #' @export
 get_selected <- function(tree, format=c("names", "slices", "classid")){
   format <- match.arg(format, c("names", "slices", "classid"), FALSE)
@@ -35,6 +36,12 @@ get_selected_names <- function(tree, ancestry=NULL, vec=list()){
     el <- tail(ancestry,n=1)
     vec[length(vec)+1] <- el
     attr(vec[[length(vec)]], "ancestry") <- head(ancestry, n=length(ancestry)-1)
+    #save attributes that start with "st" (ShinyTree)
+    lapply(names(attributes(tree)),function(attribute){
+        if(grepl("^st",attribute)){
+            attr(vec[[length(vec)]], attribute) <<- attr(tree,attribute)
+        }
+    })
   }
   return(vec)
 }

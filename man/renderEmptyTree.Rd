@@ -6,9 +6,15 @@
 \usage{
 renderEmptyTree()
 }
+\arguments{
+\item{env}{The environment in which \code{expr} should be evaluated.}
+
+\item{quoted}{Is \code{expr} a quoted expression (with \code{quote()})? This
+is useful if you want to save an expression in a variable.
+\code{\link{shinyTree}}.}
+}
 \description{
 Renders a tree with no defined nodes.
-\code{\link{shinyTree}}.
 }
 \seealso{
 \code{\link{shinyTree}}

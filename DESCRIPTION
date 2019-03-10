@@ -22,7 +22,8 @@ Depends:
     methods
 Imports:
     shiny (>= 0.9.0),
-    jsonlite
+    jsonlite ,
+    stringr
 Suggests:
     testthat
 BugReports: https://github.com/trestletech/shinyTree/issues
