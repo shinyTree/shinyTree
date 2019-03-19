@@ -33,7 +33,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
   # define theme tags (default, default-dark, or proton)
   theme.tags<-shiny::tags$link(rel = 'stylesheet',
                                type = 'text/css',
-                               href = paste('shinyTree/jsTree-3.3.3/themes/',theme,'/style.min.css',sep=""))
+                               href = paste('shinyTree/jsTree-3.3.7/themes/',theme,'/style.min.css',sep=""))
   
   
   if(!is.null(types)){
@@ -48,7 +48,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
                 href="https://use.fontawesome.com/releases/v5.7.2/css/all.css",
                 integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr",
                 crossorigin="anonymous"),
-      shiny::tags$script(src = 'shinyTree/jsTree-3.3.3/jstree.min.js'),
+      shiny::tags$script(src = 'shinyTree/jsTree-3.3.7/jstree.min.js'),
       shiny::tags$script(src = 'shinyTree/shinyTree.js'),
       shiny::tags$script(shiny::HTML(types))
     )),

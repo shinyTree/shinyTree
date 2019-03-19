@@ -161,6 +161,14 @@ runApp(system.file("examples/15-data", package="shinyTree"))
 
 Demonstrates how to attach and retreive metadata from a node.
 
+#### 16-async
+
+```
+library(shiny)
+runApp(system.file("examples/16-async", package="shinyTree"))
+```
+
+Demonstrates how to render a tree asynchronously.
 
 Known Bugs
 ----------

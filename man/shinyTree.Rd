@@ -21,7 +21,7 @@ to the ID of the text input you wish to use as the search field.}
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
 
-\item{types}{If \code{TRUE}, enables jstree types functionality}
+\item{types}{enables jstree types functionality when sent proper json (please see the types example)}
 
 \item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
 
