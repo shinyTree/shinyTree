@@ -4,8 +4,9 @@ library(shinyTree)
 #' Define server logic required to generate a simple tree
 #' @author Jeff Allen \email{jeff@@trestletech.com}
 shinyServer(function(input, output, session) {
+  log <- c(paste0(Sys.time(), ": Interact with the tree to see the logs here..."))
   
-  output$tree123 <- renderTree({
+  output$tree <- renderTree({
     list(
       root1 = structure("123"),
       root2 = list(
@@ -15,19 +16,12 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  output$sel_names <- renderPrint({
-    tree <- input$tree123
-    req(tree)
-    get_selected(tree)
-  })
-  output$sel_slices <- renderPrint({
-    tree <- input$tree123
-    req(tree)
-    get_selected(tree, format = "slices")
-  })
-  output$sel_classid <- renderPrint({
-    tree <- input$tree123
-    req(tree)
-    get_selected(tree, format = "classid")
+  output$selTxt <- renderText({
+    tree <- input$tree
+    if (is.null(tree)){
+      "None"
+    } else{
+      unlist(get_selected(tree))
+    }
   })
 })

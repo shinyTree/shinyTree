@@ -39,12 +39,10 @@ var shinyTree = function(){
       
       var tree = $(el).jstree({'core': {
           "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-          'themes': {
-            'name': $elem.data('st-theme'), 
-            'responsive': true, 
-            'icons': ($elem.data('st-theme-icons') === 'TRUE'),
-            'dots': ($elem.data('st-theme-dots') === 'TRUE')
-          }
+          'themes': {'name': $elem.data('st-theme'), 
+          'responsive': true, 
+          'icons': ($elem.data('st-theme-icons') === 'TRUE'),
+          'dots': ($elem.data('st-theme-dots') === 'TRUE') }
         },
         "types" : sttypes,
         plugins: plugins});
@@ -58,21 +56,20 @@ var shinyTree = function(){
       return $(scope).find(".shiny-tree");
     },
     getType: function(){
-      return "shinyTree";
+      return "shinyTree"
     },
     getValue: function(el, keys) {
       /**
        * Prune an object recursively to only include the specified keys.
        * Then add any data.
        **/
-        var treeid = elem = $('#' + el.id);
         var fixOutput = function(arr, keys){
         var arrToObj = function(ar){
           var obj = {};
           $.each(ar, function(i, el){
             //add the data for this node
             var data = {}
-            $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
+            $.each($('#tree').jstree(true).get_node(el.id).data, function(key, val){
               if (typeof val === 'string'){
                 data[key] = val.trim();
               } else {
@@ -136,11 +133,11 @@ var shinyTree = function(){
       $(el).on("ready.jstree", function(e){
         // Initialize the data.
         callback();
-      });
+      })
       
       $(el).on("move_node.jstree", function(e){
         callback();
-      });
+      })
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");

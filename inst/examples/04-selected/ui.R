@@ -13,11 +13,9 @@ shinyUI(
                   <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
-      shinyTree("tree123"),
-      hr(),
       "Currently Selected:",
-      verbatimTextOutput("sel_names"),
-      verbatimTextOutput("sel_slices"),
-      verbatimTextOutput("sel_classid")
+      verbatimTextOutput("selTxt"),
+      hr(),
+      shinyTree("tree")
     )
   ))
