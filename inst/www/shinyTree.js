@@ -51,13 +51,14 @@ var shinyTree = function(){
        * Prune an object recursively to only include the specified keys.
        * Then add any data.
        **/
+        var treeid = elem = $('#' + el.id);
         var fixOutput = function(arr, keys){
         var arrToObj = function(ar){
           var obj = {};
           $.each(ar, function(i, el){
             //add the data for this node
             var data = {}
-            $.each($('#tree').jstree(true).get_node(el.id).data, function(key, val){
+            $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
               if (typeof val === 'string'){
                 data[key] = val.trim();
               } else {
