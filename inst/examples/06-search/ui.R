@@ -16,6 +16,6 @@ shinyUI(
     ),
     mainPanel(
       # Show a simple table.
-      shinyTree("tree", search=TRUE)
+      shinyTree("tree", search=TRUE, searchtime = 1000)
     )
   ))

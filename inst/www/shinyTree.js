@@ -143,7 +143,7 @@ var shinyTree = function(){
   
   var exports = {};
   
-  exports.initSearch = function(treeId, searchId){
+  exports.initSearch = function(treeId, searchId, searchtime){
     $(function(){
       var to = false;
       $('#' + searchId).keyup(function () {
@@ -151,7 +151,7 @@ var shinyTree = function(){
         to = setTimeout(function () {
           var v = $('#' + searchId).val();
           $.jstree.reference('#' + treeId).search(v);
-        }, 250);
+        }, searchtime);
       });
     });    
   }
