@@ -8,6 +8,8 @@
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #' a search box above the produced tree. Alternatively, you can set the parameter
 #' to the ID of the text input you wish to use as the search field.
+#' @param searchtime Determines the reaction time of the search algorithm.
+#' Default is 250ms.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
 #' @param types enables jstree types functionality when sent proper json (please see the types example)
@@ -16,7 +18,10 @@
 #' @param themeDots If \code{TRUE}, will include level dots.
 #' @seealso \code{\link{renderTree}}
 #' @export
-shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE, types=NULL,theme="default", themeIcons=TRUE, themeDots=TRUE){
+shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
+                      searchtime = 250,
+                      dragAndDrop=FALSE, types=NULL, theme="default", 
+                      themeIcons=TRUE, themeDots=TRUE){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -25,7 +30,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, dragAndDrop=FALSE,
   if (is.character(search)){
     # Either the search field we just created or the given text field ID
     searchEl <- shiny::tagAppendChild(searchEl, shiny::tags$script(type="text/javascript", shiny::HTML(
-      paste0("shinyTree.initSearch('",outputId,"','",search,"');"))))
+      paste0("shinyTree.initSearch('",outputId,"','",search,"', ", searchtime,");"))))
   }
   
   if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
