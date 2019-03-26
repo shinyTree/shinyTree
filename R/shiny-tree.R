@@ -16,12 +16,17 @@
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
+#' @param sort If \code{TRUE}, will sort the nodes in alphabetical/numerical
+#' order.
+#' @param unique If \code{TRUE}, will ensure that no node name exists more
+#' than once.
+#' @param wholerow If \code{TRUE}, will highlight the whole selected row.
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
-                      searchtime = 250,
-                      dragAndDrop=FALSE, types=NULL, theme="default", 
-                      themeIcons=TRUE, themeDots=TRUE){
+                      searchtime = 250, dragAndDrop=FALSE, types=NULL, 
+                      theme="default", themeIcons=TRUE, themeDots=TRUE,
+                      sort=FALSE, unique=FALSE, wholerow=FALSE){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -65,7 +70,10 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-types`=!is.null(types),
         `data-st-theme`=theme,
         `data-st-theme-icons`=themeIcons,
-        `data-st-theme-dots`=themeDots
+        `data-st-theme-dots`=themeDots,
+        `data-st-sort`=sort,
+        `data-st-unique`=unique,
+        `data-st-wholerow`=wholerow
         )
   )
 }
