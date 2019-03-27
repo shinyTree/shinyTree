@@ -8,7 +8,7 @@ shinyUI(
     headerPanel("Drag-and-Drop shinyTree"),
     
     sidebarPanel(      
-      shinyTree("tree", dragAndDrop=TRUE),
+      shinyTree("tree", dragAndDrop=TRUE, sort = F, wholerow = T, unique = T),
       HTML("<hr />"),
       helpText(p("Drag some of the nodes in the tree around to see the structure on the right update."),
                HTML("<hr />Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))

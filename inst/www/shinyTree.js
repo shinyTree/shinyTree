@@ -27,13 +27,25 @@ var shinyTree = function(){
       if ($elem.data('st-types') === 'TRUE'){
         plugins.push('types');
       }
+      if ($elem.data('st-unique') === 'TRUE'){
+        plugins.push('unique');
+      }
+      if ($elem.data('st-sort') === 'TRUE'){
+        plugins.push('sort');
+      }
+      if ($elem.data('st-wholerow') === 'TRUE'){
+        plugins.push('wholerow');
+      }
       
-      var tree = $(el).jstree({'core' : { 
-        "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-        'themes': {'name': $elem.data('st-theme'), 'responsive': true, 'icons': ($elem.data('st-theme-icons') === 'TRUE'), 'dots': ($elem.data('st-theme-dots') === 'TRUE') }
-          },
-          "types" : sttypes,
-          plugins: plugins});
+      var tree = $(el).jstree({'core': {
+          "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
+          'themes': {'name': $elem.data('st-theme'), 
+          'responsive': true, 
+          'icons': ($elem.data('st-theme-icons') === 'TRUE'),
+          'dots': ($elem.data('st-theme-dots') === 'TRUE') }
+        },
+        "types" : sttypes,
+        plugins: plugins});
     }
   });
   Shiny.outputBindings.register(treeOutput, 'shinyTree.treeOutput');
@@ -143,7 +155,7 @@ var shinyTree = function(){
   
   var exports = {};
   
-  exports.initSearch = function(treeId, searchId){
+  exports.initSearch = function(treeId, searchId, searchtime){
     $(function(){
       var to = false;
       $('#' + searchId).keyup(function () {
@@ -151,7 +163,7 @@ var shinyTree = function(){
         to = setTimeout(function () {
           var v = $('#' + searchId).val();
           $.jstree.reference('#' + treeId).search(v);
-        }, 250);
+        }, searchtime);
       });
     });    
   }
