@@ -7,7 +7,8 @@
 shinyTree(outputId, checkbox = FALSE, search = FALSE,
   searchtime = 250, dragAndDrop = FALSE, types = NULL,
   theme = "default", themeIcons = TRUE, themeDots = TRUE,
-  sort = FALSE, unique = FALSE, wholerow = FALSE)
+  sort = FALSE, unique = FALSE, wholerow = FALSE, stripes = FALSE,
+  multiple = TRUE, animation = 200)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
@@ -40,6 +41,13 @@ order.}
 than once.}
 
 \item{wholerow}{If \code{TRUE}, will highlight the whole selected row.}
+
+\item{stripes}{If \code{TRUE}, the tree background is striped.}
+
+\item{multiple}{If \code{TRUE}, multiple nodes can be selected.}
+
+\item{animation}{The open / close animation duration in milliseconds.
+Det this to \code{FALSE} to disable the animation (default is 200).}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
