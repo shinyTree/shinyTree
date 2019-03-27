@@ -21,12 +21,17 @@
 #' @param unique If \code{TRUE}, will ensure that no node name exists more
 #' than once.
 #' @param wholerow If \code{TRUE}, will highlight the whole selected row.
+#' @param stripes If \code{TRUE}, the tree background is striped.
+#' @param multiple If \code{TRUE}, multiple nodes can be selected.
+#' @param animation The open / close animation duration in milliseconds.
+#' Det this to \code{FALSE} to disable the animation (default is 200).
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
                       searchtime = 250, dragAndDrop=FALSE, types=NULL, 
                       theme="default", themeIcons=TRUE, themeDots=TRUE,
-                      sort=FALSE, unique=FALSE, wholerow=FALSE){
+                      sort=FALSE, unique=FALSE, wholerow=FALSE,
+                      stripes=FALSE, multiple=TRUE, animation=200){
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -45,7 +50,9 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
                                type = 'text/css',
                                href = paste('shinyTree/jsTree-3.3.7/themes/',theme,'/style.min.css',sep=""))
   
-  
+  if(!animation){
+    animation = 'false'
+  }
   if(!is.null(types)){
     types <- paste("sttypes =",types)
   }
@@ -71,6 +78,9 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-theme`=theme,
         `data-st-theme-icons`=themeIcons,
         `data-st-theme-dots`=themeDots,
+        `data-st-theme-stripes`=stripes,
+        `data-st-multiple`=multiple,
+        `data-st-animation`=animation,
         `data-st-sort`=sort,
         `data-st-unique`=unique,
         `data-st-wholerow`=wholerow
