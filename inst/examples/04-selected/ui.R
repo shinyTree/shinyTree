@@ -14,8 +14,11 @@ shinyUI(
     ),
     mainPanel(
       "Currently Selected:",
-      verbatimTextOutput("selTxt"),
+      shinyTree("tree123"),
       hr(),
-      shinyTree("tree")
+      "Currently Selected:",
+      verbatimTextOutput("sel_names"),
+      verbatimTextOutput("sel_slices"),
+      verbatimTextOutput("sel_classid")
     )
   ))
