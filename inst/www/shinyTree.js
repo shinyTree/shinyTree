@@ -37,12 +37,18 @@ var shinyTree = function(){
         plugins.push('wholerow');
       }
       
-      var tree = $(el).jstree({'core': {
-          "check_callback" : ($elem.data('st-dnd') === 'TRUE'), 
-          'themes': {'name': $elem.data('st-theme'), 
-          'responsive': true, 
-          'icons': ($elem.data('st-theme-icons') === 'TRUE'),
-          'dots': ($elem.data('st-theme-dots') === 'TRUE') }
+      var tree = $(el).jstree({
+        'core': {
+          "check_callback" : ($elem.data('st-dnd') === 'TRUE'),
+          'multiple': ($elem.data('st-multiple') === 'TRUE'),
+          'animation': $elem.data('st-animation'),
+          'themes': {
+            'name': $elem.data('st-theme'), 
+            'responsive': true, 
+            'stripes': ($elem.data('st-theme-stripes') === 'TRUE'),
+            'icons': ($elem.data('st-theme-icons') === 'TRUE'),
+            'dots': ($elem.data('st-theme-dots') === 'TRUE') 
+          }
         },
         "types" : sttypes,
         plugins: plugins});

@@ -10,6 +10,10 @@ shinyServer(function(input, output, session) {
       root2 = list(
         SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
         SubListB = list(leafA = "", leafB = "")
+      ),
+      root3 = list(
+        SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
+        SubListB = list(leafA = "", leafB = "")
       )
     )
   })
