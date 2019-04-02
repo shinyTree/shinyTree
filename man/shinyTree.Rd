@@ -8,7 +8,7 @@ shinyTree(outputId, checkbox = FALSE, search = FALSE,
   searchtime = 250, dragAndDrop = FALSE, types = NULL,
   theme = "default", themeIcons = TRUE, themeDots = TRUE,
   sort = FALSE, unique = FALSE, wholerow = FALSE, stripes = FALSE,
-  multiple = TRUE, animation = 200)
+  multiple = TRUE, animation = 200, contextmenu = FALSE)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
@@ -48,6 +48,9 @@ than once.}
 
 \item{animation}{The open / close animation duration in milliseconds.
 Det this to \code{FALSE} to disable the animation (default is 200).}
+
+\item{contextmenu}{If \code{TRUE}, will enable a contextmenu to 
+create/rename/delete/cut/copy/paste nodes.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled

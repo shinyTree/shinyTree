@@ -36,10 +36,13 @@ var shinyTree = function(){
       if ($elem.data('st-wholerow') === 'TRUE'){
         plugins.push('wholerow');
       }
+      if ($elem.data('st-contextmenu') === 'TRUE'){
+        plugins.push('contextmenu');
+      }
       
       var tree = $(el).jstree({
         'core': {
-          "check_callback" : ($elem.data('st-dnd') === 'TRUE'),
+          "check_callback" : ($elem.data('st-dnd') === 'TRUE') || ($elem.data('st-contextmenu') === 'TRUE'),
           'multiple': ($elem.data('st-multiple') === 'TRUE'),
           'animation': $elem.data('st-animation'),
           'themes': {
@@ -62,20 +65,20 @@ var shinyTree = function(){
       return $(scope).find(".shiny-tree");
     },
     getType: function(){
-      return "shinyTree"
+      return "shinyTree";
     },
     getValue: function(el, keys) {
       /**
        * Prune an object recursively to only include the specified keys.
        * Then add any data.
        **/
-        var treeid = elem = $('#' + el.id);
+        var treeid = $('#' + el.id);
         var fixOutput = function(arr, keys){
         var arrToObj = function(ar){
           var obj = {};
           $.each(ar, function(i, el){
             //add the data for this node
-            var data = {}
+            var data = {};
             $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
               if (typeof val === 'string'){
                 data[key] = val.trim();
@@ -85,9 +88,9 @@ var shinyTree = function(){
             });
             el.data = data;
             obj['' + i] = el;
-          })
+          });
           return obj;
-        }
+        };
         
         var toReturn = [];
         $.each(arr, function(i, obj){
@@ -110,7 +113,7 @@ var shinyTree = function(){
         });
         result = arrToObj(toReturn);
         return arrToObj(result);
-      }
+      };
       
       var tree = $.jstree.reference(el);
       if (tree) { // May not be loaded yet.
@@ -140,11 +143,35 @@ var shinyTree = function(){
       $(el).on("ready.jstree", function(e){
         // Initialize the data.
         callback();
-      })
+      });
       
       $(el).on("move_node.jstree", function(e){
         callback();
-      })
+      });
+      
+      // callbacks for contextmenue
+      $(el).on("create_node.jstree", function(e){
+        callback();
+      });
+      $(el).on("rename_node.jstree", function(e){
+        callback();
+      });
+      $(el).on("delete_node.jstree", function(e){
+        callback();
+      });
+      $(el).on("copy_node.jstree", function(e){
+        callback();
+      });
+      $(el).on("cut.jstree", function(e){
+        callback();
+      });
+      $(el).on("copy.jstree", function(e){
+        callback();
+      });
+      $(el).on("paste.jstree", function(e){
+        callback();
+      });
+      
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
