@@ -170,6 +170,15 @@ runApp(system.file("examples/16-async", package="shinyTree"))
 
 Demonstrates how to render a tree asynchronously.
 
+#### 17-contextmenu
+
+```
+library(shiny)
+runApp(system.file("examples/17-contextmenu", package="shinyTree"))
+```
+
+Demonstrates how to enable the contextmenu.
+
 Known Bugs
 ----------
 

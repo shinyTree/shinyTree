@@ -25,13 +25,23 @@
 #' @param multiple If \code{TRUE}, multiple nodes can be selected.
 #' @param animation The open / close animation duration in milliseconds.
 #' Det this to \code{FALSE} to disable the animation (default is 200).
+#' @param contextmenu If \code{TRUE}, will enable a contextmenu to 
+#' create/rename/delete/cut/copy/paste nodes.
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
                       searchtime = 250, dragAndDrop=FALSE, types=NULL, 
                       theme="default", themeIcons=TRUE, themeDots=TRUE,
                       sort=FALSE, unique=FALSE, wholerow=FALSE,
-                      stripes=FALSE, multiple=TRUE, animation=200){
+                      stripes=FALSE, multiple=TRUE, animation=200,
+                      contextmenu=FALSE){
+  
+  if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
+    message("The plugins contextmenu and checkbox cannot be used together.")
+    message("Set checkbox to FALSE")
+    checkbox = FALSE
+  }
+  
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
@@ -83,7 +93,8 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-animation`=animation,
         `data-st-sort`=sort,
         `data-st-unique`=unique,
-        `data-st-wholerow`=wholerow
+        `data-st-wholerow`=wholerow,
+        `data-st-contextmenu`=contextmenu
         )
   )
 }
