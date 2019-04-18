@@ -23,24 +23,33 @@ Rlist2json <- function(nestedList) {
   as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
-#' @importFrom stringr str_subset str_match
 #fix icon retains backward compatibility for icon entries that are not fully specified
 fixIconName <- function(icon){
-  if(is.null(icon)){
+  if (is.null(icon)) {
     NULL
-  }else if(grepl("[/\\]",icon)){ #ie. "/images/ball.jpg"
+  } else if (grepl("[/\\]",icon)) { #ie. "/images/ball.jpg"
     icon
-  }else{
-    iconGroup <- str_subset(icon,"(\\S+) \\1-") #ie "fa fa-file"
-    if(length(iconGroup) > 0){
+  } else{
+    iconGroup <-  grep(pattern = "(\\S+) \\1-", x = icon, value=TRUE) #ie "fa fa-file"
+    if (length(iconGroup) > 0L) {
       icon
-    }else{
-      iconGroup <- str_match(icon,"(fa|glyphicon)-") #ie "fa-file"
-      if(length(iconGroup) > 1 && !is.na(iconGroup[2])){
-        paste(iconGroup[2],icon)
-      }else{ #ie. just "file"
-        paste0("fa fa-",icon)
+    } else {
+      icoGr = regmatches(x = icon, regexpr("(\\S+)-", icon))
+      if (length(icoGr)==0) {
+        icoGr = "fa fa-"
+      } else if (icoGr == "fa-") {
+        icoGr = "fa "
+      } else if (icoGr == "glyphicon-") {
+        icoGr = "glyphicon "
+      } else {
+        icoGr = "fa fa-"
       }
+      if (is.na(icoGr)) { #ie. just "file"
+        paste0("fa fa-", icon)
+      } else { 
+        paste0(icoGr, icon)
+      }
+      
     }
   }
 }

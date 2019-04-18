@@ -24,7 +24,6 @@ Imports:
     shiny (>= 0.9.0),
     htmlwidgets,
     jsonlite,
-    stringr,
     promises
 Suggests:
     testthat
