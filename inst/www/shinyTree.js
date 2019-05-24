@@ -38,7 +38,10 @@ var shinyTree = function(){
       if ($elem.data('st-contextmenu') === 'TRUE'){
         plugins.push('contextmenu');
       }
-      
+      var sttypes = null;
+      if(typeof window[el.id + "_sttypes"] !== 'undefined'){
+        sttypes = window[el.id + "_sttypes"];
+      }
       var tree = $(el).jstree({
         'core': {
           "check_callback" : ($elem.data('st-dnd') === 'TRUE') || ($elem.data('st-contextmenu') === 'TRUE'),
@@ -52,7 +55,7 @@ var shinyTree = function(){
             'dots': ($elem.data('st-theme-dots') === 'TRUE') 
           }
         },
-        "types" : window[el.id + "_sttypes"],
+        "types" : sttypes,
         plugins: plugins});
     }
   });

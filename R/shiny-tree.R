@@ -65,8 +65,6 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
   }
   if(!is.null(types)){
     types <- paste0(outputId,"_sttypes = ",types)
-  }else{
-    types <- paste0(outputId,"_sttypes = null")
   }
   shiny::tagList(
     shiny::singleton(shiny::tags$head(
