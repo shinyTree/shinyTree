@@ -138,6 +138,10 @@ var shinyTree = function(){
         callback();
       });
       
+      $(el).on("set_state.jstree", function(e) {
+        callback();
+      }); 
+      
       $(el).on("changed.jstree", function(e) {
         callback();
       });
