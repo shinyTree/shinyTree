@@ -17,4 +17,20 @@ shinyServer(function(input, output, session) {
       )
     )
   })
+  
+  output$sel_names <- renderPrint({
+    out <- get_selected(input$tree, "names")
+    req(out)
+    out
+  })
+  output$sel_slices <- renderPrint({
+    out <- get_selected(input$tree, "slices")
+    req(out)
+    out
+  })
+  output$sel_classid <- renderPrint({
+    out <- get_selected(input$tree, "classid")
+    req(out)
+    out
+  })
 })
