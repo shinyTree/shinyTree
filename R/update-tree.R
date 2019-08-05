@@ -54,7 +54,7 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
     additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
     
     data <- lapply(names(attributes(nestedList[[name]])),function(key){
-      if(key %in% c("icon","type","names","stopened","stselected","sttype")){
+      if(key %in% c("icon","type","names","stopened","stselected","sttype", "stdisabled")){
         NULL
       }else{
         attr(nestedList[[name]],key)
@@ -72,7 +72,8 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
         parent = parent,
         state = list(
           opened   = isTRUE(attr(nestedList[[name]], "stopened")),
-          selected = isTRUE(attr(nestedList[[name]], "stselected"))
+          selected = isTRUE(attr(nestedList[[name]], "stselected")),
+	  disabled = isTRUE(attr(nestedList[[name]], "stdisabled"))
         ),
         data = data
       ),
@@ -82,7 +83,7 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
     flatList = c(flatList,list(nodeData))
     if (is.list(nestedList[[name]]))
       flatList =
-        get_flatList(nestedList[[name]], flatList, parent = as.character(length(flatList)))
+        Recall(nestedList[[name]], flatList, parent = as.character(length(flatList)))
   }
   flatList
 }
