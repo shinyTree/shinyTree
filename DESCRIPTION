@@ -1,8 +1,8 @@
 Package: shinyTree
 Type: Package
 Title: jsTree Bindings for Shiny
-Version: 0.2.6
-Date: 2018-10-04
+Version: 0.2.7
+Date: 2019-05-27
 Authors@R: c(
   person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
   person("Jeff", "Allen", role="aut", email="cran@trestletechnology.net"),
@@ -22,10 +22,13 @@ Depends:
     methods
 Imports:
     shiny (>= 0.9.0),
-    jsonlite
+    htmlwidgets,
+    jsonlite,
+    stringr,
+    promises
 Suggests:
     testthat
 BugReports: https://github.com/trestletech/shinyTree/issues
 Roxygen: list(wrap = TRUE)
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Encoding: UTF-8

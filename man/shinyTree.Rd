@@ -5,8 +5,10 @@
 \title{Create a Shiny Tree}
 \usage{
 shinyTree(outputId, checkbox = FALSE, search = FALSE,
-  dragAndDrop = FALSE, types = NULL, theme = "default",
-  themeIcons = TRUE, themeDots = TRUE)
+  searchtime = 250, dragAndDrop = FALSE, types = NULL,
+  theme = "default", themeIcons = TRUE, themeDots = TRUE,
+  sort = FALSE, unique = FALSE, wholerow = FALSE, stripes = FALSE,
+  multiple = TRUE, animation = 200, contextmenu = FALSE)
 }
 \arguments{
 \item{outputId}{The ID associated with this element}
@@ -18,16 +20,37 @@ make the selection of multiple nodes in the tree easier.}
 a search box above the produced tree. Alternatively, you can set the parameter
 to the ID of the text input you wish to use as the search field.}
 
+\item{searchtime}{Determines the reaction time of the search algorithm.
+Default is 250ms.}
+
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
 
-\item{types}{If \code{TRUE}, enables jstree types functionality}
+\item{types}{enables jstree types functionality when sent proper json (please see the types example)}
 
 \item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
 
 \item{themeIcons}{If \code{TRUE}, will show theme icons for each item.}
 
 \item{themeDots}{If \code{TRUE}, will include level dots.}
+
+\item{sort}{If \code{TRUE}, will sort the nodes in alphabetical/numerical
+order.}
+
+\item{unique}{If \code{TRUE}, will ensure that no node name exists more
+than once.}
+
+\item{wholerow}{If \code{TRUE}, will highlight the whole selected row.}
+
+\item{stripes}{If \code{TRUE}, the tree background is striped.}
+
+\item{multiple}{If \code{TRUE}, multiple nodes can be selected.}
+
+\item{animation}{The open / close animation duration in milliseconds.
+Det this to \code{FALSE} to disable the animation (default is 200).}
+
+\item{contextmenu}{If \code{TRUE}, will enable a contextmenu to 
+create/rename/delete/cut/copy/paste nodes.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled

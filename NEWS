@@ -1,3 +1,11 @@
+ v 0.2.7
+--------------------------------------------------------------------------------
+
+- Added context menu support.
+- Added support for promises/future to render a tree asynchronously.
+- Added additional examples for file browser and metadata retreival.
+- Added support to display various icons using types and specifying tree items
+
  v 0.2.6
 --------------------------------------------------------------------------------
 

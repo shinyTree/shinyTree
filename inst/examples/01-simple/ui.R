@@ -14,6 +14,6 @@ shinyUI(
     ),
     mainPanel(
       # Show a simple table.
-      shinyTree("tree")
+      shinyTree("tree", stripes = TRUE, multiple = FALSE, animation = FALSE)
     )
   ))
