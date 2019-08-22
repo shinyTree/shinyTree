@@ -24,7 +24,7 @@
 #' @param stripes If \code{TRUE}, the tree background is striped.
 #' @param multiple If \code{TRUE}, multiple nodes can be selected.
 #' @param animation The open / close animation duration in milliseconds.
-#' Det this to \code{FALSE} to disable the animation (default is 200).
+#' Set this to \code{FALSE} to disable the animation (default is 200).
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu to 
 #' create/rename/delete/cut/copy/paste nodes.
 #' @seealso \code{\link{renderTree}}
@@ -64,7 +64,8 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
     animation = 'false'
   }
   if(!is.null(types)){
-    types <- paste0(outputId,"_sttypes = ",types)
+    outputnohyp <- gsub("-","_",outputId, fixed=T)
+    types <- paste0(outputnohyp,"_sttypes = ",types)
   }
   shiny::tagList(
     shiny::singleton(shiny::tags$head(
