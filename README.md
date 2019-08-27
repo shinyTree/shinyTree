@@ -183,7 +183,8 @@ Demonstrates how to enable the contextmenu.
 
 ```
 library(shiny)
-runApp(system.file("examples/18-modules", package="shinyTree"))
+runApp(system.file("examples/18-modules/app.R", package="shinyTree"))
+runApp(system.file("examples/18-modules/app_types.R", package="shinyTree"))
 ```
 
 Demonstrates how to use shinyTree with shiny modules.
