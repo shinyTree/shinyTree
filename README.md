@@ -179,6 +179,13 @@ runApp(system.file("examples/17-contextmenu", package="shinyTree"))
 
 Demonstrates how to enable the contextmenu.
 
+#### 18-modules
+```
+library(shiny)
+runApp(system.file("examples/18-modules", package="shinyTree"))
+```
+
+Demonstrates how to use a tree in a module.
 Known Bugs
 ----------
 
