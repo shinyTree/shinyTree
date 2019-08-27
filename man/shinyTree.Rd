@@ -47,7 +47,7 @@ than once.}
 \item{multiple}{If \code{TRUE}, multiple nodes can be selected.}
 
 \item{animation}{The open / close animation duration in milliseconds.
-Det this to \code{FALSE} to disable the animation (default is 200).}
+Set this to \code{FALSE} to disable the animation (default is 200).}
 
 \item{contextmenu}{If \code{TRUE}, will enable a contextmenu to 
 create/rename/delete/cut/copy/paste nodes.}
