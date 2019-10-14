@@ -37,8 +37,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
                       contextmenu=FALSE){
   
   if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
-    message("The plugins contextmenu and checkbox cannot be used together.")
-    message("Set checkbox to FALSE")
+    warning("The plugins contextmenu and checkbox cannot be used together. \nSet checkbox to FALSE")
     checkbox = FALSE
   }
   
@@ -59,6 +58,11 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
   theme.tags<-shiny::tags$link(rel = 'stylesheet',
                                type = 'text/css',
                                href = paste('shinyTree/jsTree-3.3.7/themes/',theme,'/style.min.css',sep=""))
+  
+  opts <- jsonlite::toJSON(list(
+    'setState' = getOption('shinyTree.setState'),
+    'refresh' = getOption('shinyTree.refresh')
+    ), auto_unbox = T)
   
   if(!animation){
     animation = 'false'
@@ -95,7 +99,8 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-sort`=sort,
         `data-st-unique`=unique,
         `data-st-wholerow`=wholerow,
-        `data-st-contextmenu`=contextmenu
+        `data-st-contextmenu`=contextmenu,
+        options = opts
         )
   )
 }
