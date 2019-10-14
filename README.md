@@ -1,4 +1,8 @@
 [![Build Status](https://travis-ci.org/shinyTree/shinyTree.svg?branch=master)](https://travis-ci.org/shinyTree/shinyTree)
+[![cran checks](https://cranchecks.info/badges/worst/shinyTree)](https://cran.r-project.org/web/checks/check_results_shinyTree.html)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/shinyTree?color=brightgreen)](https://www.r-pkg.org/pkg/shinyTree)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.rpackages.io/package/shinyTree)
+[![codecov](https://codecov.io/gh/shinyTree/shinyTree/branch/master/graph/badge.svg)](https://codecov.io/gh/shinyTree/shinyTree)
 
 shinyTree
 ==========
