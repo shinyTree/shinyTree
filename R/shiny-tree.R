@@ -8,7 +8,7 @@
 #' (for example after the user rearranged some nodes). By default, \code{input$tree} will
 #' return a list similiar to the one you use to fill the tree. This behaviour is controlled
 #' by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
-#' to \code{"tree"}, in which case a \link[data.tree]{data.tree} is returned.
+#' to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
 #' 
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
@@ -32,7 +32,7 @@
 #' @param stripes If \code{TRUE}, the tree background is striped.
 #' @param multiple If \code{TRUE}, multiple nodes can be selected.
 #' @param animation The open / close animation duration in milliseconds.
-#' Det this to \code{FALSE} to disable the animation (default is 200).
+#' Set this to \code{FALSE} to disable the animation (default is 200).
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu to 
 #' create/rename/delete/cut/copy/paste nodes.
 #' @seealso \code{\link{renderTree}}
