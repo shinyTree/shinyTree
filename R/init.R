@@ -31,7 +31,7 @@ initResourcePaths <- function() {
     ## make sure that parser is either 'list' or 'tree'
     defaultParser <- getOption("shinyTree.defaultParser")
     
-    if (defaultParser != "list" && !requireNamespace("data.tree", quietly = TRUE)) {
+    if (defaultParser == "tree" && !requireNamespace("data.tree", quietly = TRUE)) {
       ## use paste to avoid too long lines
       warning(paste("library 'data.tree' cannot be loaded, falling back to list parser",
                     "(check 'options(\"shinyTree.defaultParser\")')"),
