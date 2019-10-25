@@ -4,27 +4,38 @@
 \alias{treeToJSON}
 \title{Converts a data.tree to a JSON format}
 \usage{
-treeToJSON(tree, topLevelSlots = c("id", "text", "icon", "state",
-  "li_attr", "a_attr"), pretty = FALSE)
+treeToJSON(tree, keepRoot = FALSE, topLevelSlots = c("default", "all"),
+  pretty = FALSE)
 }
 \arguments{
-\item{tree, }{the data.tree which should be parses}
+\item{tree}{the data.tree which should be parses}
 
-\item{topLevelSlots, }{a vector of slot names which should not be stored in
-the resulting data slot but on the top level of the node}
+\item{keepRoot}{logical. If \code{FALSE} (default) the root node from the tree
+is pruned}
 
-\item{pretty, }{logical. If \code{TRUE} the resulting JSON is prettified}
+\item{topLevelSlots}{determines which slots should be moved to the top level of the 
+node. If \code{default} or \code{NULL} slots 
+\href{https://www.jstree.com/docs/json}{used in the jsTree JSON} 
+are kept on the top level, while any other atomic / list slots from the tree
+are stored in an own slot called \sQuote{data}. If \code{all} *all* nodes are
+stored on the top level. Alternatively, it can be an explicit vector of
+slot names which should be kept. In the latter case it is the user's
+responsibility to ensure that jsTree slots stay on the top level.}
+
+\item{pretty}{logical. If \code{TRUE} the resulting JSON is prettified}
 }
 \value{
 a JSON string representing the data.tree
 }
 \description{
-Walk through a \code{\link{data.tree}} and constructs a JSON string,
-which can be rendered by shinyTree. The JSON string generated follows the 
-\href{https://www.jstree.com/docs/json}{jsTree specifications}. In particular 
-it encodes children nodes via the \sQuote{children} slot.
+Walk through a \code{\link[data.tree]{data.tree}} and constructs a JSON string,
+which can be rendered by shinyTree.
 }
 \details{
+The JSON string generated follows the 
+\href{https://www.jstree.com/docs/json}{jsTree specifications}. In particular 
+it encodes children nodes via the \sQuote{children} slot.
+
 All atomic or list slots of a node in the tree are stored in a data slot in 
 the resulting JSON.
 

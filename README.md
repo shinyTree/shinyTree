@@ -182,7 +182,7 @@ Demonstrates how to enable the contextmenu.
 #### 19-data.tree
 ```
 library(shiny)
-runApp(syste,.file("examples/19-data.tree", package = "shinyTree"))
+runApp(system.file("examples/19-data.tree", package = "shinyTree"))
 ```
 
 Demonstrates how to pass a data.tree to shinyTree.
