@@ -1,7 +1,15 @@
 #' Create a Shiny Tree
 #' 
 #' This creates a spot in your Shiny UI for a shinyTree which can then be filled
-#' in using \code{\link{renderTree}}
+#' in using \code{\link{renderTree}}.
+#' 
+#' A shinyTree is an output *and* an input element in the same time. While you can 
+#' fill it via \code{\link{renderTree}} you can access its content via \code{input$tree} 
+#' (for example after the user rearranged some nodes). By default, \code{input$tree} will
+#' return a list similiar to the one you use to fill the tree. This behaviour is controlled
+#' by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
+#' to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
+#' 
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #' make the selection of multiple nodes in the tree easier.

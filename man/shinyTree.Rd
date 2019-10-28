@@ -54,7 +54,15 @@ create/rename/delete/cut/copy/paste nodes.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
-in using \code{\link{renderTree}}
+in using \code{\link{renderTree}}.
+}
+\details{
+A shinyTree is an output *and* an input element in the same time. While you can 
+fill it via \code{\link{renderTree}} you can access its content via \code{input$tree} 
+(for example after the user rearranged some nodes). By default, \code{input$tree} will
+return a list similiar to the one you use to fill the tree. This behaviour is controlled
+by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
+to \code{"tree"}, in which case a \link[data.tree]{data.tree} is returned.
 }
 \seealso{
 \code{\link{renderTree}}
