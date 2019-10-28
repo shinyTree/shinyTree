@@ -39,8 +39,9 @@ var shinyTree = function(){
         plugins.push('contextmenu');
       }
       var sttypes = null;
-      if(typeof window[el.id + "_sttypes"] !== 'undefined'){
-        sttypes = window[el.id + "_sttypes"];
+      var elidtypes = el.id.replace("-", '_');
+      if (typeof window[elidtypes + "_sttypes"] !== 'undefined'){
+      	sttypes = window[elidtypes + "_sttypes"];
       }
       var tree = $(el).jstree({
         'core': {

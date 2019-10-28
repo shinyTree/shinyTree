@@ -12,7 +12,9 @@ Authors@R: c(
   person(family="jQuery Foundation, Inc.", role=c("ctb", "cph")),
   person("Mike", "Schaffer", role=c("cre"), email="mschaff@gmail.com"),
   person("Timm", "Danker", role=c("ctb"), email="tidafr@carina.uberspace.de"),
-  person("Michael", "Bell", role=c("ctb"), email="bell_michael_a@lilly.com"))
+  person("Michael", "Bell", role=c("ctb"), email="bell_michael_a@lilly.com"),
+  person("Sebastian", "Gatscha", role=c("ctb"), email="kona1@gmx.at"),
+  person("Thorn", "Thaler", role = c("ctb"), email = "thorn.thaler@thothal.at"))
 Description: Exposes bindings to jsTree -- a JavaScript library
     that supports interactive trees -- to enable a rich, editable trees in
     Shiny.
@@ -27,7 +29,8 @@ Imports:
     stringr,
     promises
 Suggests:
-    testthat
+    testthat,
+    data.tree
 BugReports: https://github.com/trestletech/shinyTree/issues
 Roxygen: list(wrap = TRUE)
 RoxygenNote: 6.1.1
