@@ -197,6 +197,16 @@ runApp(system.file("examples/19-data.tree", package = "shinyTree"))
 
 Demonstrates how to pass a data.tree to shinyTree.
 
+#### 20-api
+
+```
+library(shiny)
+runApp(system.file("examples/20-api", package="shinyTree"))
+```
+
+An example demonstrating how to extend the operations on the tree to the rest of
+the [jsTree's core functionality](https://www.jstree.com/api/).
+
 Known Bugs
 ----------
 
