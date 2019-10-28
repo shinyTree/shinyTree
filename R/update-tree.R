@@ -23,25 +23,29 @@ Rlist2json <- function(nestedList) {
   as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
 }
 
-#' @importFrom stringr str_subset str_match
-#fix icon retains backward compatibility for icon entries that are not fully specified
+#' @importFrom stringr str_match
+# fix icon retains backward compatibility for icon entries that are not fully specified
 fixIconName <- function(icon){
-  if(is.null(icon)){
+  ## - 'yes' branch of 'if' covers everything which should not be changed
+  ##   e.g. "/images/ball.jpg" or "fa fa-file
+  ## - 'no' branch of 'if' covers all cases which need to be changed:
+  ##   use regex (str_match) to capture groups: 
+  ##     * group 1 is either 'glyphicon', 'fa' or 'NA' (if not present)
+  ##     * group 2 is the rest wihtout a potential dash '-'
+  ##     * if group 1 is empty set it to 'fa'
+  ##     * paste the pieces together
+  res <- ifelse(grepl("[/\\]|(glyphicon|fa) \\1-", icon), 
+                icon, 
+                {
+                  parts <- str_match(icon, "(glyphicon|fa)*-*(\\S+)")
+                  parts[, 2] <- ifelse(is.na(parts[, 2]), "fa", parts[, 2])
+                  paste(parts[, 2], paste(parts[, 2], parts[, 3], sep = "-")) 
+                })
+  ## if NULL was given as parameter res will be length zero
+  if (!length(res)) {
     NULL
-  }else if(grepl("[/\\]",icon)){ #ie. "/images/ball.jpg"
-    icon
-  }else{
-    iconGroup <- str_subset(icon,"(\\S+) \\1-") #ie "fa fa-file"
-    if(length(iconGroup) > 0){
-      icon
-    }else{
-      iconGroup <- str_match(icon,"(fa|glyphicon)-") #ie "fa-file"
-      if(length(iconGroup) > 1 && !is.na(iconGroup[2])){
-        paste(iconGroup[2],icon)
-      }else{ #ie. just "file"
-        paste0("fa fa-",icon)
-      }
-    }
+  } else {
+    res
   }
 }
 
