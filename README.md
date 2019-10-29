@@ -218,7 +218,12 @@ library(shiny)
 runApp(system.file("examples/21-options/app_setState_refresh.R", package="shinyTree"))
 ```
 
-Demonstrates how to fine-tune shinyTree's behaviour with options.
+Demonstrates how to fine-tune shinyTree's behaviour with options. Specifically:
+When internal jstree code calls set_state or refresh, a callback is made so that the shiny
+server is notified and observe and observeEvents for the tree are fired.
+This can be useful if the developer would like observe and observeEvents to run after
+using updateTree. (By default, updateTree does not run observe or observeEvent because it
+is assumed that the shiny application knows that the tree is being changed already.)
 
 Known Bugs
 ----------
