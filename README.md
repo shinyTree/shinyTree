@@ -1,4 +1,8 @@
 [![Build Status](https://travis-ci.org/shinyTree/shinyTree.svg?branch=master)](https://travis-ci.org/shinyTree/shinyTree)
+[![cran checks](https://cranchecks.info/badges/worst/shinyTree)](https://cran.r-project.org/web/checks/check_results_shinyTree.html)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/shinyTree?color=brightgreen)](https://www.r-pkg.org/pkg/shinyTree)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.rpackages.io/package/shinyTree)
+[![codecov](https://codecov.io/gh/shinyTree/shinyTree/branch/master/graph/badge.svg)](https://codecov.io/gh/shinyTree/shinyTree)
 
 shinyTree
 ==========
@@ -206,6 +210,20 @@ runApp(system.file("examples/20-api", package="shinyTree"))
 
 An example demonstrating how to extend the operations on the tree to the rest of
 the [jsTree's core functionality](https://www.jstree.com/api/).
+
+#### 21-options
+
+```
+library(shiny)
+runApp(system.file("examples/21-options/app_setState_refresh.R", package="shinyTree"))
+```
+
+Demonstrates how to fine-tune shinyTree's behaviour with options. Specifically:
+When internal jstree code calls set_state or refresh, a callback is made so that the shiny
+server is notified and observe and observeEvents for the tree are fired.
+This can be useful if the developer would like observe and observeEvents to run after
+using updateTree. (By default, updateTree does not run observe or observeEvent because it
+is assumed that the shiny application knows that the tree is being changed already.)
 
 Known Bugs
 ----------

@@ -77,7 +77,7 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
         state = list(
           opened   = isTRUE(attr(nestedList[[name]], "stopened")),
           selected = isTRUE(attr(nestedList[[name]], "stselected")),
-	  disabled = isTRUE(attr(nestedList[[name]], "stdisabled"))
+          disabled = isTRUE(attr(nestedList[[name]], "stdisabled"))
         ),
         data = data
       ),
