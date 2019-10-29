@@ -193,6 +193,14 @@ runApp(system.file("examples/18-modules/app_types.R", package="shinyTree"))
 
 Demonstrates how to use shinyTree with shiny modules.
 
+#### 21-options
+
+```
+library(shiny)
+runApp(system.file("examples/21-options/app_setState_refresh.R", package="shinyTree"))
+```
+
+Demonstrates how to fine-tune shinyTree's behaviour with options.
 
 Known Bugs
 ----------
