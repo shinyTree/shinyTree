@@ -33,7 +33,7 @@ Getting Started
 
 ```
 library(shiny)
-runApp(system.file("examples/01-simple", package="shinyTree"))
+runApp(system.file("examples/01-simple", package = "shinyTree"))
 ```
 
 A simple example to demonstrate the usage of the shinyTree package.
@@ -42,7 +42,7 @@ A simple example to demonstrate the usage of the shinyTree package.
 
 ```
 library(shiny)
-runApp(system.file("examples/02-attributes", package="shinyTree"))
+runApp(system.file("examples/02-attributes", package = "shinyTree"))
 ```
 
 Manage properties of your tree by adding attributes to your list when rendering.
@@ -51,7 +51,7 @@ Manage properties of your tree by adding attributes to your list when rendering.
 
 ```
 library(shiny)
-runApp(system.file("examples/03-checkbox", package="shinyTree"))
+runApp(system.file("examples/03-checkbox", package = "shinyTree"))
 ```
 
 Use checkboxes to allow users to more easily manage which nodes are selected.
@@ -60,7 +60,7 @@ Use checkboxes to allow users to more easily manage which nodes are selected.
 
 ```
 library(shiny)
-runApp(system.file("examples/04-selected", package="shinyTree"))
+runApp(system.file("examples/04-selected", package = "shinyTree"))
 ```
 
 An example demonstrating how to set an `input` to the value of the currently selected node in the tree.
@@ -69,7 +69,7 @@ An example demonstrating how to set an `input` to the value of the currently sel
 
 ```
 library(shiny)
-runApp(system.file("examples/05-structure", package="shinyTree"))
+runApp(system.file("examples/05-structure", package = "shinyTree"))
 ```
 
 Demonstrates the low-level usage of a shinyTree as an input in which all attributes describing the state of the tree can be read.
@@ -79,7 +79,7 @@ Demonstrates the low-level usage of a shinyTree as an input in which all attribu
 
 ```
 library(shiny)
-runApp(system.file("examples/06-search", package="shinyTree"))
+runApp(system.file("examples/06-search", package = "shinyTree"))
 ```
 
 An example showing the use of the search plugin to allow users to more easily navigate the nodes in your tree.
@@ -88,7 +88,7 @@ An example showing the use of the search plugin to allow users to more easily na
 
 ```
 library(shiny)
-runApp(system.file("examples/07-drag-and-drop", package="shinyTree"))
+runApp(system.file("examples/07-drag-and-drop", package = "shinyTree"))
 ```
 
 An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
@@ -97,7 +97,7 @@ An example demonstrating the use of the drag-and-drop feature which allows the u
 
 ```
 library(shiny)
-runApp(system.file("examples/08-class", package="shinyTree"))
+runApp(system.file("examples/08-class", package = "shinyTree"))
 ```
 
 An example demonstrating the use of the ability to style nodes using custom classes.
@@ -106,7 +106,7 @@ An example demonstrating the use of the ability to style nodes using custom clas
 
 ```
 library(shiny)
-runApp(system.file("examples/09-themes", package="shinyTree"))
+runApp(system.file("examples/09-themes", package = "shinyTree"))
 ```
 
 An example demonstrating the use of built-in tree themes.
@@ -115,7 +115,7 @@ An example demonstrating the use of built-in tree themes.
 
 ```
 library(shiny)
-runApp(system.file("examples/10-node-ids", package="shinyTree"))
+runApp(system.file("examples/10-node-ids", package = "shinyTree"))
 ```
 
 An example demonstrating the ability to label and return node identifiers and classes.
@@ -124,7 +124,7 @@ An example demonstrating the ability to label and return node identifiers and cl
 
 ```
 library(shiny)
-runApp(system.file("examples/11-tree-update", package="shinyTree"))
+runApp(system.file("examples/11-tree-update", package = "shinyTree"))
 ```
 
 An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization.
@@ -133,7 +133,7 @@ An example demonstrating the ability to update a tree with a new tree model.  Th
 
 ```
 library(shiny)
-runApp(system.file("examples/12-types", package="shinyTree"))
+runApp(system.file("examples/12-types", package = "shinyTree"))
 ```
 
 An example demonstrating node types with custom icons.
@@ -142,7 +142,7 @@ An example demonstrating node types with custom icons.
 
 ```
 library(shiny)
-runApp(system.file("examples/13-icons", package="shinyTree"))
+runApp(system.file("examples/13-icons", package = "shinyTree"))
 ```
 
 An example demonstrating various ways to use icons on nodes.
@@ -151,7 +151,7 @@ An example demonstrating various ways to use icons on nodes.
 
 ```
 library(shiny)
-runApp(system.file("examples/14-files", package="shinyTree"))
+runApp(system.file("examples/14-files", package = "shinyTree"))
 ```
 
 Demonstrates how to create a file browser tree.
@@ -160,7 +160,7 @@ Demonstrates how to create a file browser tree.
 
 ```
 library(shiny)
-runApp(system.file("examples/15-data", package="shinyTree"))
+runApp(system.file("examples/15-data", package = "shinyTree"))
 ```
 
 Demonstrates how to attach and retreive metadata from a node.
@@ -169,7 +169,7 @@ Demonstrates how to attach and retreive metadata from a node.
 
 ```
 library(shiny)
-runApp(system.file("examples/16-async", package="shinyTree"))
+runApp(system.file("examples/16-async", package = "shinyTree"))
 ```
 
 Demonstrates how to render a tree asynchronously.
@@ -178,7 +178,7 @@ Demonstrates how to render a tree asynchronously.
 
 ```
 library(shiny)
-runApp(system.file("examples/17-contextmenu", package="shinyTree"))
+runApp(system.file("examples/17-contextmenu", package = shinyTree"))
 ```
 
 Demonstrates how to enable the contextmenu.
@@ -193,6 +193,23 @@ runApp(system.file("examples/18-modules/app_types.R", package="shinyTree"))
 
 Demonstrates how to use shinyTree with shiny modules.
 
+#### 19-data.tree
+```
+library(shiny)
+runApp(system.file("examples/19-data.tree", package = "shinyTree"))
+```
+
+Demonstrates how to pass a data.tree to shinyTree.
+
+#### 20-api
+
+```
+library(shiny)
+runApp(system.file("examples/20-api", package="shinyTree"))
+```
+
+An example demonstrating how to extend the operations on the tree to the rest of
+the [jsTree's core functionality](https://www.jstree.com/api/).
 
 Known Bugs
 ----------
