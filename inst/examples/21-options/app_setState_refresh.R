@@ -2,8 +2,8 @@ library(shiny)
 library(shinyTree)
 
 ## OPTIONS #####################
-options(shinyTree.setState = T)
-# options(shinyTree.refresh = T)
+options(shinyTree.setState = FALSE)
+# options(shinyTree.refresh = TRUE)
 
 ## TREE DATA ###################
 tree = list(a=list(a1=1,a2=2) , b="b") 
@@ -18,10 +18,10 @@ ui <- fluidPage(
       helpText(HTML(
         "This example shall illustrate the two options:<br>", 
         "<code>shinyTree.setState</code> and <code>shinyTree.refresh</code>.<br><br>",
-        "Per default, both options are <b>FALSE</b> and the <em>Selected Nodes</em> output will not",
-        "change after clicking on <kbd>Reset nodes</kbd>. The selection will remain.<br><br>",
-        "With one of the 2 options being set to <b>TRUE</b>, the <em>Selected Nodes</em> output",
-        "will be reset to <code>list()</code>."
+        "By default, both options are <b>FALSE</b> and the <em>Selected Nodes</em> output does not",
+        "change after clicking on <kbd>Reset nodes</kbd>. The selection is retained.<br><br>",
+        "If either option is set to <b>TRUE</b>, the <em>Selected Nodes</em> output",
+        "is reset to <code>list()</code>."
         ))
     ),
     mainPanel(
