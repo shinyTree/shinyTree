@@ -139,6 +139,18 @@ var shinyTree = function(){
         callback();
       });
       
+      var opts = JSON.parse(el.attributes.options.nodeValue);
+      if (opts.setState && opts.setState === true) {
+        $(el).on("set_state.jstree", function(e) {
+          callback();
+        }); 
+      }
+      if (opts.refresh && opts.refresh === true) {
+        $(el).on("refresh.jstree", function(e) {
+          callback();
+        }); 
+      }
+      
       $(el).on("changed.jstree", function(e) {
         callback();
       });
@@ -153,27 +165,29 @@ var shinyTree = function(){
       });
       
       // callbacks for contextmenue
-      $(el).on("create_node.jstree", function(e){
-        callback();
-      });
-      $(el).on("rename_node.jstree", function(e){
-        callback();
-      });
-      $(el).on("delete_node.jstree", function(e){
-        callback();
-      });
-      $(el).on("copy_node.jstree", function(e){
-        callback();
-      });
-      $(el).on("cut.jstree", function(e){
-        callback();
-      });
-      $(el).on("copy.jstree", function(e){
-        callback();
-      });
-      $(el).on("paste.jstree", function(e){
-        callback();
-      });
+      if (el.dataset.stContextmenu == "TRUE") {
+        $(el).on("create_node.jstree", function(e){
+          callback();
+        });
+        $(el).on("rename_node.jstree", function(e){
+          callback();
+        });
+        $(el).on("delete_node.jstree", function(e){
+          callback();
+        });
+        $(el).on("copy_node.jstree", function(e){
+          callback();
+        });
+        $(el).on("cut.jstree", function(e){
+          callback();
+        });
+        $(el).on("copy.jstree", function(e){
+          callback();
+        });
+        $(el).on("paste.jstree", function(e){
+          callback();
+        });
+      }
       
     },
     unsubscribe: function(el) {
