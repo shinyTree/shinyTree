@@ -197,11 +197,11 @@ test_that("shinyTree", {
   
   ## Custom shinyTree with different themes ############
   res <- shinyTree("tree", theme = "default-dark")
-  print(unlistShinytagList(res, theme = "default-dark"))
+  # print(unlistShinytagList(res, theme = "default-dark"))
   expect_true(all(unlistShinytagList(res, theme = "default-dark")))
   
   res <- shinyTree("tree", theme = "proton")
-  print(unlistShinytagList(res, theme = "proton"))
+  # print(unlistShinytagList(res, theme = "proton"))
   expect_true(all(unlistShinytagList(res, theme = "proton")))
   
   ## ERROR: wrong theme ############
