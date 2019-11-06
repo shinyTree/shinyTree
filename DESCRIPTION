@@ -30,6 +30,7 @@ Imports:
     promises
 Suggests:
     testthat,
+    shinytest,
     data.tree
 BugReports: https://github.com/trestletech/shinyTree/issues
 Roxygen: list(wrap = TRUE)
