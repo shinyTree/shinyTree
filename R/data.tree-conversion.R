@@ -75,7 +75,7 @@ treeToJSON <- function(tree,
     }
     fields$icon <- fixIconName(fields$icon)
     if (!is.null(fields$state)) {
-      valid_states <- c("opened", "disabled", "selected")
+      valid_states <- c("opened", "disabled", "selected", "loaded")
       states_template <- stats::setNames(rep(list(FALSE), length(valid_states)),
                                          valid_states)
       NOK <- !names(fields$state) %in% valid_states
