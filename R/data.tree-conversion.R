@@ -50,7 +50,7 @@ treeToJSON <- function(tree,
     stop(msg, domain = NA)
   }
   nodesToKeep <- list(default = c("id", "text", "icon", "state",
-                                  "li_attr", "a_attr"),
+                                  "li_attr", "a_attr", "type"),
                       all     = NULL)
   topLevelSlots <- tryCatch(nodesToKeep[[match.arg(topLevelSlots)]],
                             error = function(e) topLevelSlots)
