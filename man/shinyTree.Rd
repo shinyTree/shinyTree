@@ -62,7 +62,7 @@ fill it via \code{\link{renderTree}} you can access its content via \code{input$
 (for example after the user rearranged some nodes). By default, \code{input$tree} will
 return a list similiar to the one you use to fill the tree. This behaviour is controlled
 by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
-to \code{"tree"}, in which case a \link[data.tree]{data.tree} is returned.
+to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
 }
 \seealso{
 \code{\link{renderTree}}
