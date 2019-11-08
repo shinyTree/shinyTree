@@ -29,9 +29,10 @@
 #'        stored on the top level. Alternatively, it can be an explicit vector of
 #'        slot names which should be kept. In the latter case it is the user's
 #'        responsibility to ensure that jsTree slots stay on the top level.
-#'        
+#' @param createNewId logical. If \code{TRUE} a new id will be generated. Any old \sQuote{id} 
+#'        will be stored in \sQuote{id.orig} and a warning will be issued, If \code{FALSE},
+#'        any existing id will be re-used.
 #' @param pretty logical. If \code{TRUE} the resulting JSON is prettified
-#'
 #' @return a JSON string representing the data.tree
 #' @section Note:
 #' \code{\link{updateTree}} and \code{\link{renderTree}} need an unevaluated JSON 
@@ -41,6 +42,7 @@
 treeToJSON <- function(tree, 
                        keepRoot = FALSE,
                        topLevelSlots = c("default", "all"),
+                       createNewId = TRUE,
                        pretty = FALSE) {
   ## match against "default"/"all", if this returns an error we take topLevelSlots as is
   ## i.e. a vector of names to keep
@@ -114,15 +116,29 @@ treeToJSON <- function(tree,
   tree <- data.tree::Clone(tree)
   nodes <- data.tree::Traverse(tree, filterFun = data.tree::isNotRoot)
   old_ids <- data.tree::Get(nodes, "id")
-  if (any(!is.na(old_ids))) {
-    warning(paste("slot",
-                  dQuote("id"), 
-                  "will be stored in",
-                  dQuote("id.orig")),
-            domain = NA)
-    data.tree::Set(nodes, id.orig = old_ids)
+  if (createNewId) {
+    if (any(!is.na(old_ids))) {
+      warning(paste("slot",
+                    dQuote("id"), 
+                    "will be stored in",
+                    dQuote("id.orig")),
+              domain = NA)
+      data.tree::Set(nodes, id.orig = old_ids)
+    }
+    new_ids <- seq_along(nodes)
+  } else {
+    if (any(is.na(old_ids)) ||
+        any(duplicated(old_ids))) {
+      warning(paste("old ids are invalid (duplicated values or NA),",
+                    "creating new ids"),
+              domain = NA)
+      new_ids <- seq_along
+    } else {
+      new_ids <- old_ids
+    }
   }
-  data.tree::Set(nodes, id = seq_along(nodes))
+
+  data.tree::Set(nodes, id = new_ids)
   treeList <- node_to_list(tree)
   if (!keepRoot) {
     ## to prune off the root node return the first children list
