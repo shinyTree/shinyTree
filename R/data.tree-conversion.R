@@ -132,7 +132,7 @@ treeToJSON <- function(tree,
       warning(paste("old ids are invalid (duplicated values or NA),",
                     "creating new ids"),
               domain = NA)
-      new_ids <- seq_along
+      new_ids <- seq_along(nodes)
     } else {
       new_ids <- old_ids
     }
