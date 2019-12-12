@@ -5,7 +5,7 @@
 \title{Converts a data.tree to a JSON format}
 \usage{
 treeToJSON(tree, keepRoot = FALSE, topLevelSlots = c("default", "all"),
-  pretty = FALSE)
+  createNewId = TRUE, pretty = FALSE)
 }
 \arguments{
 \item{tree}{the data.tree which should be parses}
@@ -21,6 +21,10 @@ are stored in an own slot called \sQuote{data}. If \code{all} *all* nodes are
 stored on the top level. Alternatively, it can be an explicit vector of
 slot names which should be kept. In the latter case it is the user's
 responsibility to ensure that jsTree slots stay on the top level.}
+
+\item{createNewId}{logical. If \code{TRUE} a new id will be generated. Any old \sQuote{id} 
+will be stored in \sQuote{id.orig} and a warning will be issued, If \code{FALSE},
+any existing id will be re-used.}
 
 \item{pretty}{logical. If \code{TRUE} the resulting JSON is prettified}
 }

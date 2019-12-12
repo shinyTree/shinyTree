@@ -5,10 +5,11 @@ library(shinytest)
 library(testthat)
 
 # open Shiny app and PhantomJS
-app <- ShinyDriver$new(test_path("apps/test_selec"))
+app <- try(ShinyDriver$new(test_path("apps/test_selec")), 
+           silent = TRUE)
 test_that("interactive_tests", {
   skip_on_cran()
-  
+  skip_if(inherits(app, "try-error"), "ShinyDriver could not be started. Are you sitting behind a proxy?")
   x <- app$getAllValues()
   
   expect_true(x$input$action == 0)
@@ -27,14 +28,16 @@ test_that("interactive_tests", {
   expect_equal(x$output$sel_slices, "[[1]]\n[[1]]$root2\n[[1]]$root2$SubListA\n[[1]]$root2$SubListA$leaf1\n[1] 0\n\n\n\n")
   
 })
-app$stop()
-
+if (!inherits(app, "try-error")) {
+  app$stop()
+}
 
 # open Shiny app and PhantomJS
-app <- ShinyDriver$new(test_path("apps/test_async"))
+app <- try(ShinyDriver$new(test_path("apps/test_async")),
+           silent = TRUE)
 test_that("interactive_tests_async", {
   skip_on_cran()
-  
+  skip_if(inherits(app, "try-error"), "ShinyDriver could not be started. Are you sitting behind a proxy?")
   x <- app$getAllValues()
   
   expect_true(x$input$action == 0)
@@ -52,4 +55,6 @@ test_that("interactive_tests_async", {
   expect_equal(x$output$sel_classid, "[[1]]\n[1] \"leaf1\"\nattr(,\"id\")\n[1] \"4\"\n")
   expect_equal(x$output$sel_slices, "[[1]]\n[[1]]$root2\n[[1]]$root2$SubListA\n[[1]]$root2$SubListA$leaf1\n[1] 0\n\n\n\n")
 })
-app$stop()
+if (!inherits(app, "try-error")) {
+  app$stop()
+}
