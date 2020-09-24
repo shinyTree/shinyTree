@@ -12,7 +12,7 @@ initResourcePaths <- function() {
 
 # Parse incoming shinyTree input from the client
 #' @importFrom methods loadMethod
-.onAttach <- function(libname, pkgname) {
+.onLoad <- function(libname, pkgname) {
   ## set the default parser to list to keep backwards compatibility
   ## can be set by the user to "tree" to receive a data.tree
   options(shinyTree.defaultParser = "list")
