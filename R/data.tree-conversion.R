@@ -150,3 +150,145 @@ treeToJSON <- function(tree,
                                 auto_unbox = TRUE, 
                                 pretty = pretty))
 }
+
+
+#' Recursively apply function to all data.frames in a nested list
+#' 
+#' @param list (nested) list containing data.frames 
+#' @param f function to apply to each data.frame
+#' @param ... extra arguments to f
+#' @return list
+#' 
+#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+dfrapply <- function(list, f, ...) {
+  if (inherits(list, "data.frame")) {
+    return(f(list, ...))
+  }
+  if (inherits(list, "list")) {
+    return(lapply(list, function(x) dfrapply(x, f, ...)))
+  }
+  stop("List element must be either a data frame or another list")
+}
+
+
+#' Converts a data.frame  to a data.tree format
+#' 
+#' @param df data.frame
+#' @param hierarchy ordered character vector of column names defining the hierarchy
+#' @examples
+#'\dontrun{
+#' df <- data.frame(Titanic)
+#' tree <- dfToTree(df, c("Sex", "Class", "Survived"))
+#'}
+#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+#' @return nested list
+#' @export
+dfToTree <- function(
+    df,
+    hierarchy = colnames(df)){ 
+  l <- df
+  for(c in hierarchy){
+    l <- dfrapply(
+        list = l,
+        f = function(x){
+          split(x, x[[c]], drop = TRUE)
+        }
+    )
+  }
+  dfrapply(l, function(x){""})
+}
+
+#' Convert tree into data.frame
+#' 
+#' @param tree named nested list
+#' @param hierarchy sorted character vector with name for each level of the list
+#' @examples
+#'\dontrun{
+#' df <- data.frame(Titanic)
+#' tree <- dfToTree(df, c("Sex", "Class", "Survived"))
+#' newDf <- treeToDf(tree, c("Sex", "Class", "Survived"))
+#'}
+#' @return data.frame
+#' 
+#' @author Jasper Schelfhout
+#' @export
+treeToDf <- function(tree, hierarchy){
+  depth <- depth(tree) 
+  
+  if(depth > length(hierarchy)){
+    stop("Not enough names specified in hierarchy.")
+  }
+  
+  if(depth < length(hierarchy)){
+    hierarchy <- tail(hierarchy, depth)    
+    warning(sprintf("To many levels specified in hierarchy. Only using last %s: %s",
+            depth,
+            paste(hierarchy, collapse = ", ")
+        )
+    )
+  }
+  
+  for(i in seq_len(length(hierarchy))){
+    tree <- nodesToDf(tree, hierarchy)
+    hierarchy <- hierarchy[-length(hierarchy)]
+  }
+  df <- tree
+}
+
+#' Convert the nodes of a tree into a data.frame
+#' 
+#' @param tree named nested list
+#' @param hierarchy sorted character vector with name for each level of the list
+#' @return nested list with one level less that is stacked to a data.frame
+#' 
+#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+nodesToDf <- function(
+    tree,
+    hierarchy){
+  depth <- depth(tree) 
+  if(depth == 0 || depth < length(hierarchy)){
+    return(tree)
+  }
+  if(depth == 1){
+    df <- stackList(tree, hierarchy)
+  } else if(depth > 1){
+    df <- lapply(
+        tree,
+        treeToDf, 
+        hierarchy = tail(hierarchy, depth-1))
+  }
+  df
+}
+
+#' Combine named list into single data.frame with extra column
+#' 
+#' @param list named list
+#' @param name character
+#' @return data.frame
+#' 
+#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+stackList <- function(list, name){
+  outputList <- lapply(names(list),
+      function(x, name){
+        if(inherits(list[[x]], "data.frame")){
+          df <- list[[x]]
+          df[,name] <- x
+        } else {
+          df <- data.frame(x, stringsAsFactors = FALSE)
+          names(df) = name   
+        }
+        df
+      },
+      name = name)
+  Reduce(function(x,y){merge(x,y,all=TRUE)}, outputList)
+}
+
+#' Check depth of a list
+#' 
+#' @param x list
+#' @return integer
+#' 
+#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+depth <- function(x){
+  ifelse(is.list(x) && !is.data.frame(x), 1L + max(sapply(x, depth)), 0L)
+}
