@@ -1,8 +1,8 @@
 Package: shinyTree
 Type: Package
 Title: jsTree Bindings for Shiny
-Version: 0.2.8
-Date: 2020-09-24
+Version: 0.3.0
+Date: 2020-10-16
 Authors@R: c(
   person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
   person("Jeff", "Allen", role="aut", email="cran@trestletechnology.net"),
