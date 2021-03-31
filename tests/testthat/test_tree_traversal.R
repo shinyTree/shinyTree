@@ -1,4 +1,4 @@
-test_that("chaning attribute for object works", {
+test_that("changing attribute for object works", {
   obj <- data.frame()
   obj <- set_attr(obj, "testAttr", "testVal")
   expect_true("testAttr" %in% names(attributes(obj)))
