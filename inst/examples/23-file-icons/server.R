@@ -3,17 +3,18 @@ library(shinyTree)
 
 #' @author Sandro Raabe \email{sa.ra.online@posteo.de} 
 shinyServer(function(input, output, session) {
-  for(pkg in c("tidyr", "stringr", "tibble"))
-    if(! pkg %in% installed.packages())
+    if(! "tidyr" %in% installed.packages())
       stop(paste(pkg, " must be installed for this example to work"))
   
   output$tree <- renderTree({
-    files <- data.frame(allFiles) %>%
-      tidyr::separate(allFiles, 
-                      as.character(seq_len(max(stringr::str_count(.$allFiles, "/")) + 1)), 
-                      sep = "/",
-                      fill = "right") %>% 
-      tibble::as_tibble()
+    allFiles <- data.frame(path = list.files("../..", recursive = TRUE))
+    max_depth <- max(vapply(strsplit(allFiles$path, "/"), function(x) length(x), FUN.VALUE = integer(1)))
+    
+    files <- tidyr::separate(allFiles,
+                             path, 
+                             as.character(seq_len(max_depth)), 
+                             sep = "/",
+                             fill = "right")
     
     set_node_attrs(dfToTree(files),
                    attr_name = "sttype", 
