@@ -4,7 +4,7 @@ library(shinyTree)
 #' @author Sandro Raabe \email{sa.ra.online@posteo.de} 
 shinyServer(function(input, output, session) {
     if(! "tidyr" %in% installed.packages())
-      stop(paste(pkg, " must be installed for this example to work"))
+      stop("tidyr must be installed for this example to work")
   
   output$tree <- renderTree({
     allFiles <- data.frame(path = list.files("../..", recursive = TRUE))
