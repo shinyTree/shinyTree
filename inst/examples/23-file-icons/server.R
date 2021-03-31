@@ -8,7 +8,7 @@ shinyServer(function(input, output, session) {
   
   output$tree <- renderTree({
     allFiles <- data.frame(path = list.files("../..", recursive = TRUE))
-    max_depth <- max(vapply(strsplit(allFiles$path, "/"), function(x) length(x), FUN.VALUE = integer(1)))
+    max_depth <- max(vapply(strsplit(allFiles$path, "/"), length, FUN.VALUE = integer(1)))
     
     files <- tidyr::separate(allFiles,
                              path, 
