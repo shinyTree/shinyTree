@@ -23,8 +23,7 @@ Traverse through tree/list to set node attributes, e.g. change icons.
 Useful for directory structure icons where inner nodes are directories, leafs are files.
 }
 \examples{
-\dontrun{
 tree <- dfToTree(data.frame(Titanic),  c("Sex", "Survived"))
 str(set_node_attrs(tree, attr_name = "sttype", inner_val = "directory", leaf_val = "file"))
-}
+
 }

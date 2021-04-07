@@ -14,23 +14,15 @@
 #' @return named nested list
 #' @export
 set_node_attrs <- function(tree, attr_name, inner_val, leaf_val){
-  if(length(tree) == 0 || is.atomic(tree)){ # matches leaves like "" or list() (which comes from dfToTree)
-    set_attr(tree, attr_name, leaf_val)
+  if(length(tree) == 0 || is.atomic(tree)){
+    # base case: leaf node is list() or ""
+    attr(tree, attr_name) <- leaf_val
+    tree
   }else{
     res <- lapply(tree, set_node_attrs, attr_name, inner_val, leaf_val)
-    set_attr(res, attr_name, inner_val)
+    attr(res, attr_name) <- inner_val
+    # Previous attributes are lost here, so we need to append the again
+    attributes(res) <- append(attributes(tree), attributes(res))
+    res
   }
-}
-
-#' Set attribute on object
-#'
-#  Set attribute on object and return the object
-#' @param obj any object
-#' @param attr_name name of attribute to set
-#' @param attr_value value of attribute to set
-#' @return the same object with set attribute
-set_attr <- function(obj, attr_name, attr_value){
-  # set attribute on object and return the object
-  attr(obj, attr_name) <- attr_value
-  obj
 }
