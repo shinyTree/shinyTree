@@ -7,7 +7,7 @@ shinyServer(function(input, output, session) {
       stop("tidyr must be installed for this example to work")
   
   output$tree <- renderTree({
-    allFiles <- data.frame(path = list.files("../..", recursive = TRUE))
+    allFiles <- data.frame(path = list.files("../..", recursive = TRUE), stringsAsFactors = FALSE)
     max_depth <- max(vapply(strsplit(allFiles$path, "/"), length, FUN.VALUE = integer(1)))
     
     files <- tidyr::separate(allFiles,
