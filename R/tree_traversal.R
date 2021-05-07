@@ -21,7 +21,7 @@ set_node_attrs <- function(tree, attr_name, inner_val, leaf_val){
   }else{
     res <- lapply(tree, set_node_attrs, attr_name, inner_val, leaf_val)
     attr(res, attr_name) <- inner_val
-    # Previous attributes are lost here, so we need to append the again
+    # Previous attributes are lost here, so we need to append them again
     attributes(res) <- append(attributes(tree), attributes(res))
     res
   }
