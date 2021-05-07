@@ -1,3 +1,9 @@
+ v 0.3.0
+--------------------------------------------------------------------------------
+ 
+- new function `set_node_attrs()` to set distinct node or leaf attributes 
+  (useful for creating file tree icons)
+ 
  v 0.2.7
 --------------------------------------------------------------------------------
 
