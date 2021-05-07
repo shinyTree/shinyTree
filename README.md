@@ -225,6 +225,17 @@ This can be useful if the developer would like `observe` and `observeEvents` to 
 using `updateTree`. (By default, `updateTree` does not run `observe` or `observeEvent` because it
 is assumed that the shiny application knows that the tree is being changed already.)
 
+#### 23-file-icons
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/23-file-icons", package = "shinyTree"))
+```
+
+An example demonstrating how to create a file tree with individual icons.
+
+
 Known Bugs
 ----------
 
