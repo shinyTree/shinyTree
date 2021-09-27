@@ -56,6 +56,11 @@ var shinyTree = function(){
             'dots': ($elem.data('st-theme-dots') === 'TRUE') 
           }
         },
+        'checkbox': {
+          'three_state': ($elem.data('st-three-state') === 'TRUE'),
+          'tie_selection': ($elem.data('st-tie-selection') === 'TRUE'),
+          'whole_node': ($elem.data('st-whole-node') === 'TRUE')
+        },
         "types" : sttypes,
         plugins: plugins});
     }
