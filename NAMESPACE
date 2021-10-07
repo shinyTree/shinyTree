@@ -2,6 +2,7 @@
 
 export(dfToTree)
 export(get_selected)
+export(get_checked)
 export(renderEmptyTree)
 export(renderTree)
 export(renderTreeAsync)
