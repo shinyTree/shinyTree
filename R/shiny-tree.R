@@ -31,6 +31,9 @@
 #' @param wholerow If \code{TRUE}, will highlight the whole selected row.
 #' @param stripes If \code{TRUE}, the tree background is striped.
 #' @param multiple If \code{TRUE}, multiple nodes can be selected.
+#' @param three_state If \code{TRUE}, a boolean indicating if checkboxes should cascade down and have an undetermined state
+#' @param whole_node If \code{TRUE},a boolean indicating if clicking anywhere on the node should act as clicking on the checkbox
+#' @param tie_selection If \code{TRUE}, controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin.
 #' @param animation The open / close animation duration in milliseconds.
 #' Set this to \code{FALSE} to disable the animation (default is 200).
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu to 
@@ -42,7 +45,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
                       theme="default", themeIcons=TRUE, themeDots=TRUE,
                       sort=FALSE, unique=FALSE, wholerow=FALSE,
                       stripes=FALSE, multiple=TRUE, animation=200,
-                      contextmenu=FALSE){
+                      contextmenu=FALSE, three_state=TRUE, whole_node=TRUE, tie_selection=TRUE){
   
   if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
     warning("The plugins contextmenu and checkbox cannot be used together. \nSet checkbox to FALSE")
@@ -95,6 +98,9 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
     searchEl,
     shiny::div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
+        `data-st-tie-selection`=tie_selection,
+        `data-st-whole-node`=whole_node,
+        `data-st-three-state`=three_state,
         `data-st-search`=is.character(search),
         `data-st-dnd`=dragAndDrop,
         `data-st-types`=!is.null(types),
