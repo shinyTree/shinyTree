@@ -58,7 +58,7 @@ treeToJSON <- function(tree,
                             error = function(e) topLevelSlots)
   node_to_list <- function(node, 
                            node_name = NULL) {
-    fields <- mget(node$fields, node)
+    fields <- mget(node$attributes, node)
     NOK <- sapply(fields, function(slot) !is.atomic(slot) && !is.list(slot))
     if (any(NOK)) {
       msg <- sprintf(ngettext(length(which(NOK)),
