@@ -6,9 +6,7 @@ library(shinyjs)
 ## load acme and alter some nodes
 data(acme)
 acme$IT$li_attr         <- list(class = "myl")
-acme$IT$state           <- list(opened = TRUE)
 acme$Accounting$icon    <- "file"
-acme$IT$Outsource$state <- list(opened = TRUE, selected = FALSE)
 
 
 ui <- fluidPage(
