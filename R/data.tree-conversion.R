@@ -165,7 +165,13 @@ dfrapply <- function(list, f, ...) {
     return(f(list, ...))
   }
   if (inherits(list, "list")) {
-    return(lapply(list, function(x) dfrapply(x, f, ...)))
+    returnval <- lapply(list, function(x) dfrapply(x, f, ...))
+    
+    if(length(returnval) == 0){ 
+      return("") 
+    } else {
+      return(returnval)
+    }
   }
   stop("List element must be either a data frame or another list")
 }
@@ -210,77 +216,30 @@ dfToTree <- function(
 #'}
 #' @return data.frame
 #' 
-#' @author Jasper Schelfhout
+#' @author Michael Bell
 #' @export
-treeToDf <- function(tree, hierarchy){
-  depth <- depth(tree) 
-  
-  if(depth > length(hierarchy)){
-    stop("Not enough names specified in hierarchy.")
+treeToDf <- function(tree,hierarchy=NULL){
+  depth <- depth(tree)
+  df <- data.frame(matrix(ncol = depth, nrow = 0))
+  if(is.null(hierarchy) | length(hierarchy) != depth){
+    names(df) <- c(1:depth)
+  }else{
+    names(df) <- hierarchy
   }
   
-  if(depth < length(hierarchy)){
-    hierarchy <- tail(hierarchy, depth)    
-    warning(sprintf("To many levels specified in hierarchy. Only using last %s: %s",
-            depth,
-            paste(hierarchy, collapse = ", ")
-        )
-    )
+  dfs <- function(lst, path = character()) {
+    if (!is.list(lst) || length(lst) == 0) {
+      len <- length(path)
+      numRows <- nrow(df) + 1
+      df[numRows, 1:len] <<- path
+    } else {
+      for (i in seq_along(lst)) {
+        dfs(lst[[i]], c(path, names(lst)[i]))
+      }
+    }
   }
-  
-  for(i in seq_len(length(hierarchy))){
-    tree <- nodesToDf(tree, hierarchy)
-    hierarchy <- hierarchy[-length(hierarchy)]
-  }
-  df <- tree
-}
-
-#' Convert the nodes of a tree into a data.frame
-#' 
-#' @param tree named nested list
-#' @param hierarchy sorted character vector with name for each level of the list
-#' @return nested list with one level less that is stacked to a data.frame
-#' 
-#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
-nodesToDf <- function(
-    tree,
-    hierarchy){
-  depth <- depth(tree) 
-  if(depth == 0 || depth < length(hierarchy)){
-    return(tree)
-  }
-  if(depth == 1){
-    df <- stackList(tree, hierarchy)
-  } else if(depth > 1){
-    df <- lapply(
-        tree,
-        treeToDf, 
-        hierarchy = tail(hierarchy, depth-1))
-  }
+  dfs(tree)
   df
-}
-
-#' Combine named list into single data.frame with extra column
-#' 
-#' @param list named list
-#' @param name character
-#' @return data.frame
-#' 
-#' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
-stackList <- function(list, name){
-  outputList <- lapply(names(list),
-      function(x, name){
-        if(inherits(list[[x]], "data.frame")){
-          df <- list[[x]]
-          df[,name] <- x
-        } else {
-          df <- data.frame(x, stringsAsFactors = FALSE)
-          names(df) = name   
-        }
-        df
-      },
-      name = name)
-  Reduce(function(x,y){merge(x,y,all=TRUE)}, outputList)
 }
 
 #' Check depth of a list
