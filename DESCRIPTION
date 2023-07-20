@@ -32,7 +32,7 @@ Suggests:
     testthat,
     shinytest,
     data.tree
-BugReports: https://github.com/trestletech/shinyTree/issues
+BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list(wrap = TRUE)
 RoxygenNote: 7.1.1
 Encoding: UTF-8
