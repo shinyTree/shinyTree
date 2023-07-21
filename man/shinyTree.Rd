@@ -20,7 +20,10 @@ shinyTree(
   stripes = FALSE,
   multiple = TRUE,
   animation = 200,
-  contextmenu = FALSE
+  contextmenu = FALSE,
+  three_state = TRUE,
+  whole_node = TRUE,
+  tie_selection = TRUE
 )
 }
 \arguments{
@@ -64,6 +67,12 @@ Set this to \code{FALSE} to disable the animation (default is 200).}
 
 \item{contextmenu}{If \code{TRUE}, will enable a contextmenu to 
 create/rename/delete/cut/copy/paste nodes.}
+
+\item{three_state}{If \code{TRUE}, a boolean indicating if checkboxes should cascade down and have an undetermined state}
+
+\item{whole_node}{If \code{TRUE},a boolean indicating if clicking anywhere on the node should act as clicking on the checkbox}
+
+\item{tie_selection}{If \code{TRUE}, controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled

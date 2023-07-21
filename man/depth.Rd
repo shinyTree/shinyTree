@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.tree-conversion.R
 \name{depth}
 \alias{depth}
-\title{Check depth of a list.}
+\title{Check depth of a list}
 \usage{
 depth(x)
 }
@@ -13,8 +13,8 @@ depth(x)
 integer
 }
 \description{
-Check depth of a list.
+Check depth of a list
 }
 \author{
-Jasper Schelfhout
+Jasper Schelfhout \email{jasper.schelfhout@openanalytics.eu}
 }
