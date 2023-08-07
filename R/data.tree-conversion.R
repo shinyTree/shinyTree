@@ -23,7 +23,7 @@
 #'        is pruned
 #' @param topLevelSlots determines which slots should be moved to the top level of the 
 #'        node. If \code{default} or \code{NULL} slots 
-#'        \href{https://www.jstree.com/docs/json}{used in the jsTree JSON} 
+#'        \href{https://www.jstree.com/docs/json/}{used in the jsTree JSON} 
 #'        are kept on the top level, while any other atomic / list slots from the tree
 #'        are stored in an own slot called \sQuote{data}. If \code{all} *all* nodes are
 #'        stored on the top level. Alternatively, it can be an explicit vector of
