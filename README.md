@@ -1,4 +1,3 @@
-[![Build Status](https://app.travis-ci.org/shinyTree/shinyTree.svg?branch=master)](https://app.travis-ci.org/shinyTree/shinyTree)
 [![cran checks](https://badges.cranchecks.info/worst/shinyTree.svg)](https://cran.r-project.org/web/checks/check_results_shinyTree.html)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/shinyTree?color=brightgreen)](https://www.r-pkg.org/pkg/shinyTree)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.rpackages.io/package/shinyTree)
@@ -245,8 +244,7 @@ License
 -------
 
 The development of this project was generously sponsored by the [Institut de 
-Radioprotection et de Sûreté Nucléaire](http://www.irsn.fr/EN/Pages/home.aspx) 
-and performed by [Jeff Allen](http://trestletech.com). The code is
+and performed by [Jeff Allen](https://trestletech.com). The code is
 licensed under The MIT License (MIT).
 
 Copyright (c) 2014 Institut de Radioprotection et de Sûreté Nucléaire
