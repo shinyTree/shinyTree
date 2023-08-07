@@ -42,7 +42,7 @@ which can be rendered by shinyTree.
 }
 \details{
 The JSON string generated follows the 
-\href{https://www.jstree.com/docs/json}{jsTree specifications}. In particular 
+\href{https://www.jstree.com/docs/json/}{jsTree specifications}. In particular 
 it encodes children nodes via the \sQuote{children} slot. 
 
 All atomic or list slots of a node in the tree are stored in a data slot in 

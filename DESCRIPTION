@@ -34,6 +34,6 @@ Suggests:
     shinytest,
     data.tree
 BugReports: https://github.com/shinyTree/shinyTree/issues
-Roxygen: list(wrap = TRUE)
+Roxygen: list()
 RoxygenNote: 7.2.3
 Encoding: UTF-8
