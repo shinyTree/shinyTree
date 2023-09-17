@@ -194,6 +194,21 @@ var shinyTree = function(){
         });
       }
       
+      if (el.dataset.stCheckbox == "TRUE" && el.dataset.stTieSelection == "FALSE") {
+        $(el).on("check_node.jstree", function(e) {
+          callback();
+        });
+        $(el).on("uncheck_node.jstree", function(e) {
+          callback();
+        });
+        $(el).on("check_all.jstree", function(e) {
+          callback();
+        });
+        $(el).on("uncheck_all.jstree", function(e) {
+          callback();
+        });
+      }
+      
     },
     unsubscribe: function(el) {
       $(el).off(".jstree");
