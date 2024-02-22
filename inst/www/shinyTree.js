@@ -110,6 +110,9 @@ var shinyTree = function(){
           $.each(obj, function(key, val){
             if (keys.indexOf(key) >= 0) {
                 if (typeof val === 'string'){
+                  if (key === "text" && val === "") {
+                    val = "New node";
+                  }
                   clean[key] = val.trim();
                 } else {
                   clean[key] = val; 
