@@ -13,7 +13,7 @@
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #' make the selection of multiple nodes in the tree easier.
-"' @param searchplaceholder Add a placeholder value to the search box
+#' @param searchplaceholder Add a placeholder value to the search box
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #' a search box above the produced tree. Alternatively, you can set the parameter
 #' to the ID of the text input you wish to use as the search field.
