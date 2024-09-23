@@ -9,6 +9,7 @@ shinyTree(
   checkbox = FALSE,
   search = FALSE,
   searchtime = 250,
+  searchplaceholder = "",
   dragAndDrop = FALSE,
   types = NULL,
   theme = "default",
@@ -38,6 +39,8 @@ to the ID of the text input you wish to use as the search field.}
 
 \item{searchtime}{Determines the reaction time of the search algorithm.
 Default is 250ms.}
+
+\item{searchplaceholder}{Add a placeholder value to the search box}
 
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
