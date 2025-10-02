@@ -13,6 +13,7 @@
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #' make the selection of multiple nodes in the tree easier.
+#' @param searchplaceholder Add a placeholder value to the search box
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #' a search box above the produced tree. Alternatively, you can set the parameter
 #' to the ID of the text input you wish to use as the search field.
@@ -41,7 +42,7 @@
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
-                      searchtime = 250, dragAndDrop=FALSE, types=NULL, 
+                      searchtime = 250, searchplaceholder = "", dragAndDrop=FALSE, types=NULL, 
                       theme="default", themeIcons=TRUE, themeDots=TRUE,
                       sort=FALSE, unique=FALSE, wholerow=FALSE,
                       stripes=FALSE, multiple=TRUE, animation=200,
@@ -55,7 +56,7 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
   searchEl <- shiny::div("")
   if (search == TRUE){
     search <- paste0(outputId, "-search-input")
-    searchEl <- shiny::tags$input(id=search, class="input", type="text", value="")
+    searchEl <- shiny::tags$input(id=search, class="input", type="text", value="", placeholder = searchplaceholder)
   }
   if (is.character(search)){
     # Either the search field we just created or the given text field ID
