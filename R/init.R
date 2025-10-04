@@ -88,7 +88,7 @@ supplementAttr <- function(ret, json){
     if (json$state$selected != FALSE){
       attr(ret, "stselected") <- json$state$selected
     }
-    if (json$state$selected != FALSE){
+    if (json$state$checked != FALSE){
       attr(ret, "stchecked") <- json$state$checked
     }
     if (json$state$disabled != FALSE){
