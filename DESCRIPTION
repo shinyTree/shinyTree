@@ -35,7 +35,8 @@ Suggests:
     covr,
     data.tree,
     mockery,
-    withr
+    withr,
+    later
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.2.3
