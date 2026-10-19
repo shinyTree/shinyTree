@@ -25,7 +25,7 @@ test_that("selecting a node and reacting to an updateTree call works end-to-end"
   expect_equal(
     vals$output$sel_names,
     paste0("[[1]]\n[1] \"root1\"\nattr(,\"ancestry\")\ncharacter(0)\n",
-           "attr(,\"stselected\")\n[1] TRUE\nattr(,\"stchecked\")\n[1] FALSE\n")
+           "attr(,\"stselected\")\n[1] TRUE\n")
   )
   expect_equal(vals$output$sel_classid, "[[1]]\n[1] \"root1\"\nattr(,\"id\")\n[1] \"1\"\n")
   expect_equal(vals$output$sel_slices, "[[1]]\n[[1]]$root1\n[1] 0\n\n")
@@ -40,7 +40,7 @@ test_that("selecting a node and reacting to an updateTree call works end-to-end"
   expect_equal(
     vals$output$sel_names,
     paste0("[[1]]\n[1] \"leaf1\"\nattr(,\"ancestry\")\n[1] \"root2\"    \"SubListA\"\n",
-           "attr(,\"stselected\")\n[1] TRUE\nattr(,\"stchecked\")\n[1] FALSE\n")
+           "attr(,\"stselected\")\n[1] TRUE\n")
   )
   expect_equal(vals$output$sel_classid, "[[1]]\n[1] \"leaf1\"\nattr(,\"id\")\n[1] \"4\"\n")
   expect_equal(
