@@ -50,35 +50,41 @@ fixIconName <- function(icon){
 }
 
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
-  for (name in names(nestedList)) {
+  # Walk by position rather than by name: `nestedList[[name]]` always resolves
+  # to the first match, which smeared that node's attributes onto every later
+  # sibling sharing its name (#104).
+  nodeNames <- names(nestedList)
+  for (i in seq_along(nestedList)) {
+    name <- nodeNames[i]
+    node <- nestedList[[i]]
     additionalAttributes <- list(
-      "icon" = fixIconName(attr(nestedList[[name]],"sticon")),
-      "type" = attr(nestedList[[name]],"sttype")
+      "icon" = fixIconName(attr(node,"sticon")),
+      "type" = attr(node,"sttype")
     )
     additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
-    
-    data <- lapply(names(attributes(nestedList[[name]])),function(key){
+
+    data <- lapply(names(attributes(node)),function(key){
       if(key %in% c("icon","type","names","stopened","stselected","sttype", "stdisabled", "stchecked")){
         NULL
       }else{
-        attr(nestedList[[name]],key)
+        attr(node,key)
       }
     })
     if(!is.null(data) && length(data) > 0){
-      names(data) <- names(attributes(nestedList[[name]]))
+      names(data) <- names(attributes(node))
       data <- data[which(sapply(data,Negate(is.null)))]
     }
-    
+
     nodeData <- append(
       list(
         id = as.character(length(flatList) + 1),
         text = name,
         parent = parent,
         state = list(
-          opened   = isTRUE(attr(nestedList[[name]], "stopened")),
-          selected = isTRUE(attr(nestedList[[name]], "stselected")),
-          disabled = isTRUE(attr(nestedList[[name]], "stdisabled")),
-          checked = isTRUE(attr(nestedList[[name]], "stchecked"))
+          opened   = isTRUE(attr(node, "stopened")),
+          selected = isTRUE(attr(node, "stselected")),
+          disabled = isTRUE(attr(node, "stdisabled")),
+          checked = isTRUE(attr(node, "stchecked"))
         ),
         data = data
       ),
@@ -86,9 +92,9 @@ get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
     )
 
     flatList = c(flatList,list(nodeData))
-    if (is.list(nestedList[[name]]))
+    if (is.list(node))
       flatList =
-        Recall(nestedList[[name]], flatList, parent = as.character(length(flatList)))
+        Recall(node, flatList, parent = as.character(length(flatList)))
   }
   flatList
 }
