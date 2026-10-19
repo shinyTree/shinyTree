@@ -1,3 +1,4 @@
+[![R-CMD-check](https://github.com/shinyTree/shinyTree/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/shinyTree/shinyTree/actions/workflows/R-CMD-check.yaml)
 [![cran checks](https://badges.cranchecks.info/worst/shinyTree.svg)](https://cran.r-project.org/web/checks/check_results_shinyTree.html)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/shinyTree?color=brightgreen)](https://www.r-pkg.org/pkg/shinyTree)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.rpackages.io/package/shinyTree)
