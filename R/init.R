@@ -62,10 +62,13 @@ jsonToAttr <- function(json){
   
   if (! "text" %in% names(json)){
     # This is a top-level list, not a node.
+    # Assign positionally and name afterwards: keying by text would let
+    # same-named siblings overwrite each other (#104).
+    ret <- vector("list", length(json))
     for (i in 1:length(json)){
-      ret[[json[[i]]$text]] <- jsonToAttr(json[[i]])
-      ret[[json[[i]]$text]] <- supplementAttr(ret[[json[[i]]$text]], json[[i]])
+      ret[[i]] <- supplementAttr(jsonToAttr(json[[i]]), json[[i]])
     }
+    names(ret) <- vapply(json, function(node) node$text, character(1))
     return(ret)
   }
   

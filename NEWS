@@ -1,9 +1,18 @@
+ v 0.3.2
+--------------------------------------------------------------------------------
+
+- Fixed `get_checked()` returning nothing when `checkbox = TRUE` and
+  `tie_selection = FALSE` (#121).
+- Fixed duplicate-named sibling nodes collapsing into a single entry, so
+  `get_selected()`/`get_checked()` now report the correct node and its own
+  attributes rather than only the last sibling (#104).
+
  v 0.3.1
 --------------------------------------------------------------------------------
- 
+
 - checkbox functionality
 - bugfixes
- 
+
 
  v 0.3.0
 --------------------------------------------------------------------------------

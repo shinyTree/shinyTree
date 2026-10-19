@@ -235,6 +235,30 @@ runApp(system.file("examples/23-file-icons", package = "shinyTree"))
 
 An example demonstrating how to create a file tree with individual icons.
 
+#### 24-checkbox-options
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/24-checkbox-options", package = "shinyTree"))
+```
+
+An example of a tree whose checkboxes are decoupled from the selection, using
+`tie_selection`, `whole_node` and `three_state`.
+
+#### 25-duplicate-names
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/25-duplicate-names", package = "shinyTree"))
+```
+
+An example showing that sibling nodes may share the same name. Several nodes are
+called `Invoice`, each with its own attributes, and `get_checked()` reports each
+checked node individually along with the attributes belonging to that specific
+node.
+
 
 Known Bugs
 ----------
