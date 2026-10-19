@@ -87,17 +87,20 @@ supplementAttr <- function(ret, json){
     sapply(names(json$data),function(name){
       attr(ret, name) <<- json$data[[name]]
     })
-    
-    if (json$state$selected != FALSE){
+
+    # isTRUE() rather than `!= FALSE`: a state key may be missing entirely --
+    # treeToJSON() emits no "checked" -- and `NULL != FALSE` is logical(0),
+    # which makes if() raise "argument is of length zero" (#103).
+    if (isTRUE(json$state$selected)){
       attr(ret, "stselected") <- json$state$selected
     }
-    if (json$state$checked != FALSE){
+    if (isTRUE(json$state$checked)){
       attr(ret, "stchecked") <- json$state$checked
     }
-    if (json$state$disabled != FALSE){
+    if (isTRUE(json$state$disabled)){
       attr(ret, "stdisabled") <- json$state$disabled
     }
-    if (json$state$opened != FALSE){
+    if (isTRUE(json$state$opened)){
       attr(ret, "stopened") <- json$state$opened
     }
     if (exists('id', where=json)) {

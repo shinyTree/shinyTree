@@ -7,6 +7,10 @@
   `tie_selection = TRUE`. jsTree treats checked and selected as the same thing
   in that mode, so a selected node is now reported as checked, matching
   jsTree's own `is_checked()`/`get_checked()` (#121).
+- Fixed `get_selected()`/`get_checked()` returning nothing for trees rendered
+  from `treeToJSON()`. A node state without a `checked` key made the input
+  handler fail with "argument is of length zero", so `input$tree` was never
+  populated (#103).
 - Fixed duplicate-named sibling nodes collapsing into a single entry, so
   `get_selected()`/`get_checked()` now report the correct node and its own
   attributes rather than only the last sibling (#104).
