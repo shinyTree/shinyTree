@@ -82,3 +82,36 @@ test_that("clicking a node's checkbox in the browser updates input$tree", {
   expect_equal(sel[[1]][1], "root1")
   expect_true(attr(sel[[1]], "stselected"))
 })
+
+test_that("clicking a node's label (not its checkbox) also updates input$tree", {
+  ## A user clicking the node text goes through jsTree's whole_node handling,
+  ## a different path from clicking the .jstree-checkbox icon above. Both must
+  ## reach Shiny.
+  skip_on_cran()
+  skip_if_not_installed("shinytest2")
+
+  app <- tryCatch(
+    AppDriver$new(
+      app_dir = test_path("apps/test_checkbox"),
+      name = "shinytree-checkbox-label",
+      variant = NULL,
+      load_timeout = 30000
+    ),
+    error = function(e) e
+  )
+  if (inherits(app, "error")) {
+    skip(paste("AppDriver could not be started:", conditionMessage(app)))
+  }
+  withr::defer(app$stop())
+
+  expect_null(app$get_value(input = "tree"))
+
+  ## Click the label itself rather than the checkbox icon.
+  app$click(selector = "[id=\"1_anchor\"]")
+  app$wait_for_idle()
+
+  sel <- get_selected(app$get_value(input = "tree"))
+  expect_length(sel, 1)
+  expect_equal(sel[[1]][1], "root1")
+  expect_true(attr(sel[[1]], "stselected"))
+})
