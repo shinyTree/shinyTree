@@ -115,11 +115,22 @@ var shinyTree = function(){
                   }
                   clean[key] = val.trim();
                 } else {
-                  clean[key] = val; 
+                  clean[key] = val;
                 }
               }
           });
-          
+
+          // get_json() reports state.checked straight from the node model, which
+          // the checkbox plugin leaves at false when tie_selection is on -- it
+          // derives checked-ness from the selection instead. is_checked() is the
+          // plugin's own accessor and honours either mode, so ask it rather than
+          // trusting the raw state. It only exists while the checkbox plugin is
+          // loaded, hence the guard (#121).
+          var jstreeRef = $(treeid).jstree(true);
+          if (clean.state && typeof jstreeRef.is_checked === 'function') {
+            clean.state.checked = jstreeRef.is_checked(obj.id);
+          }
+
           toReturn.push(clean);
         });
         result = arrToObj(toReturn);

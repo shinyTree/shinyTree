@@ -3,6 +3,10 @@
 
 - Fixed `get_checked()` returning nothing when `checkbox = TRUE` and
   `tie_selection = FALSE` (#121).
+- Fixed `get_checked()` returning nothing for ticked boxes under the default
+  `tie_selection = TRUE`. jsTree treats checked and selected as the same thing
+  in that mode, so a selected node is now reported as checked, matching
+  jsTree's own `is_checked()`/`get_checked()` (#121).
 - Fixed duplicate-named sibling nodes collapsing into a single entry, so
   `get_selected()`/`get_checked()` now report the correct node and its own
   attributes rather than only the last sibling (#104).
