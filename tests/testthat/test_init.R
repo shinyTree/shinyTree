@@ -56,6 +56,22 @@ test_that("jsonToAttr sets st* attributes only when the corresponding state is T
   expect_true(attr(res$leaf, "stopened"))
 })
 
+test_that("jsonToAttr sets stchecked independently of stselected (tie_selection = FALSE)", {
+  ## Regression test for issue #122 / PR #122: when checkbox = TRUE and
+  ## tie_selection = FALSE, a node can be checked without being selected
+  ## (and vice versa). supplementAttr's stchecked branch must gate on
+  ## json$state$checked, not json$state$selected.
+  checked_not_selected <- make_node("leaf", selected = FALSE, checked = TRUE)
+  res1 <- shinyTree:::jsonToAttr(list(checked_not_selected))
+  expect_true(attr(res1$leaf, "stchecked"))
+  expect_null(attr(res1$leaf, "stselected"))
+
+  selected_not_checked <- make_node("leaf", selected = TRUE, checked = FALSE)
+  res2 <- shinyTree:::jsonToAttr(list(selected_not_checked))
+  expect_true(attr(res2$leaf, "stselected"))
+  expect_null(attr(res2$leaf, "stchecked"))
+})
+
 test_that("jsonToAttr carries over data fields and id as attributes", {
   node <- make_node("leaf", data = list(foo = "bar", baz = 42), id = "node-id-1")
   res <- shinyTree:::jsonToAttr(list(node))
