@@ -2,6 +2,14 @@ context("test_tree")
 library(shiny)
 library(jsonlite)
 
+make_data_tree <- function() {
+  tree <- data.tree::Node$new("myroot")
+  a <- tree$AddChild("A")
+  a$AddChild("A1")
+  tree$AddChild("B")
+  tree
+}
+
 
 test_that("get_flatList", {  
   li <- list(abc = 123, def = 456)
@@ -383,4 +391,121 @@ test_that("get_selected_classid", {
   expect_length(sel, 2)
   expect_true(sel[[1]] == "leaf1")
   expect_true(sel[[2]] == "leafA")
+})
+
+test_that("treeToJSON prunes the root by default and encodes children", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+
+  js <- treeToJSON(tree)
+  expect_true(jsonlite::validate(js))
+
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  expect_length(parsed, 2)
+  texts <- unlist(lapply(parsed, function(x) x$text))
+  expect_setequal(texts, c("A", "B"))
+
+  a_node <- parsed[[which(texts == "A")]]
+  expect_equal(a_node$children[[1]]$text, "A1")
+})
+
+test_that("treeToJSON keeps the root node when keepRoot = TRUE", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+
+  js <- treeToJSON(tree, keepRoot = TRUE)
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  expect_null(parsed$text)
+  expect_length(parsed$children, 2)
+})
+
+test_that("treeToJSON topLevelSlots controls which fields stay out of data", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+  tree$children$A$sticon <- "fa-file"
+
+  js_default <- treeToJSON(tree, topLevelSlots = "default")
+  parsed_default <- jsonlite::fromJSON(js_default, simplifyVector = FALSE)
+  a_default <- parsed_default[[which(sapply(parsed_default, function(x) x$text) == "A")]]
+  expect_equal(a_default$data$sticon, "fa-file")
+
+  js_all <- treeToJSON(tree, topLevelSlots = "all")
+  parsed_all <- jsonlite::fromJSON(js_all, simplifyVector = FALSE)
+  a_all <- parsed_all[[which(sapply(parsed_all, function(x) x$text) == "A")]]
+  expect_null(a_all$data)
+
+  js_explicit <- treeToJSON(tree, topLevelSlots = c("id", "text", "sticon"))
+  parsed_explicit <- jsonlite::fromJSON(js_explicit, simplifyVector = FALSE)
+  a_explicit <- parsed_explicit[[which(sapply(parsed_explicit, function(x) x$text) == "A")]]
+  expect_equal(a_explicit$sticon, "fa-file")
+  expect_null(a_explicit$data)
+})
+
+test_that("treeToJSON createNewId = FALSE keeps valid unique ids", {
+  skip_if_not_installed("data.tree")
+  tree <- data.tree::Node$new("myroot")
+  a <- tree$AddChild("A")
+  a$id <- "ida"
+  b <- tree$AddChild("B")
+  b$id <- "idb"
+
+  js <- treeToJSON(tree, createNewId = FALSE)
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  ids <- unlist(lapply(parsed, function(x) x$id))
+  expect_setequal(ids, c("ida", "idb"))
+})
+
+test_that("treeToJSON createNewId = FALSE regenerates duplicated/NA ids with a warning", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+  tree$children$A$id <- "dup"
+  tree$children$B$id <- "dup"
+
+  expect_warning(js <- treeToJSON(tree, createNewId = FALSE), "invalid")
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  ids <- unlist(lapply(parsed, function(x) x$id))
+  expect_false(any(duplicated(ids)))
+})
+
+test_that("treeToJSON createNewId = TRUE stores a pre-existing id in id.orig with a warning", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+  tree$children$A$id <- "origid"
+
+  expect_warning(js <- treeToJSON(tree, createNewId = TRUE), "id.orig")
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  a_node <- parsed[[which(sapply(parsed, function(x) x$text) == "A")]]
+  expect_equal(a_node$data$id.orig, "origid")
+})
+
+test_that("treeToJSON drops unsupported slot types with a warning", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+  tree$children$B$myfunc <- function() 1
+
+  expect_warning(js <- treeToJSON(tree), "unsupported slot")
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  b_node <- parsed[[which(sapply(parsed, function(x) x$text) == "B")]]
+  expect_null(b_node$data$myfunc)
+})
+
+test_that("treeToJSON warns about invalid state names but keeps the valid ones", {
+  skip_if_not_installed("data.tree")
+  tree <- make_data_tree()
+  tree$children$A$state <- list(selected = TRUE, bogus = TRUE)
+
+  expect_warning(js <- treeToJSON(tree), "invalid state")
+  parsed <- jsonlite::fromJSON(js, simplifyVector = FALSE)
+  a_node <- parsed[[which(sapply(parsed, function(x) x$text) == "A")]]
+  expect_true(a_node$state$selected)
+  expect_false(a_node$state$disabled)
+})
+
+test_that("treeToJSON errors when data.tree is not installed", {
+  skip_if_not_installed("data.tree")
+  skip_if_not_installed("mockery")
+  tree <- make_data_tree()
+
+  mockery::stub(treeToJSON, "requireNamespace", FALSE)
+  expect_error(treeToJSON(tree), "data.tree")
 })

@@ -31,8 +31,11 @@ Imports:
     promises
 Suggests:
     testthat,
-    shinytest,
-    data.tree
+    shinytest2,
+    covr,
+    data.tree,
+    mockery,
+    withr
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.2.3
