@@ -7,6 +7,9 @@
   `tie_selection = TRUE`. jsTree treats checked and selected as the same thing
   in that mode, so a selected node is now reported as checked, matching
   jsTree's own `is_checked()`/`get_checked()` (#121).
+- Node attribute values are no longer trimmed on their way back to R, so
+  padded keys and fixed-width codes stored in `st*` attributes survive a round
+  trip. Node *names* are still trimmed, which is deliberate (#3).
 - Fixed `get_selected()`/`get_checked()` returning nothing for trees rendered
   from `treeToJSON()`. A node state without a `checked` key made the input
   handler fail with "argument is of length zero", so `input$tree` was never
