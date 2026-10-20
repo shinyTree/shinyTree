@@ -1,6 +1,10 @@
  v 0.3.2
 --------------------------------------------------------------------------------
 
+- Search now hides non-matching nodes with the `proton` theme. jsTree marked
+  them correctly but proton's stylesheet omits the rule that hides them, which
+  the other themes ship, so every node stayed on screen. shinyTree now
+  declares it in its own stylesheet (#113).
 - Fixed `get_checked()` returning nothing when `checkbox = TRUE` and
   `tie_selection = FALSE` (#121).
 - Fixed `get_checked()` returning nothing for ticked boxes under the default

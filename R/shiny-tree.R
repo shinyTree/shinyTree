@@ -99,7 +99,11 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
     shiny::singleton(shiny::tags$head(
       initResourcePaths(),
       theme.tags,
-      shiny::tags$link(rel = "stylesheet", 
+      # After theme.tags so it can correct gaps in individual themes.
+      shiny::tags$link(rel = 'stylesheet',
+                       type = 'text/css',
+                       href = 'shinyTree/shinyTree.css'),
+      shiny::tags$link(rel = "stylesheet",
                 type = "text/css", 
                 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css",
                 integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==",
