@@ -1,6 +1,11 @@
  v 0.3.2
 --------------------------------------------------------------------------------
 
+- A tree now repopulates when its element is removed from the page and added
+  back -- inside a `modalDialog` that is dismissed and reopened, for example.
+  Contents are pushed to the client rather than returned as an output value, so
+  Shiny had nothing to replay and would not re-run the render function. The
+  client now reports binding an empty tree and the contents are resent (#79).
 - Fixed `types` being ignored for trees nested more than one Shiny module deep.
   Only the first hyphen of the output id was replaced when looking up the types
   spec on the client, so the lookup missed and the tree failed to render (#129).

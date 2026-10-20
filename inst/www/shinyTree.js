@@ -158,6 +158,29 @@ var shinyTree = function(){
       }
     },
     setValue: function(el, value) {},
+    initialize: function(el) {
+      // A tree's contents are pushed to the client rather than returned as an
+      // output value, so Shiny has nothing cached to replay when an element is
+      // removed from the page and added back -- a modalDialog that is dismissed
+      // and reopened, for example. The output is still considered valid, so the
+      // render function does not re-run and the new element stays empty (#79).
+      //
+      // Report an empty tree so the server can resend its contents. The check
+      // runs on a timeout because renderValue() may still be on its way for a
+      // genuinely new tree, and sending the signal then would make the server
+      // resend a tree that is about to arrive anyway.
+      setTimeout(function(){
+        if (!document.body.contains(el)) { return; }
+        var tree = $.jstree.reference(el);
+        var isEmpty = !tree || tree.get_container().find("li").length === 0;
+        if (isEmpty && typeof Shiny !== 'undefined' && Shiny.setInputValue) {
+          // priority: 'event' so a second rebind of an identical tree is not
+          // discarded as a duplicate value.
+          Shiny.setInputValue(el.id + '_rebind', new Date().getTime(),
+                              {priority: 'event'});
+        }
+      }, 100);
+    },
     subscribe: function(el, callback) {
       $(el).on("open_node.jstree", function(e) {
         callback();
