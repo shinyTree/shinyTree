@@ -87,12 +87,11 @@ var shinyTree = function(){
           $.each(ar, function(i, el){
             //add the data for this node
             var data = {};
+            // Node data is never rendered, so unlike the node text it must not
+            // be trimmed -- doing so corrupted padded keys and fixed-width
+            // codes stored in st* attributes (#3).
             $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
-              if (typeof val === 'string'){
-                data[key] = val.trim();
-              } else {
-                data[key] = val; 
-              }
+              data[key] = val;
             });
             el.data = data;
             obj['' + i] = el;
@@ -107,6 +106,11 @@ var shinyTree = function(){
           }
 
           var clean = {};
+          // The node text is kept trimmed on purpose: it is a display label,
+          // HTML collapses surrounding whitespace on screen anyway, and the
+          // renderValue() path builds trees from raw HTML where Shiny's own
+          // pretty-printed indentation would otherwise end up in every name.
+          // It also keys input$tree, so trimming it is load-bearing (#3).
           $.each(obj, function(key, val){
             if (keys.indexOf(key) >= 0) {
                 if (typeof val === 'string'){
