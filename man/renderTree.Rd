@@ -18,6 +18,17 @@ is useful if you want to save an expression in a variable.}
 Should return a list from the given expression which will be converted into a
 \code{\link{shinyTree}}.
 }
+\section{Note}{
+
+A tree's contents are pushed to the client rather than returned as an output
+value, so Shiny has nothing cached to replay if the element is removed from
+the page and later added back -- inside a \code{\link[shiny]{modalDialog}}
+that is dismissed and reopened, for example, or a conditional panel. The
+client reports whenever it binds an empty tree and the contents are resent,
+so such a tree repopulates without the app having to re-trigger the render
+itself.
+}
+
 \seealso{
 \code{\link{shinyTree}}
 }
