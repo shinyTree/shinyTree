@@ -253,11 +253,17 @@ var shinyTree = function(){
       }
       
       if (el.dataset.stCheckbox == "TRUE" && el.dataset.stTieSelection == "FALSE") {
+        // These handlers are bound when Shiny binds the input, before jsTree
+        // initialises and registers its own check_node/uncheck_node handlers,
+        // which is where three_state cascades the change to parents and
+        // children. jQuery runs handlers in registration order, so reading the
+        // tree here synchronously reported the state from before the cascade.
+        // Defer the read until jsTree's handlers have run.
         $(el).on("check_node.jstree", function(e) {
-          callback();
+          setTimeout(callback, 0);
         });
         $(el).on("uncheck_node.jstree", function(e) {
-          callback();
+          setTimeout(callback, 0);
         });
         $(el).on("check_all.jstree", function(e) {
           callback();
