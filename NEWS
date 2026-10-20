@@ -1,6 +1,9 @@
  v 0.3.2
 --------------------------------------------------------------------------------
 
+- Fixed `types` being ignored for trees nested more than one Shiny module deep.
+  Only the first hyphen of the output id was replaced when looking up the types
+  spec on the client, so the lookup missed and the tree failed to render (#129).
 - Search now hides non-matching nodes with the `proton` theme. jsTree marked
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
