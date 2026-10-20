@@ -68,7 +68,7 @@ than once.}
 \item{animation}{The open / close animation duration in milliseconds.
 Set this to \code{FALSE} to disable the animation (default is 200).}
 
-\item{contextmenu}{If \code{TRUE}, will enable a contextmenu to 
+\item{contextmenu}{If \code{TRUE}, will enable a contextmenu to
 create/rename/delete/cut/copy/paste nodes.}
 
 \item{three_state}{If \code{TRUE}, a boolean indicating if checkboxes should cascade down and have an undetermined state}
@@ -89,6 +89,21 @@ return a list similiar to the one you use to fill the tree. This behaviour is co
 by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
 to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
 }
+\section{Options}{
+
+Two options control whether additional jsTree events update \code{input$tree}.
+Both default to \code{FALSE}:
+\describe{
+  \item{\code{shinyTree.refresh}}{report \code{refresh.jstree} events.}
+  \item{\code{shinyTree.setState}}{report \code{set_state.jstree} events.}
+}
+A refresh triggered by \code{\link{updateTree}} is never reported, since the
+server already knows about a change it made itself; reporting it back caused
+a feedback loop in apps that call \code{updateTree} from an observer watching
+\code{input$tree}. Refreshes from any other source are still reported when
+the option is enabled.
+}
+
 \seealso{
 \code{\link{renderTree}}
 }
