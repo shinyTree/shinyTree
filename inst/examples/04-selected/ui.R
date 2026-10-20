@@ -1,24 +1,33 @@
 library(shiny)
 library(shinyTree)
 
-#' Define UI for application that demonstrates a simple Tree editor
+#' Define UI for an application comparing selected and checked nodes
 #' @author Jeff Allen \email{jeff@@trestletech.com}
 shinyUI(
   pageWithSidebar(
     # Application title
-    headerPanel("shinyTree with 'selected' input"),
-    
+    headerPanel("shinyTree with 'selected' and 'checked' input"),
+
     sidebarPanel(
-      helpText(HTML("An example of using shinyTree's <code>get_selected</code> function to extract the cells which are currently selected.
-                  <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
+      checkboxInput("checkbox", "checkbox", TRUE),
+      conditionalPanel(
+        "input.checkbox",
+        checkboxInput("tie_selection", "tie_selection", TRUE),
+        checkboxInput("whole_node", "whole_node", TRUE),
+        checkboxInput("three_state", "three_state", TRUE)
+      ),
+      radioButtons("format", "format", c("names", "slices", "classid"),
+                   inline = TRUE),
+      hr(),
+      uiOutput("explanation"),
+      helpText(HTML("<hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
-      "Currently Selected:",
-      shinyTree("tree123"),
+      uiOutput("tree_ui"),
       hr(),
-      "Currently Selected:",
-      verbatimTextOutput("sel_names"),
-      verbatimTextOutput("sel_slices"),
-      verbatimTextOutput("sel_classid")
+      fluidRow(
+        column(6, "get_selected():", verbatimTextOutput("selected")),
+        column(6, "get_checked():", verbatimTextOutput("checked"))
+      )
     )
   ))
