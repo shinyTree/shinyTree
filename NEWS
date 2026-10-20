@@ -13,6 +13,10 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- With `tie_selection = FALSE`, `input$tree` now reflects `three_state`
+  cascades. It was read before jsTree applied the cascade, so checking a parent
+  reported only the parent rather than its children too, and unchecking a child
+  left its parent reported as checked.
 - Fixed `get_checked()` returning nothing when `checkbox = TRUE` and
   `tie_selection = FALSE` (#121).
 - Fixed `get_checked()` returning nothing for ticked boxes under the default
