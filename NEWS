@@ -7,6 +7,11 @@
   `tie_selection = TRUE`. jsTree treats checked and selected as the same thing
   in that mode, so a selected node is now reported as checked, matching
   jsTree's own `is_checked()`/`get_checked()` (#121).
+- `updateTree()` no longer reports its own refresh back to the server. Calling
+  it from an observer watching `input$tree` could otherwise loop indefinitely
+  when `options(shinyTree.refresh)` or `options(shinyTree.setState)` was
+  enabled. Refreshes from other sources are still reported, and the two
+  options are now documented (#36).
 - Node attribute values are no longer trimmed on their way back to R, so
   padded keys and fixed-width codes stored in `st*` attributes survive a round
   trip. Node *names* are still trimmed, which is deliberate (#3).
