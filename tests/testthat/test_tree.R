@@ -200,7 +200,10 @@ test_that("shinyTree", {
         }"
   res <- shinyTree("tree", types = typs)
   expect_true(all(unlistShinytagList(res, types = TRUE)))
-  expect_identical(res[[1]]$children[[6]]$children[[1]],
+  ## The types script is the last child of <head>; index from the end so this
+  ## does not have to move every time a stylesheet or script is added.
+  head_children <- res[[1]]$children
+  expect_identical(head_children[[length(head_children)]]$children[[1]],
                    HTML(paste("tree_sttypes =", typs)))
   
   ## Custom shinyTree with different themes ############

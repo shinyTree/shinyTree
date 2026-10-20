@@ -1,0 +1,16 @@
+/* shinyTree's own styles, loaded after the jsTree theme stylesheet so it can
+   correct gaps in individual themes. */
+
+/* The proton theme omits the rule that hides filtered-out nodes, which both the
+   default and default-dark themes carry as:
+
+     .jstree-hidden,.jstree-node.jstree-hidden{display:none}
+
+   Without it, searching a proton tree applies .jstree-hidden correctly but the
+   browser still paints every node, so the search appears to do nothing (#113).
+   Declaring it here rather than editing the vendored theme keeps the fix from
+   being lost the next time jsTree or the theme is re-vendored. */
+.jstree-hidden,
+.jstree-node.jstree-hidden {
+  display: none;
+}
