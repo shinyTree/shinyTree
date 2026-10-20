@@ -39,7 +39,12 @@ var shinyTree = function(){
         plugins.push('contextmenu');
       }
       var sttypes = null;
-      var elidtypes = el.id.replace("-", '_');
+      // Replace every hyphen, not just the first. The R side builds this global's
+      // name with gsub(), so a tree nested two or more Shiny modules deep has
+      // more than one hyphen in its id and String.replace with a string argument
+      // would leave all but the first in place -- the lookup then missed and the
+      // types plugin failed on a null settings object (#129).
+      var elidtypes = el.id.split('-').join('_');
       if (typeof window[elidtypes + "_sttypes"] !== 'undefined'){
       	sttypes = window[elidtypes + "_sttypes"];
       }
