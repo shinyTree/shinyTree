@@ -1,0 +1,54 @@
+name: playwright
+
+# Browser tests for behaviour that shinytest2 cannot drive.
+#
+# A shinyTree output never returns a value -- renderTree() pushes the tree with
+# sendInputMessage() and returns NULL -- so for an app that shows a tree inside
+# a modalDialog, Shiny's output state machine never settles and shinytest2's
+# app$click()/app$get_value() block indefinitely. Since that is the same defect
+# the tests exercise (#79), they are driven with Playwright instead.
+#
+# Playwright uses the Chrome installed by setup-chrome rather than downloading
+# its own browser, so this adds no browser download to CI.
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: local::.
+          needs: check
+
+      - name: Install Playwright
+        run: npm install --no-audit --no-fund playwright@1.48.2
+
+      - name: Run browser tests
+        run: node tests/playwright/run.js
+        env:
+          CHROMOTE_CHROME: ${{ steps.setup-chrome.outputs.chrome-path }}

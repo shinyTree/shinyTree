@@ -5,3 +5,8 @@ shinyapps/
 .DS_Store
 # Playwright MCP scratch output
 .playwright-mcp/
+
+# Node modules for the Playwright browser tests
+node_modules/
+package-lock.json
+package.json
