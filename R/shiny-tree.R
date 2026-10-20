@@ -37,8 +37,20 @@
 #' @param tie_selection If \code{TRUE}, controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin.
 #' @param animation The open / close animation duration in milliseconds.
 #' Set this to \code{FALSE} to disable the animation (default is 200).
-#' @param contextmenu If \code{TRUE}, will enable a contextmenu to 
+#' @param contextmenu If \code{TRUE}, will enable a contextmenu to
 #' create/rename/delete/cut/copy/paste nodes.
+#' @section Options:
+#' Two options control whether additional jsTree events update \code{input$tree}.
+#' Both default to \code{FALSE}:
+#' \describe{
+#'   \item{\code{shinyTree.refresh}}{report \code{refresh.jstree} events.}
+#'   \item{\code{shinyTree.setState}}{report \code{set_state.jstree} events.}
+#' }
+#' A refresh triggered by \code{\link{updateTree}} is never reported, since the
+#' server already knows about a change it made itself; reporting it back caused
+#' a feedback loop in apps that call \code{updateTree} from an observer watching
+#' \code{input$tree}. Refreshes from any other source are still reported when
+#' the option is enabled.
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
