@@ -63,7 +63,11 @@ library(shiny)
 runApp(system.file("examples/04-selected", package = "shinyTree"))
 ```
 
-An example demonstrating how to set an `input` to the value of the currently selected node in the tree.
+An example comparing `get_selected()` and `get_checked()` side by side. It can
+switch checkboxes on and off and toggle `tie_selection`, `whole_node` and
+`three_state`, explaining how each combination behaves: with the default
+`tie_selection = TRUE`, checked and selected are the same thing, while with
+`tie_selection = FALSE` a node can be checked without being selected.
 
 #### 05-structure ([Live Demo](https://trestletech.shinyapps.io/st-05-structure/))
 
