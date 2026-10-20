@@ -163,16 +163,28 @@ var shinyTree = function(){
       });
       
       var opts = JSON.parse(el.attributes.options.nodeValue);
-      if (opts.setState && opts.setState === true) {
-        $(el).on("set_state.jstree", function(e) {
-          callback();
-        }); 
-      }
-      if (opts.refresh && opts.refresh === true) {
-        $(el).on("refresh.jstree", function(e) {
-          callback();
-        }); 
-      }
+      // A refresh started by updateTree() re-reports a change the server has
+      // just made, so notifying the server about it creates a feedback loop
+      // (#36). receiveMessage() sets stServerRefresh before calling refresh();
+      // the events that refresh emits then skip the callback while it is set.
+      //
+      // The flag is NOT cleared by these handlers. refresh() completes
+      // asynchronously and the observed event order is
+      // model -> load_node -> refresh.jstree -> set_state.jstree, so clearing
+      // on either event unmutes the other one. receiveMessage() instead clears
+      // the flag from a timeout that runs after the whole refresh has settled.
+      //
+      // Both handlers are registered unconditionally so that the suppression
+      // applies regardless of which option is enabled; the option is checked
+      // before notifying the server.
+      $(el).on("set_state.jstree", function(e) {
+        if (el.stServerRefresh) { return; }
+        if (opts.setState && opts.setState === true) { callback(); }
+      });
+      $(el).on("refresh.jstree", function(e) {
+        if (el.stServerRefresh) { return; }
+        if (opts.refresh && opts.refresh === true) { callback(); }
+      });
       
       $(el).on("changed.jstree", function(e) {
         callback();
@@ -234,6 +246,21 @@ var shinyTree = function(){
     receiveMessage: function(el, message) {
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
+          // Mark this refresh as server-initiated so subscribe() does not echo
+          // it back and start a feedback loop (#36).
+          //
+          // refresh() completes asynchronously: it calls load_node(), and
+          // refresh.jstree then set_state.jstree fire from that continuation.
+          // The flag therefore has to outlive the refresh() call and is cleared
+          // once the refresh has settled. The delay is a compromise -- long
+          // enough to cover load_node()'s continuation, short enough that a
+          // genuine refresh from elsewhere moments later is still reported.
+          el.stServerRefresh = true;
+          if (el.stServerRefreshTimer) { clearTimeout(el.stServerRefreshTimer); }
+          el.stServerRefreshTimer = setTimeout(function(){
+            el.stServerRefresh = false;
+            el.stServerRefreshTimer = null;
+          }, 100);
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
           $(el).jstree(true).refresh(true, true);
       }
