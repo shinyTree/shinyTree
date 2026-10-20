@@ -71,11 +71,21 @@ Set this to \code{FALSE} to disable the animation (default is 200).}
 \item{contextmenu}{If \code{TRUE}, will enable a contextmenu to
 create/rename/delete/cut/copy/paste nodes.}
 
-\item{three_state}{If \code{TRUE}, a boolean indicating if checkboxes should cascade down and have an undetermined state}
+\item{three_state}{If \code{TRUE}, checking a node cascades to its children,
+and a parent is shown checked only while all of its children are (and as
+undetermined while some are).}
 
-\item{whole_node}{If \code{TRUE},a boolean indicating if clicking anywhere on the node should act as clicking on the checkbox}
+\item{whole_node}{If \code{TRUE}, clicking anywhere on a node toggles its
+checkbox, as if the box itself were clicked. If \code{FALSE}, only the box
+does; clicking the label behaves as it would without checkboxes.}
 
-\item{tie_selection}{If \code{TRUE}, controls if checkbox are bound to the general tree selection or to an internal array maintained by the checkbox plugin.}
+\item{tie_selection}{If \code{TRUE}, checked and selected are the same thing:
+ticking a box selects the node and selecting a node ticks its box, so
+\code{\link{get_checked}} and \code{\link{get_selected}} report the same
+nodes. If \code{FALSE}, checking is kept separate from the selection, so a
+node can be checked without being selected. With \code{whole_node = TRUE}
+as well, every click toggles a checkbox and nothing can be selected by
+clicking.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
@@ -89,6 +99,17 @@ return a list similiar to the one you use to fill the tree. This behaviour is co
 by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
 to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
 }
+\section{Checked and selected nodes}{
+
+Without checkboxes, clicking a node selects it and
+\code{\link{get_selected}} reports the selection. With
+\code{checkbox = TRUE}, \code{tie_selection} decides whether a checked
+node counts as selected; see its description above. The
+\code{04-selected} example shows \code{get_selected} and
+\code{get_checked} side by side and can switch between every combination
+of \code{tie_selection}, \code{whole_node} and \code{three_state}.
+}
+
 \section{Options}{
 
 Two options control whether additional jsTree events update \code{input$tree}.

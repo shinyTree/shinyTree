@@ -12,4 +12,15 @@ shinyServer(function(input, output, session) {
       )
     )
   })
+
+  # With tie_selection = FALSE these are independent: compare the two after
+  # clicking a label and after ticking a box.
+  output$selected <- renderPrint({
+    tree <- req(input$tree)
+    str(get_selected(tree))
+  })
+  output$checked <- renderPrint({
+    tree <- req(input$tree)
+    str(get_checked(tree))
+  })
 })
