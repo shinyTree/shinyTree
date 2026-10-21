@@ -91,6 +91,13 @@ flatListToFrame <- function(flatList) {
   frame$data <- lapply(flatList, `[[`, "data")
   frame$icon <- field("icon")
   frame$type <- field("type")
+  # Only added when some node has a tooltip, so trees without one serialise
+  # exactly as before. A node without one gets an empty a_attr, which jsTree
+  # ignores.
+  title <- vapply(flatList, function(x) x$a_attr$title %||% NA_character_, character(1))
+  if (any(!is.na(title))) {
+    frame$a_attr <- data.frame(title = title, stringsAsFactors = FALSE)
+  }
   frame
 }
 
@@ -161,7 +168,7 @@ countNodes <- function(nestedList) {
 # Attributes that shinyTree interprets itself rather than passing through as
 # node data.
 reservedAttributes <- c("icon", "type", "names", "stopened", "stselected",
-                        "sttype", "stdisabled", "stchecked")
+                        "sttype", "stdisabled", "stchecked", "sttooltip")
 
 flatNode <- function(node, name, id, parent) {
   attrs <- attributes(node)
@@ -192,6 +199,10 @@ flatNode <- function(node, name, id, parent) {
   }
   if (!is.null(attrs$sttype)) {
     nodeData$type <- attrs$sttype
+  }
+  # Shown by the browser when the pointer rests on the node's label (#66).
+  if (!is.null(attrs$sttooltip)) {
+    nodeData$a_attr <- list(title = as.character(attrs$sttooltip))
   }
   nodeData
 }

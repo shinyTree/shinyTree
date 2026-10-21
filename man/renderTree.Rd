@@ -29,6 +29,29 @@ so such a tree repopulates without the app having to re-trigger the render
 itself.
 }
 
+\section{Node attributes}{
+
+Each node is an element of the list, named by its label. Attributes set on
+it with \code{\link{structure}} or \code{attr()} control how it is shown:
+\describe{
+  \item{\code{stopened}}{\code{TRUE} to show the node expanded.}
+  \item{\code{stselected}}{\code{TRUE} to select it.}
+  \item{\code{stchecked}}{\code{TRUE} to tick its checkbox when
+    \code{tie_selection = FALSE}. With the default
+    \code{tie_selection = TRUE} a ticked box is a selection, so use
+    \code{stselected} instead.}
+  \item{\code{stdisabled}}{\code{TRUE} to disable it.}
+  \item{\code{sticon}}{an icon: a Font Awesome or glyphicon name such as
+    \code{"fa fa-file"}, or the URL of an image.}
+  \item{\code{sttype}}{the node's type, for the \code{types} argument of
+    \code{\link{shinyTree}}.}
+  \item{\code{sttooltip}}{text shown when the pointer rests on the node's
+    label. It is shown as plain text, not HTML.}
+}
+Any other attribute whose name starts with \code{st} is passed through as
+data and comes back on the node in \code{input$tree}.
+}
+
 \section{Caching}{
 
 \code{renderTree} can be wrapped in \code{\link[shiny]{bindCache}}, in which
