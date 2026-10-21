@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      PKG_SYSREQS: false
 
     steps:
       - uses: actions/checkout@v4
@@ -39,6 +40,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      # pak would install chromote's "Chrome" system requirement as Chromium from
+      # the ppa:xtradeb/apps Launchpad PPA, which is often unavailable (503) and
+      # failed whole runs before any test ran. Chrome already comes from
+      # setup-chrome above, and chromote is pointed at it, so that Chromium is
+      # never used. Install the remaining system requirements from Ubuntu's own
+      # mirror instead, and tell pak not to install any itself.
+      - name: Install system requirements
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libicu-dev \
+            libuv1-dev zlib1g-dev cmake make pandoc
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
