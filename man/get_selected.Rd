@@ -4,7 +4,11 @@
 \alias{get_selected}
 \title{Get the selected nodes from a tree}
 \usage{
-get_selected(tree, format = c("names", "slices", "classid"))
+get_selected(
+  tree,
+  format = c("names", "slices", "classid"),
+  leaves_only = FALSE
+)
 }
 \arguments{
 \item{tree}{The \code{input$tree} shinyTree you want to 
@@ -15,8 +19,27 @@ inspect.}
 describing the node's ancestry), or \code{slices} to get a list
 of lists, each of which is a slice of the list used to get down
 to the selected node.}
+
+\item{leaves_only}{If \code{TRUE}, return only selected nodes that have no
+children, leaving out selected parents. This works however deep each branch
+goes, unlike filtering \code{slices} by depth.}
 }
 \description{
 Extract the nodes from the tree that are selected in a more
 convenient format. You can choose which format you prefer.
+}
+\examples{
+tree <- list(
+  World = structure(list(
+    Europe = structure(list(
+      Scandinavia = structure(list(
+        Denmark = structure(0, stselected = TRUE),
+        Sweden = structure(0, stselected = TRUE)
+      ), stselected = TRUE),
+      France = structure(0, stselected = TRUE)
+    ), stselected = TRUE)
+  ), stselected = TRUE)
+)
+unlist(get_selected(tree))
+unlist(get_selected(tree, leaves_only = TRUE))
 }

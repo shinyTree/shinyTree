@@ -10,14 +10,19 @@
 #' describing the node's ancestry), or \code{slices} to get a list
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
+#' @param leaves_only If \code{TRUE}, return only checked nodes that have no
+#' children, leaving out checked parents. With \code{three_state = TRUE} a
+#' parent is checked whenever all of its children are, so this gives just the
+#' items that were ticked.
 #' @export
-get_checked<- function(tree, format=c("names", "slices", "classid")){
+get_checked <- function(tree, format=c("names", "slices", "classid"),
+                        leaves_only = FALSE){
   format <- match.arg(format, c("names", "slices", "classid"), FALSE)
-  switch(format,
-         "names"=get_checked_names(tree),
-         "slices"=get_checked_slices(tree),
-         "classid"=get_checked_classid(tree)
-         )  
+  make <- switch(format,
+                 "names"=node_name,
+                 "slices"=node_slice,
+                 "classid"=node_classid)
+  collect_nodes(tree, "stchecked", make, leaves_only = leaves_only)
 }
 
 get_checked_names <- function(tree, ancestry=NULL, vec=list()){

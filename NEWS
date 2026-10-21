@@ -13,6 +13,10 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- `get_selected()` and `get_checked()` gain `leaves_only`. With
+  `leaves_only = TRUE` they return only nodes that have no children, however
+  deep each branch goes, so selected parents -- and, with `three_state`, the
+  parents jsTree checks automatically -- are left out (#98).
 - Large trees are much faster to render and to read back. Building a tree's
   JSON grew the node list one element at a time and serialised it node by
   node, and reading `input$tree` with `get_selected()`/`get_checked()` did the
