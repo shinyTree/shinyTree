@@ -13,6 +13,9 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- Fixed two broken stylesheet links to the Font Awesome CDN on every page with
+  a tree, which each failed with a 403 in the browser console. Font Awesome
+  itself was unaffected and still loads with its integrity hash.
 - A tree now works in R Markdown documents with `runtime: shiny`. Its scripts
   and stylesheets were written into the page's `<head>`, which R Markdown
   drops, so jsTree never loaded and the tree stayed empty. They are now
