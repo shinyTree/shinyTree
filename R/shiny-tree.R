@@ -171,15 +171,21 @@ shinyTreeDependencies <- function(theme) {
       script = "shinyTree.js",
       stylesheet = "shinyTree.css"
     ),
+    # Through `head` rather than `stylesheet`: htmltools renders each element of
+    # a stylesheet entry as its own <link>, so passing integrity and
+    # crossorigin there produced two broken links to the CDN (a 403 each) on
+    # every page. `head` is included once with the dependency, so the hash is
+    # kept.
     htmltools::htmlDependency(
       name = "font-awesome-shinyTree",
       version = "7.0.0",
       src = c(href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0"),
-      stylesheet = list(list(
-        href = "css/all.min.css",
-        integrity = "sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==",
-        crossorigin = "anonymous"
-      ))
+      head = paste0(
+        '<link rel="stylesheet" ',
+        'href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" ',
+        'integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" ',
+        'crossorigin="anonymous"/>'
+      )
     )
   )
 }

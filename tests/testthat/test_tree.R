@@ -538,6 +538,18 @@ test_that("shinyTree declares its scripts and styles as dependencies (#18)", {
     file.path(d$src$file, c(unlist(d$script), unlist(d$stylesheet)))
   }))
   expect_true(all(file.exists(files)))
+  ## Every stylesheet and script the dependencies render is a real file or URL.
+  ## Font Awesome's integrity hash was once passed as a stylesheet entry, which
+  ## htmltools rendered as two extra <link>s pointing at the hash and at
+  ## "anonymous" on the CDN.
+  rendered <- strsplit(as.character(htmltools::renderDependencies(deps)), "\n")[[1]]
+  hrefs <- regmatches(rendered, regexpr('href="[^"]*"', rendered))
+  expect_false(any(grepl("sha512|anonymous", hrefs)))
+  fa <- grep("font-awesome", rendered, value = TRUE)
+  expect_length(fa, 1)
+  expect_match(fa, 'integrity="sha512-', fixed = TRUE)
+  expect_match(fa, 'crossorigin="anonymous"', fixed = TRUE)
+
   ## Nothing is written into <head> directly any more.
   expect_identical(as.character(htmltools::renderTags(shinyTree("a"))$head), "")
 })
