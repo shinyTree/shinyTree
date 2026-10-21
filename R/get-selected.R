@@ -10,14 +10,32 @@
 #' describing the node's ancestry), or \code{slices} to get a list
 #' of lists, each of which is a slice of the list used to get down
 #' to the selected node. 
+#' @param leaves_only If \code{TRUE}, return only selected nodes that have no
+#' children, leaving out selected parents. This works however deep each branch
+#' goes, unlike filtering \code{slices} by depth.
+#' @examples
+#' tree <- list(
+#'   World = structure(list(
+#'     Europe = structure(list(
+#'       Scandinavia = structure(list(
+#'         Denmark = structure(0, stselected = TRUE),
+#'         Sweden = structure(0, stselected = TRUE)
+#'       ), stselected = TRUE),
+#'       France = structure(0, stselected = TRUE)
+#'     ), stselected = TRUE)
+#'   ), stselected = TRUE)
+#' )
+#' unlist(get_selected(tree))
+#' unlist(get_selected(tree, leaves_only = TRUE))
 #' @export
-get_selected <- function(tree, format=c("names", "slices", "classid")){
+get_selected <- function(tree, format=c("names", "slices", "classid"),
+                         leaves_only = FALSE){
   format <- match.arg(format, c("names", "slices", "classid"), FALSE)
-  switch(format,
-         "names"=get_selected_names(tree),
-         "slices"=get_selected_slices(tree),
-         "classid"=get_selected_classid(tree)
-         )  
+  make <- switch(format,
+                 "names"=node_name,
+                 "slices"=node_slice,
+                 "classid"=node_classid)
+  collect_nodes(tree, "stselected", make, leaves_only = leaves_only)
 }
 
 get_selected_names <- function(tree, ancestry=NULL, vec=list()){
@@ -48,17 +66,22 @@ get_selected_classid <- function(tree, ancestry=NULL, vec=list()){
 #' @param flag attribute name to test, e.g. \code{"stselected"}
 #' @param make function of \code{(node, ancestry)} building one result entry
 #' @param ancestry names from the root down to \code{tree}
+#' @param leaves_only if \code{TRUE}, skip nodes that have children. In
+#' \code{input$tree} a node with children is a list and a leaf is not.
 #' @noRd
-collect_nodes <- function(tree, flag, make, ancestry = NULL) {
+collect_nodes <- function(tree, flag, make, ancestry = NULL, leaves_only = FALSE) {
   found <- list()
   if (is.list(tree)) {
     nodeNames <- names(tree)
     found <- do.call(c, lapply(seq_along(tree), function(i) {
-      collect_nodes(tree[[i]], flag, make, c(ancestry, nodeNames[i]))
+      collect_nodes(tree[[i]], flag, make, c(ancestry, nodeNames[i]), leaves_only)
     }))
     if (is.null(found)) {
       found <- list()
     }
+  }
+  if (leaves_only && is.list(tree)) {
+    return(found)
   }
   if (isTRUE(attr(tree, flag, TRUE) == TRUE)) {
     found[length(found) + 1] <- list(make(tree, ancestry))
