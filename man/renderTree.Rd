@@ -29,6 +29,14 @@ so such a tree repopulates without the app having to re-trigger the render
 itself.
 }
 
+\section{Caching}{
+
+\code{renderTree} can be wrapped in \code{\link[shiny]{bindCache}}, in which
+case \code{expr} is evaluated only for a cache key that has not been seen
+before and the cached tree is sent otherwise. It works with
+\code{\link[shiny]{bindEvent}} as well.
+}
+
 \seealso{
 \code{\link{shinyTree}}
 }
