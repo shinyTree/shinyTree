@@ -97,11 +97,6 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
   
   if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
   
-  # define theme tags (default, default-dark, or proton)
-  theme.tags<-shiny::tags$link(rel = 'stylesheet',
-                               type = 'text/css',
-                               href = paste('shinyTree/jsTree-3.3.7/themes/',theme,'/style.min.css',sep=""))
-  
   opts <- jsonlite::toJSON(list(
     'setState' = getOption('shinyTree.setState'),
     'refresh' = getOption('shinyTree.refresh')
@@ -115,22 +110,14 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
     types <- paste0(outputnohyp,"_sttypes = ",types)
   }
   shiny::tagList(
-    shiny::singleton(shiny::tags$head(
-      initResourcePaths(),
-      theme.tags,
-      # After theme.tags so it can correct gaps in individual themes.
-      shiny::tags$link(rel = 'stylesheet',
-                       type = 'text/css',
-                       href = 'shinyTree/shinyTree.css'),
-      shiny::tags$link(rel = "stylesheet",
-                type = "text/css", 
-                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css",
-                integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==",
-                crossorigin="anonymous"),
-      shiny::tags$script(src = 'shinyTree/jsTree-3.3.7/jstree.min.js'),
-      shiny::tags$script(src = 'shinyTree/shinyTree.js'),
-      shiny::tags$script(shiny::HTML(types))
-    )),
+    # The scripts and stylesheets are declared as dependencies rather than
+    # written into <head>, so they load wherever the tree is rendered: R
+    # Markdown documents with runtime: shiny drop hand-written <head> tags, which
+    # left the tree empty there (#18). Shiny includes each dependency once per
+    # page however many trees use it.
+    shinyTreeDependencies(theme),
+    initResourcePaths(),
+    if (!is.null(types)) shiny::tags$script(shiny::HTML(types)),
     searchEl,
     shiny::div(id=outputId, class="shiny-tree", 
         `data-st-checkbox`=checkbox, 
@@ -152,5 +139,47 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-contextmenu`=contextmenu,
         options = opts
         )
+  )
+}
+
+#' The scripts and stylesheets a shinyTree needs, as htmlDependency objects
+#'
+#' One dependency per theme, so a page with trees in several themes loads each
+#' theme stylesheet once. shinyTree.css comes after the theme stylesheet so it
+#' can correct gaps in individual themes.
+#' @noRd
+shinyTreeDependencies <- function(theme) {
+  version <- as.character(utils::packageVersion("shinyTree"))
+  list(
+    htmltools::htmlDependency(
+      name = "jstree",
+      version = "3.3.7",
+      src = c(file = system.file("www/jsTree-3.3.7", package = "shinyTree")),
+      script = "jstree.min.js"
+    ),
+    htmltools::htmlDependency(
+      name = paste0("jstree-theme-", theme),
+      version = "3.3.7",
+      src = c(file = system.file(file.path("www/jsTree-3.3.7/themes", theme),
+                                 package = "shinyTree")),
+      stylesheet = "style.min.css"
+    ),
+    htmltools::htmlDependency(
+      name = "shinyTree",
+      version = version,
+      src = c(file = system.file("www", package = "shinyTree")),
+      script = "shinyTree.js",
+      stylesheet = "shinyTree.css"
+    ),
+    htmltools::htmlDependency(
+      name = "font-awesome-shinyTree",
+      version = "7.0.0",
+      src = c(href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0"),
+      stylesheet = list(list(
+        href = "css/all.min.css",
+        integrity = "sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==",
+        crossorigin = "anonymous"
+      ))
+    )
   )
 }

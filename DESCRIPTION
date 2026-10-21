@@ -25,6 +25,7 @@ Depends:
     methods
 Imports:
     shiny (>= 0.9.0),
+    htmltools (>= 0.5.4),
     htmlwidgets,
     jsonlite,
     stringr,
@@ -36,7 +37,8 @@ Suggests:
     data.tree,
     mockery,
     withr,
-    later
+    later,
+    rmarkdown
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.2.3
