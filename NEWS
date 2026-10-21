@@ -13,6 +13,13 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- `renderTree()` can now be wrapped in `shiny::bindCache()`. It was refused
+  outright, and since a tree is sent as a message rather than returned as the
+  output value, caching that value would have left the tree empty on every cache
+  hit. The tree's JSON is cached instead and sent again on a hit. A tree that is
+  removed from the page and added back (#79) now gets the tree last sent rather
+  than a fresh evaluation of the render expression, matching how Shiny replays
+  other outputs (#109).
 - Shiny no longer warns about a shared input/output id for every tree. A
   shinyTree is an input and an output under the same id by design, so the
   browser console warning -- and, with `shiny::devmode()`, the on-page error

@@ -148,8 +148,9 @@ async function testModalReopen() {
     );
     equal(await nodeCount(page), 4, 'second open renders 4 nodes again');
 
-    // And it must be because the contents were resent, not left in the DOM.
-    ok(await renderCount(page) > 1, 'render function ran again for the reopen');
+    // The element was removed on dismiss, so the nodes were resent. They are
+    // the tree last sent, so the render function does not need to run again.
+    equal(await renderCount(page), 1, 'reopen resent the tree without re-rendering');
   });
 }
 
@@ -201,6 +202,47 @@ async function testSearchAfterReopen() {
   });
 }
 
+async function testCachedTreeInModal() {
+  console.log('a cached tree in a modal repopulates on reopen (#109, #79)');
+  await withApp('test_bind_cache_modal', async (page) => {
+    const labels = () => page.evaluate(() =>
+      Array.from(document.querySelectorAll('#tree .jstree-anchor')).map((a) => a.textContent).join(','));
+    const openAndWait = async (expected) => {
+      await openModal(page);
+      await page.waitForFunction(
+        (e) => Array.from(document.querySelectorAll('#tree .jstree-anchor')).map((a) => a.textContent).join(',') === e,
+        expected,
+        { timeout: 10000 }
+      );
+    };
+    const setKey = async (key) => {
+      await page.check(`input[name=key][value=${key}]`);
+      await page.waitForFunction(
+        (k) => Shiny.shinyapp.$inputValues['key:shiny.radioInput'] === k || Shiny.shinyapp.$inputValues.key === k,
+        key
+      );
+    };
+
+    await openAndWait('a1,a2');
+    equal(await renderCount(page), 1, 'key a renders');
+    await dismissModal(page);
+
+    await setKey('b');
+    await openAndWait('b1,b2');
+    equal(await renderCount(page), 2, 'new key b renders');
+    await dismissModal(page);
+
+    // A cache hit sends the cached tree, and reopening resends it.
+    await setKey('a');
+    await openAndWait('a1,a2');
+    equal(await labels(), 'a1,a2', 'cache hit for key a shows its tree');
+    await dismissModal(page);
+    await openAndWait('a1,a2');
+    equal(await labels(), 'a1,a2', 'reopening after a cache hit shows the same tree');
+    equal(await renderCount(page), 2, 'neither the cache hit nor the reopen re-rendered');
+  });
+}
+
 async function testEmptyTreeDoesNotLoop() {
   console.log('a legitimately empty tree does not resend forever (#79)');
   await withApp('test_empty_tree', async (page) => {
@@ -220,6 +262,7 @@ async function testEmptyTreeDoesNotLoop() {
   await testModalReopen();
   await testRepeatedReopen();
   await testSearchAfterReopen();
+  await testCachedTreeInModal();
   await testEmptyTreeDoesNotLoop();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
