@@ -11,7 +11,9 @@ shinyUI(
 							               "A_closed" = "A_closed",
 							               "B" = "B", 
 							               "List" ="List"),
-							selected = NULL)
+							selected = NULL),
+				actionButton("expand", "Expand all"),
+				actionButton("collapse", "Collapse all")
 			),
 			mainPanel(
 			  h4("Tree Update"),

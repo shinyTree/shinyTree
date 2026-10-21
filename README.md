@@ -131,7 +131,8 @@ library(shiny)
 runApp(system.file("examples/11-tree-update", package = "shinyTree"))
 ```
 
-An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization.
+An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization. It also has "Expand all" and "Collapse all" buttons, using `expandTree()` and
+`collapseTree()` to open or close every node without resending the tree.
 
 #### 12-types
 

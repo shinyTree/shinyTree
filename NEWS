@@ -13,6 +13,10 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- New `expandTree()` and `collapseTree()` open or close every node of a tree
+  from the server, for "Expand all" / "Collapse all" buttons. The tree is not
+  resent, so selection, checkboxes and search are kept, and `input$tree`
+  reports the new open state (#42).
 - `get_selected()` and `get_checked()` gain `leaves_only`. With
   `leaves_only = TRUE` they return only nodes that have no children, however
   deep each branch goes, so selected parents -- and, with `three_state`, the
