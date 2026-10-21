@@ -25,6 +25,11 @@ test_that("Rlist2json matches serialising the node list directly", {
     unicode = list(`Ünïcödé "q" \\ /` = "", `日本` = ""),
     deep = Reduce(function(acc, i) setNames(list(acc), paste0("n", i)), 1:50, list(leaf = ""))
   )
+  ## With a tooltip on some nodes, the data-frame path gives the others an empty
+  ## a_attr, which jsTree ignores; everything else matches.
+  tooltips <- list(a = structure("", sttooltip = "About a"),
+                   b = list(c = structure("", sttooltip = "Say \"hi\" <b>", stinfo = "x"), d = ""))
+  expect_identical(gsub(',"a_attr":\\{\\}', "", Rlist2json(tooltips)), list_json(tooltips))
   for (name in names(cases)) {
     expect_identical(Rlist2json(cases[[name]]), list_json(cases[[name]]), info = name)
   }
