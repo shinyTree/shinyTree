@@ -302,6 +302,29 @@ var shinyTree = function(){
   });
   
   Shiny.inputBindings.register(treeInput); 
+
+  // A shinyTree is an input and an output under the same id by design: the
+  // tree is rendered as an output and read back as input$<id>. Shiny warns
+  // about every shared id, in the console and, in dev mode, in an on-page error
+  // panel, so every app with a tree showed a false alarm (#110). Drop the
+  // message when every id it lists is a tree bound once as each. Anything else,
+  // such as a tree id that is genuinely reused, is passed through untouched.
+  //
+  // The listener captures on window so it runs before Shiny's own listener on
+  // window, wherever the event was dispatched.
+  window.addEventListener('shiny:client-message', function(ev) {
+    var detail = ev.detail || {};
+    if (typeof detail.message !== 'string') { return; }
+    var lines = detail.message.split('\n').slice(1);
+    if (lines.length === 0) { return; }
+    var onlyTrees = lines.every(function(line) {
+      var m = /^- "(.*)": 1 input and 1 output$/.exec(line);
+      if (!m) { return false; }
+      var el = document.getElementById(m[1]);
+      return el !== null && $(el).hasClass('shiny-tree');
+    });
+    if (onlyTrees) { ev.stopImmediatePropagation(); }
+  }, true);
   
   var exports = {};
   
