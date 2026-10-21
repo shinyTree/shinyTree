@@ -13,6 +13,11 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- Shiny no longer warns about a shared input/output id for every tree. A
+  shinyTree is an input and an output under the same id by design, so the
+  browser console warning -- and, with `shiny::devmode()`, the on-page error
+  panel -- was a false alarm in every app. A shared id that involves anything
+  other than a tree is still reported (#110).
 - The `04-selected` example now shows `get_selected()` and `get_checked()`
   side by side, with toggles for `checkbox`, `tie_selection`, `whole_node` and
   `three_state` and an explanation of how each combination behaves.
