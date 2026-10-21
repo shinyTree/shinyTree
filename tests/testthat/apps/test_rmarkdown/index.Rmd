@@ -1,0 +1,18 @@
+---
+title: "shinyTree in an R Markdown document (#18)"
+output: html_document
+runtime: shiny
+---
+
+```{r, echo = FALSE}
+library(shiny)
+library(shinyTree)
+
+shinyTree("tree", checkbox = TRUE)
+verbatimTextOutput("sel")
+
+output$tree <- renderTree({
+  list(root1 = "", root2 = list(SubListA = list(leaf1 = "", leaf2 = "")))
+})
+output$sel <- renderPrint(unlist(get_selected(req(input$tree))))
+```

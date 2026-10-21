@@ -25,6 +25,7 @@ Depends:
     methods
 Imports:
     shiny (>= 0.9.0),
+    htmltools (>= 0.5.4),
     htmlwidgets,
     jsonlite,
     stringr,
