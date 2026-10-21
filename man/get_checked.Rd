@@ -4,7 +4,11 @@
 \alias{get_checked}
 \title{Get the checked nodes from a tree}
 \usage{
-get_checked(tree, format = c("names", "slices", "classid"))
+get_checked(
+  tree,
+  format = c("names", "slices", "classid"),
+  leaves_only = FALSE
+)
 }
 \arguments{
 \item{tree}{The \code{input$tree} shinyTree you want to 
@@ -15,6 +19,11 @@ inspect.}
 describing the node's ancestry), or \code{slices} to get a list
 of lists, each of which is a slice of the list used to get down
 to the selected node.}
+
+\item{leaves_only}{If \code{TRUE}, return only checked nodes that have no
+children, leaving out checked parents. With \code{three_state = TRUE} a
+parent is checked whenever all of its children are, so this gives just the
+items that were ticked.}
 }
 \description{
 Extract the nodes from the tree that are checked in a more
