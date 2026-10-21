@@ -130,6 +130,16 @@ test_that("fixIconName", {
   expect_identical(f1, f3)
 })
 
+## Find parts of shinyTree()'s output by what they are rather than by
+## position, which changes whenever a dependency or script is added.
+tree_div <- function(res) {
+  Filter(function(x) inherits(x, "shiny.tag") && identical(x$attribs$class, "shiny-tree"), res)[[1]]
+}
+inline_scripts <- function(res) {
+  html <- as.character(htmltools::renderTags(res)$html)
+  regmatches(html, gregexpr("<script[^>]*>.*?</script>", html))[[1]]
+}
+
 test_that("shinyTree", {
   unlistShinytagList <- function(res, checkbox=F, search=F, dnd=F, 
                                  themeicon=T, themedots=T, themestripes=F,
@@ -138,7 +148,7 @@ test_that("shinyTree", {
                                  options = '{"setState":{},"refresh":{}}', 
                                  theme="default") {
     ## Function defaults are the same as shinyTree defaults
-    resattr <- res[[3]]$attribs
+    resattr <- tree_div(res)$attribs
     unlist(list(
       checkbox = resattr[["data-st-checkbox"]] == checkbox,
       search = resattr[["data-st-search"]] == search,
@@ -180,8 +190,8 @@ test_that("shinyTree", {
                    theme = "default", themeIcons = T, themeDots = T, sort = T, unique = T, 
                    wholerow = T, stripes = T, multiple = T, animation = T)
   expect_is(res, "shiny.tag.list")
-  expect_identical(res[[2]]$children[[2]]$children[[1]],
-                   HTML("shinyTree.initSearch('tree','searchid', 1000);"))
+  expect_true(any(grepl("shinyTree.initSearch('tree','searchid', 1000);",
+                        inline_scripts(res), fixed = TRUE)))
   expect_true(all(
     unlistShinytagList(res, checkbox = T, search = T, dnd = T, themeicon = T, 
                        themedots = T, themestripes = T, animation = T, sort = T,
@@ -200,11 +210,7 @@ test_that("shinyTree", {
         }"
   res <- shinyTree("tree", types = typs)
   expect_true(all(unlistShinytagList(res, types = TRUE)))
-  ## The types script is the last child of <head>; index from the end so this
-  ## does not have to move every time a stylesheet or script is added.
-  head_children <- res[[1]]$children
-  expect_identical(head_children[[length(head_children)]]$children[[1]],
-                   HTML(paste("tree_sttypes =", typs)))
+  expect_true(any(grepl(paste("tree_sttypes =", typs), inline_scripts(res), fixed = TRUE)))
   
   ## Custom shinyTree with different themes ############
   res <- shinyTree("tree", theme = "default-dark")
@@ -511,4 +517,27 @@ test_that("treeToJSON errors when data.tree is not installed", {
 
   mockery::stub(treeToJSON, "requireNamespace", FALSE)
   expect_error(treeToJSON(tree), "data.tree")
+})
+
+test_that("shinyTree declares its scripts and styles as dependencies (#18)", {
+  ## Written into <head> they were dropped by R Markdown documents with
+  ## runtime: shiny, leaving the tree empty.
+  deps <- htmltools::resolveDependencies(
+    htmltools::renderTags(htmltools::tagList(
+      shinyTree("a"), shinyTree("b", theme = "proton"), shinyTree("c")
+    ))$dependencies
+  )
+  names <- vapply(deps, function(d) d$name, "")
+  expect_setequal(names, c("jstree", "jstree-theme-default", "jstree-theme-proton",
+                           "shinyTree", "font-awesome-shinyTree"))
+  ## Each is included once however many trees use it.
+  expect_false(anyDuplicated(names) > 0)
+
+  files <- unlist(lapply(deps, function(d) {
+    if (is.null(d$src$file)) return(character())
+    file.path(d$src$file, c(unlist(d$script), unlist(d$stylesheet)))
+  }))
+  expect_true(all(file.exists(files)))
+  ## Nothing is written into <head> directly any more.
+  expect_identical(as.character(htmltools::renderTags(shinyTree("a"))$head), "")
 })

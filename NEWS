@@ -13,6 +13,11 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- A tree now works in R Markdown documents with `runtime: shiny`. Its scripts
+  and stylesheets were written into the page's `<head>`, which R Markdown
+  drops, so jsTree never loaded and the tree stayed empty. They are now
+  declared as HTML dependencies, which also means each is included once per
+  page however many trees it has (#18).
 - New `expandTree()` and `collapseTree()` open or close every node of a tree
   from the server, for "Expand all" / "Collapse all" buttons. The tree is not
   resent, so selection, checkboxes and search are kept, and `input$tree`
