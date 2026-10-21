@@ -21,70 +21,82 @@ get_selected <- function(tree, format=c("names", "slices", "classid")){
 }
 
 get_selected_names <- function(tree, ancestry=NULL, vec=list()){
-  if (is.list(tree)){
-    for (i in 1:length(tree)){
-      anc <- c(ancestry, names(tree)[i])
-      vec <- get_selected_names(tree[[i]], anc, vec)
-    }    
-  }
-  
-  a <- attr(tree, "stselected", TRUE)
-  if (!is.null(a) && a == TRUE){
-    # Get the element name
-    len_anc <- length(ancestry)
-    el <- ancestry[len_anc]
-    vec[length(vec)+1] <- el
-    attr(vec[[length(vec)]], "ancestry") <- ancestry[1:len_anc-1]
-    #save attributes that start with "st" (ShinyTree)
-    lapply(names(attributes(tree)),function(attribute){
-        if(grepl("^st",attribute)){
-            attr(vec[[length(vec)]], attribute) <<- attr(tree,attribute)
-        }
-    })
-  }
-  return(vec)
+  c(vec, collect_nodes(tree, "stselected", node_name, ancestry))
 }
 
 get_selected_slices <- function(tree, ancestry=NULL, vec=list()){
-  
-  if (is.list(tree)){
-    for (i in 1:length(tree)){
-      anc <- c(ancestry, names(tree)[i])
-      vec <- get_selected_slices(tree[[i]], anc, vec)
-    }    
-  }
-  
-  a <- attr(tree, "stselected", TRUE)
-  if (!is.null(a) && a == TRUE){
-    # Get the element name
-    ancList <- 0
-    
-    for (i in length(ancestry):1){
-      nl <- list()
-      nl[ancestry[i]] <- list(ancList)
-      ancList <- nl
-    }
-    vec[length(vec)+1] <- list(ancList)
-  }
-  return(vec)
+  c(vec, collect_nodes(tree, "stselected", node_slice, ancestry))
 }
 
 get_selected_classid <- function(tree, ancestry=NULL, vec=list()){
-    if (is.list(tree)){
-      for (i in 1:length(tree)){
-        anc <- c(ancestry, names(tree)[i])
-        vec <- get_selected_classid(tree[[i]], anc, vec)
-      }
+  c(vec, collect_nodes(tree, "stselected", node_classid, ancestry))
+}
+
+#' Collect the nodes of a tree that carry a given flag
+#'
+#' Walks \code{tree} depth-first and returns \code{make(node, ancestry)} for
+#' each node whose \code{flag} attribute is \code{TRUE}, in the order a node's
+#' descendants come before the node itself. Shared by the
+#' \code{get_selected()} and \code{get_checked()} formats.
+#'
+#' Each subtree returns its own matches and they are joined once per level, so
+#' the work is proportional to the number of nodes times the depth of the tree.
+#' Appending to one growing result with \code{vec[length(vec)+1] <-} copied it
+#' on every match instead, which made reading a large tree quadratic (#83).
+#'
+#' @param tree the \code{input$tree} list
+#' @param flag attribute name to test, e.g. \code{"stselected"}
+#' @param make function of \code{(node, ancestry)} building one result entry
+#' @param ancestry names from the root down to \code{tree}
+#' @noRd
+collect_nodes <- function(tree, flag, make, ancestry = NULL) {
+  found <- list()
+  if (is.list(tree)) {
+    nodeNames <- names(tree)
+    found <- do.call(c, lapply(seq_along(tree), function(i) {
+      collect_nodes(tree[[i]], flag, make, c(ancestry, nodeNames[i]))
+    }))
+    if (is.null(found)) {
+      found <- list()
     }
-    
-    a <- attr(tree, "stselected", TRUE)
-    if (!is.null(a) && a == TRUE){
-      # Get the element name
-      el <- ancestry[length(ancestry)]
-      vec[length(vec)+1] <- el
-      attr(vec[[length(vec)]], "stclass") <- attr(tree, "stclass", TRUE)
-      attr(vec[[length(vec)]], "stid") <- attr(tree, "stid", TRUE)
-      attr(vec[[length(vec)]], "id") <- attr(tree, "id", TRUE)
-    }
-    return(vec)
   }
+  if (isTRUE(attr(tree, flag, TRUE) == TRUE)) {
+    found[length(found) + 1] <- list(make(tree, ancestry))
+  }
+  found
+}
+
+# The node's name, with its ancestry and its st* attributes.
+node_name <- function(tree, ancestry) {
+  len_anc <- length(ancestry)
+  el <- ancestry[len_anc]
+  attr(el, "ancestry") <- ancestry[1:len_anc-1]
+  #save attributes that start with "st" (ShinyTree)
+  attrs <- attributes(tree)
+  for (attribute in names(attrs)) {
+    if (grepl("^st", attribute)) {
+      attr(el, attribute) <- attrs[[attribute]]
+    }
+  }
+  el
+}
+
+# A nested list of names from the root down to the node.
+node_slice <- function(tree, ancestry) {
+  ancList <- 0
+  for (i in length(ancestry):1){
+    nl <- list()
+    nl[ancestry[i]] <- list(ancList)
+    ancList <- nl
+  }
+  ancList
+}
+
+# The node's name, with its stclass, stid and id.
+node_classid <- function(tree, ancestry) {
+  el <- ancestry[length(ancestry)]
+  attr(el, "stclass") <- attr(tree, "stclass", TRUE)
+  attr(el, "stid") <- attr(tree, "stid", TRUE)
+  attr(el, "id") <- attr(tree, "id", TRUE)
+  el
+}
