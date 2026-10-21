@@ -84,9 +84,9 @@ jsonToAttr <- function(json){
 supplementAttr <- function(ret, json){
   # Only add attributes if non-default
   if(!is.null(ret)){
-    sapply(names(json$data),function(name){
-      attr(ret, name) <<- json$data[[name]]
-    })
+    for (name in names(json$data)) {
+      attr(ret, name) <- json$data[[name]]
+    }
 
     # isTRUE() rather than `!= FALSE`: a state key may be missing entirely --
     # treeToJSON() emits no "checked" -- and `NULL != FALSE` is logical(0),

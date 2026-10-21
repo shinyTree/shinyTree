@@ -20,7 +20,40 @@ updateTree <- function(session, treeId, data=NULL) {
 
 #' @importFrom jsonlite toJSON
 Rlist2json <- function(nestedList) {
-  as.character(toJSON(get_flatList(nestedList), auto_unbox = T))
+  flatList <- get_flatList(nestedList)
+  as.character(toJSON(flatListToFrame(flatList) %||% flatList, auto_unbox = T))
+}
+
+# jsonlite serialises a list of nodes one element at a time, which dominated
+# rendering for large trees (#83). A data frame with one row per node serialises
+# column-wise and produces the same JSON: a row omits a field whose value is NA,
+# just as a node omits an icon or type it does not have. Returns NULL when that
+# equivalence does not hold, so the caller falls back to the list.
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
+flatListToFrame <- function(flatList) {
+  if (!length(flatList)) {
+    return(NULL)
+  }
+  text <- lapply(flatList, `[[`, "text")
+  # A missing or NA name is serialised differently by the two forms.
+  if (!all(vapply(text, function(x) is.character(x) && length(x) == 1 && !is.na(x), logical(1)))) {
+    return(NULL)
+  }
+  field <- function(name) {
+    vapply(flatList, function(x) x[[name]] %||% NA_character_, character(1))
+  }
+  state <- function(name) {
+    vapply(flatList, function(x) x$state[[name]], logical(1))
+  }
+  frame <- data.frame(id = field("id"), text = unlist(text), parent = field("parent"),
+                      stringsAsFactors = FALSE)
+  frame$state <- data.frame(opened = state("opened"), selected = state("selected"),
+                            disabled = state("disabled"), checked = state("checked"))
+  frame$data <- lapply(flatList, `[[`, "data")
+  frame$icon <- field("icon")
+  frame$type <- field("type")
+  frame
 }
 
 #' @importFrom stringr str_match
@@ -50,51 +83,77 @@ fixIconName <- function(icon){
 }
 
 get_flatList <- function(nestedList, flatList = NULL, parent = "#") {
-  # Walk by position rather than by name: `nestedList[[name]]` always resolves
-  # to the first match, which smeared that node's attributes onto every later
-  # sibling sharing its name (#104).
-  nodeNames <- names(nestedList)
-  for (i in seq_along(nestedList)) {
-    name <- nodeNames[i]
-    node <- nestedList[[i]]
-    additionalAttributes <- list(
-      "icon" = fixIconName(attr(node,"sticon")),
-      "type" = attr(node,"sttype")
-    )
-    additionalAttributes <- additionalAttributes[which(sapply(additionalAttributes,Negate(is.null)))]
+  # Nodes are written into a preallocated list in depth-first order, so a
+  # node's position is also its id. Growing the result with c() copied the whole
+  # list once per node, which made rendering quadratic in the size of the tree
+  # (#83).
+  out <- vector("list", countNodes(nestedList))
+  n <- 0L
 
-    data <- lapply(names(attributes(node)),function(key){
-      if(key %in% c("icon","type","names","stopened","stselected","sttype", "stdisabled", "stchecked")){
-        NULL
-      }else{
-        attr(node,key)
+  walk <- function(nestedList, parent) {
+    # Walk by position rather than by name: `nestedList[[name]]` always resolves
+    # to the first match, which smeared that node's attributes onto every later
+    # sibling sharing its name (#104).
+    nodeNames <- names(nestedList)
+    for (i in seq_along(nestedList)) {
+      node <- nestedList[[i]]
+      n <<- n + 1L
+      id <- as.character(n)
+      out[[n]] <<- flatNode(node, nodeNames[i], id, parent)
+      if (is.list(node)) {
+        walk(node, id)
       }
-    })
-    if(!is.null(data) && length(data) > 0){
-      names(data) <- names(attributes(node))
-      data <- data[which(sapply(data,Negate(is.null)))]
     }
-
-    nodeData <- append(
-      list(
-        id = as.character(length(flatList) + 1),
-        text = name,
-        parent = parent,
-        state = list(
-          opened   = isTRUE(attr(node, "stopened")),
-          selected = isTRUE(attr(node, "stselected")),
-          disabled = isTRUE(attr(node, "stdisabled")),
-          checked = isTRUE(attr(node, "stchecked"))
-        ),
-        data = data
-      ),
-      additionalAttributes
-    )
-
-    flatList = c(flatList,list(nodeData))
-    if (is.list(node))
-      flatList =
-        Recall(node, flatList, parent = as.character(length(flatList)))
   }
-  flatList
+  walk(nestedList, parent)
+
+  c(flatList, out)
+}
+
+countNodes <- function(nestedList) {
+  total <- length(nestedList)
+  for (node in nestedList) {
+    if (is.list(node)) {
+      total <- total + countNodes(node)
+    }
+  }
+  total
+}
+
+# Attributes that shinyTree interprets itself rather than passing through as
+# node data.
+reservedAttributes <- c("icon", "type", "names", "stopened", "stselected",
+                        "sttype", "stdisabled", "stchecked")
+
+flatNode <- function(node, name, id, parent) {
+  attrs <- attributes(node)
+
+  # A node with no attributes at all yields an unnamed list(), serialised as
+  # [], while one whose attributes are all reserved yields an empty named list,
+  # serialised as {}. Both are kept as they were.
+  data <- list()
+  if (length(attrs) > 0) {
+    data <- attrs[!names(attrs) %in% reservedAttributes]
+    data <- data[!vapply(data, is.null, logical(1))]
+  }
+
+  nodeData <- list(
+    id = id,
+    text = name,
+    parent = parent,
+    state = list(
+      opened   = isTRUE(attrs$stopened),
+      selected = isTRUE(attrs$stselected),
+      disabled = isTRUE(attrs$stdisabled),
+      checked  = isTRUE(attrs$stchecked)
+    ),
+    data = data
+  )
+  if (!is.null(attrs$sticon)) {
+    nodeData$icon <- fixIconName(attrs$sticon)
+  }
+  if (!is.null(attrs$sttype)) {
+    nodeData$type <- attrs$sttype
+  }
+  nodeData
 }

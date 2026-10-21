@@ -13,6 +13,13 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- Large trees are much faster to render and to read back. Building a tree's
+  JSON grew the node list one element at a time and serialised it node by
+  node, and reading `input$tree` with `get_selected()`/`get_checked()` did the
+  same with the matches, so both were quadratic in the size of the tree. For a
+  30,000-node tree, rendering went from 14s to 2s and `get_checked()` from 15s
+  to under 1s. The JSON sent to the browser and the values returned are
+  unchanged (#83).
 - `renderTree()` can now be wrapped in `shiny::bindCache()`. It was refused
   outright, and since a tree is sent as a message rather than returned as the
   output value, caching that value would have left the tree empty on every cache
