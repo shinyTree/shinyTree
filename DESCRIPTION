@@ -37,7 +37,8 @@ Suggests:
     data.tree,
     mockery,
     withr,
-    later
+    later,
+    rmarkdown
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.2.3
