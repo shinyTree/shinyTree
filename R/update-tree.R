@@ -18,6 +18,44 @@ updateTree <- function(session, treeId, data=NULL) {
 }
 
 
+#' Expand or collapse every node of a tree
+#'
+#' Opens or closes every node of a \code{\link{shinyTree}} in the browser,
+#' for example from "Expand all" and "Collapse all" buttons. The tree's
+#' contents are not resent, so selection, checkboxes and search are kept, and
+#' \code{input$tree} reports each node's new open state as it would after a
+#' user click.
+#'
+#' To control which nodes start open instead, set \code{stopened = TRUE} on
+#' them when rendering the tree.
+#'
+#' @param session The current session variable.
+#' @param treeId The identifier for the shinyTree object.
+#' @examples
+#' \dontrun{
+#' ui <- fluidPage(
+#'   actionButton("expand", "Expand all"),
+#'   actionButton("collapse", "Collapse all"),
+#'   shinyTree("tree")
+#' )
+#' server <- function(input, output, session) {
+#'   output$tree <- renderTree(list(a = list(b = list(c = ""))))
+#'   observeEvent(input$expand, expandTree(session, "tree"))
+#'   observeEvent(input$collapse, collapseTree(session, "tree"))
+#' }
+#' }
+#' @seealso \code{\link{updateTree}}
+#' @export
+expandTree <- function(session, treeId) {
+  session$sendInputMessage(treeId, list(type = "openAll"))
+}
+
+#' @rdname expandTree
+#' @export
+collapseTree <- function(session, treeId) {
+  session$sendInputMessage(treeId, list(type = "closeAll"))
+}
+
 #' @importFrom jsonlite toJSON
 Rlist2json <- function(nestedList) {
   flatList <- get_flatList(nestedList)

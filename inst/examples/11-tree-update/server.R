@@ -28,4 +28,8 @@ shinyServer(function(input, output, session) {
 	  updated.tree<-jsonTree(input$idTree)
 	  updateTree(session,"tree",updated.tree)
 	})
+
+	# Open or close every node without resending the tree.
+	observeEvent(input$expand, expandTree(session, "tree"))
+	observeEvent(input$collapse, collapseTree(session, "tree"))
 })

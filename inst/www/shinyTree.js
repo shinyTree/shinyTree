@@ -298,6 +298,14 @@ var shinyTree = function(){
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
           $(el).jstree(true).refresh(true, true);
       }
+      // Sent by expandTree()/collapseTree(). The resulting open/close events
+      // update input$tree as they would for a user clicking (#42).
+      if (message.type == 'openAll') {
+        $(el).jstree(true).open_all();
+      }
+      if (message.type == 'closeAll') {
+        $(el).jstree(true).close_all();
+      }
     }
   });
   
