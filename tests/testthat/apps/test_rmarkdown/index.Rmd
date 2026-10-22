@@ -8,11 +8,57 @@ runtime: shiny
 library(shiny)
 library(shinyTree)
 
+## Diagnostics for test_shinytest2_rmarkdown.R, printed only if it fails: a
+## timestamped event log in the browser (window.__stlog) and on the server
+## (written to ST_DEBUG_LOG when the test sets it).
+tags$script(HTML("
+window.__stlog = [];
+window.__t0 = performance.now();
+function __L(m) { window.__stlog.push(Math.round(performance.now() - window.__t0) + 'ms ' + m); }
+$(document).on('shiny:connected', function(){ __L('shiny connected'); });
+$(document).on('shiny:inputchanged', function(e){
+  if (e.name === 'tree_rebind') __L('-> tree_rebind sent');
+  if (e.name === 'tree') {
+    var v = e.value, sel = [];
+    (function walk(o){ if (!o || typeof o !== 'object') return; Object.keys(o).forEach(function(k){ var n = o[k]; if (n && n.state && n.state.selected) sel.push(n.text); if (n && n.children) walk(n.children); }); })(v);
+    __L('-> input$tree sent, selected=[' + sel.join(',') + ']');
+  }
+});
+$(document).on('shiny:message', function(e){
+  var m = e.message && e.message.inputMessages;
+  if (m) m.forEach(function(x){ if (x.id === 'tree') __L('<- updateTree message received'); });
+});
+// jsTree fires its events with triggerHandler(), which does not bubble, so
+// listen on the tree element itself once it is bound.
+var __jsWired = false;
+$(document).on('shiny:bound', function(e){
+  if (!e.target || e.target.id !== 'tree') return;
+  __L('tree bound as ' + e.bindingType);
+  if (__jsWired) return; __jsWired = true;
+  $('#tree').on('ready.jstree refresh.jstree select_node.jstree deselect_node.jstree changed.jstree', function(ev, data){
+    var t = $('#tree').jstree(true);
+    __L('jstree ' + ev.type + (data && data.action ? ' action=' + data.action : '') +
+        (data && data.node ? ' node=' + data.node.text : '') +
+        ' selected=' + JSON.stringify(t ? t.get_selected() : null));
+  });
+  $('#tree').on('mousedown click', 'a.jstree-anchor', function(ev){ __L('DOM ' + ev.type + ' on ' + $(ev.currentTarget).text()); });
+});
+"))
+
 shinyTree("tree", checkbox = TRUE)
 verbatimTextOutput("sel")
 
+slog <- function(...) {
+  f <- Sys.getenv("ST_DEBUG_LOG")
+  if (nzchar(f)) cat(format(Sys.time(), "%H:%M:%OS3"), "[server]", ..., "\n", file = f, append = TRUE)
+}
 output$tree <- renderTree({
+  slog("renderTree evaluated")
   list(root1 = "", root2 = list(SubListA = list(leaf1 = "", leaf2 = "")))
 })
+observeEvent(input$tree, {
+  slog("input$tree received, selected =", paste(unlist(get_selected(input$tree)), collapse = ","))
+}, ignoreNULL = FALSE)
+observeEvent(input$tree_rebind, slog("tree_rebind received"))
 output$sel <- renderPrint(unlist(get_selected(req(input$tree))))
 ```
