@@ -49,6 +49,17 @@
 #' Set this to \code{FALSE} to disable the animation (default is 200).
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu to
 #' create/rename/delete/cut/copy/paste nodes.
+#' @param state If \code{TRUE}, the browser remembers which nodes were open,
+#' selected and checked, and restores them when the page is reloaded. Pass a
+#' string to choose the key it is stored under; by default it is
+#' \code{"shinyTree-<outputId>"}, so each tree keeps its own. Two apps on the
+#' same server share the browser's storage, so give their trees different
+#' keys if they have the same id. See the \emph{Remembering state} section.
+#' @param state_priority When a remembered state disagrees with the
+#' \code{stopened}, \code{stselected} or \code{stchecked} attributes the
+#' tree was rendered with, which wins: \code{"saved"} (the default) restores
+#' what the user had, \code{"code"} keeps what the app sets and restores the
+#' rest.
 #' @section Checked and selected nodes:
 #' Without checkboxes, clicking a node selects it and
 #' \code{\link{get_selected}} reports the selection. With
@@ -57,6 +68,15 @@
 #' \code{04-selected} example shows \code{get_selected} and
 #' \code{get_checked} side by side and can switch between every combination
 #' of \code{tie_selection}, \code{whole_node} and \code{three_state}.
+#'
+#' @section Remembering state:
+#' With \code{state} set, the open, selected and checked nodes are saved in the
+#' browser's \code{localStorage} each time they change, and restored the first
+#' time the tree is filled after the page loads. Nodes are matched by their
+#' position in the tree, so a remembered state is only applied to that first
+#' tree: one sent later by \code{\link{updateTree}} or a re-render may be
+#' shaped differently, so it is shown as the server sent it. The restored
+#' state is reported in \code{input$tree} as usual.
 #'
 #' @section Options:
 #' Two options control whether additional jsTree events update \code{input$tree}.
@@ -77,7 +97,14 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
                       theme="default", themeIcons=TRUE, themeDots=TRUE,
                       sort=FALSE, unique=FALSE, wholerow=FALSE,
                       stripes=FALSE, multiple=TRUE, animation=200,
-                      contextmenu=FALSE, three_state=TRUE, whole_node=TRUE, tie_selection=TRUE){
+                      contextmenu=FALSE, three_state=TRUE, whole_node=TRUE, tie_selection=TRUE,
+                      state=FALSE, state_priority=c("saved", "code")){
+  state_priority <- match.arg(state_priority)
+  if (isTRUE(state)) {
+    state <- paste0("shinyTree-", outputId)
+  } else if (!(is.character(state) && length(state) == 1 && nzchar(state)) && !identical(state, FALSE)) {
+    stop("`state` must be TRUE, FALSE or a single non-empty string (the storage key).")
+  }
   
   if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
     warning("The plugins contextmenu and checkbox cannot be used together. \nSet checkbox to FALSE")
@@ -137,6 +164,8 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
         `data-st-unique`=unique,
         `data-st-wholerow`=wholerow,
         `data-st-contextmenu`=contextmenu,
+        `data-st-state`=if (is.character(state)) state else NULL,
+        `data-st-state-priority`=if (is.character(state)) state_priority else NULL,
         options = opts
         )
   )

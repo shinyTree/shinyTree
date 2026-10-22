@@ -24,7 +24,9 @@ shinyTree(
   contextmenu = FALSE,
   three_state = TRUE,
   whole_node = TRUE,
-  tie_selection = TRUE
+  tie_selection = TRUE,
+  state = FALSE,
+  state_priority = c("saved", "code")
 )
 }
 \arguments{
@@ -86,6 +88,19 @@ nodes. If \code{FALSE}, checking is kept separate from the selection, so a
 node can be checked without being selected. With \code{whole_node = TRUE}
 as well, every click toggles a checkbox and nothing can be selected by
 clicking.}
+
+\item{state}{If \code{TRUE}, the browser remembers which nodes were open,
+selected and checked, and restores them when the page is reloaded. Pass a
+string to choose the key it is stored under; by default it is
+\code{"shinyTree-<outputId>"}, so each tree keeps its own. Two apps on the
+same server share the browser's storage, so give their trees different
+keys if they have the same id. See the \emph{Remembering state} section.}
+
+\item{state_priority}{When a remembered state disagrees with the
+\code{stopened}, \code{stselected} or \code{stchecked} attributes the
+tree was rendered with, which wins: \code{"saved"} (the default) restores
+what the user had, \code{"code"} keeps what the app sets and restores the
+rest.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
@@ -108,6 +123,17 @@ node counts as selected; see its description above. The
 \code{04-selected} example shows \code{get_selected} and
 \code{get_checked} side by side and can switch between every combination
 of \code{tie_selection}, \code{whole_node} and \code{three_state}.
+}
+
+\section{Remembering state}{
+
+With \code{state} set, the open, selected and checked nodes are saved in the
+browser's \code{localStorage} each time they change, and restored the first
+time the tree is filled after the page loads. Nodes are matched by their
+position in the tree, so a remembered state is only applied to that first
+tree: one sent later by \code{\link{updateTree}} or a re-render may be
+shaped differently, so it is shown as the server sent it. The restored
+state is reported in \code{input$tree} as usual.
 }
 
 \section{Options}{

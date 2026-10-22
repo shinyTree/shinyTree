@@ -297,3 +297,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+#### 26-state
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/26-state", package = "shinyTree"))
+```
+
+Trees that remember which nodes were open, selected and checked, and restore
+them when the page is reloaded, using `state = TRUE`. One tree lets what the
+user did win over the app's own `stopened`/`stselected`; the other uses
+`state_priority = "code"` to keep the app's.
+

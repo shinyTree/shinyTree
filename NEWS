@@ -13,6 +13,14 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- New `shinyTree(state = TRUE)` remembers which nodes were open, selected and
+  checked in the browser, and restores them when the page is reloaded. Each
+  tree is stored under its own key (`"shinyTree-<id>"` by default, or pass a
+  string). Nodes are matched by their path from the root, and only the first
+  tree after a reload is restored. When the remembered state disagrees with the
+  `stopened`/`stselected`/`stchecked` attributes the tree was rendered with,
+  the remembered state wins; `state_priority = "code"` keeps the app's instead
+  (#19).
 - A tree is no longer sent to the browser twice on page load when its render
   takes more than about 100ms. The check that repopulates a tree whose element
   is added back (#79) also fired for brand-new trees, so the server resent the
