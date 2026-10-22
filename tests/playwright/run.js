@@ -262,6 +262,85 @@ async function testSlowRenderSentOnce() {
   });
 }
 
+// Reload the page and wait for the tree, keeping the browser's localStorage.
+async function reloadTree(page, query) {
+  const base = page.url().split('?')[0];
+  await page.goto(base + (query || ''));
+  await page.waitForFunction(() => window.Shiny && Shiny.shinyapp && Shiny.shinyapp.isConnected());
+  await page.waitForFunction(() => document.querySelectorAll('#tree li').length > 0);
+  await page.waitForTimeout(700);
+}
+
+// The tree's open / selected / checked nodes, as paths like "root2/b1".
+const treeState = (page) => page.evaluate(() => {
+  const t = $('#tree').jstree(true);
+  const path = (id) => { const n = []; let x = t.get_node(id); while (x && x.id !== '#') { n.unshift(x.text); x = t.get_node(x.parent); } return n.join('/'); };
+  const ids = Object.keys(t._model.data).filter((id) => id !== '#');
+  return {
+    open: ids.filter((id) => t.is_parent(id) && t.is_open(id)).map(path).sort().join(','),
+    selected: t.get_selected().map(path).sort().join(','),
+    checked: (typeof t.get_checked === 'function' ? t.get_checked() : []).map(path).sort().join(','),
+    server: document.getElementById('report').textContent.trim().replace(/\s+/g, ' ')
+  };
+});
+
+// Run a change against the tree, finding nodes by path.
+const changeTree = (page, fn) => page.evaluate((src) => {
+  const t = $('#tree').jstree(true);
+  const id = (p) => Object.keys(t._model.data).find((i) => {
+    if (i === '#') return false;
+    const n = []; let x = t.get_node(i);
+    while (x && x.id !== '#') { n.unshift(x.text); x = t.get_node(x.parent); }
+    return n.join('/') === p;
+  });
+  (new Function('t', 'id', src))(t, id);
+}, fn);
+
+async function testStateRemembered() {
+  console.log('state = TRUE remembers open/selected/checked nodes across reloads (#19)');
+  await withApp('test_state', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    let s = await treeState(page);
+    equal(s.open, 'root2', 'first load uses the rendered stopened');
+    equal(s.selected, 'root2/b1', 'first load uses the rendered stselected');
+
+    // Change everything the app rendered: close root2, open root1 and its b,
+    // and select the "dup" under b -- a name that also exists under a.
+    await changeTree(page, "t.deselect_all(); t.close_node(id('root2')); t.open_node(id('root1'));");
+    await page.waitForTimeout(200);
+    await changeTree(page, "t.open_node(id('root1/b')); t.select_node(id('root1/b/dup'));");
+    await page.waitForTimeout(400);
+
+    await reloadTree(page);
+    s = await treeState(page);
+    equal(s.open, 'root1,root1/b', 'open nodes restored, overriding the rendered stopened');
+    equal(s.selected, 'root1/b,root1/b/dup', 'selection restored by path, not by name');
+    ok(/selected: root1\/b\/dup root1\/b/.test(s.server), `the restored selection reaches the server (got "${s.server}")`);
+
+    // state_priority = "code": the rendered attributes win, the rest is restored.
+    await reloadTree(page, '?priority=code');
+    s = await treeState(page);
+    equal(s.open, 'root1,root1/b,root2', 'code priority keeps the rendered stopened and adds the saved');
+    equal(s.selected, 'root1/b,root1/b/dup,root2/b1', 'code priority keeps the rendered stselected and adds the saved');
+  });
+}
+
+async function testStateUntiedCheckboxes() {
+  console.log('state = TRUE remembers checkboxes untied from the selection (#19)');
+  await withApp('test_state', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page, '?tied=0');
+    await changeTree(page, "t.uncheck_all(); t.check_node(id('root2/b2')); t.deselect_all();");
+    await page.waitForTimeout(400);
+    await reloadTree(page, '?tied=0');
+    const s = await treeState(page);
+    equal(s.checked, 'root2/b2', 'checked node restored');
+    equal(s.selected, '', 'selection restored separately (none)');
+    ok(/checked: root2\/b2/.test(s.server), `the restored checks reach the server (got "${s.server}")`);
+  });
+}
+
 async function testEmptyTreeDoesNotLoop() {
   console.log('a legitimately empty tree does not resend forever (#79)');
   await withApp('test_empty_tree', async (page) => {
@@ -283,6 +362,8 @@ async function testEmptyTreeDoesNotLoop() {
   await testSearchAfterReopen();
   await testCachedTreeInModal();
   await testSlowRenderSentOnce();
+  await testStateRemembered();
+  await testStateUntiedCheckboxes();
   await testEmptyTreeDoesNotLoop();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
