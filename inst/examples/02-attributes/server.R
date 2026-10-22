@@ -8,7 +8,8 @@ shinyServer(function(input, output, session) {
   
   output$tree <- renderTree({
     list(
-      root1 = structure("", stselected=TRUE, sticon="signal"),
+      root1 = structure("", stselected=TRUE, sticon="signal",
+                        sttooltip="Hover text set with sttooltip"),
       root2 = structure(list(
         SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
         SubListB = structure(list(leafA = "", leafB = ""), stdisabled=TRUE)

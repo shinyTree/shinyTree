@@ -13,6 +13,8 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- New `sttooltip` node attribute: text shown when the pointer rests on a node's
+  label. `?renderTree` now documents all of the `st*` node attributes (#66).
 - Fixed two broken stylesheet links to the Font Awesome CDN on every page with
   a tree, which each failed with a 403 in the browser console. Font Awesome
   itself was unaffected and still loads with its integrity hash.
