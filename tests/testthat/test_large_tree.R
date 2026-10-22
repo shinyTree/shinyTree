@@ -75,3 +75,23 @@ test_that("a tree with nothing selected returns an empty list in every format", 
     expect_identical(get_checked(tree, format), list(), info = format)
   }
 })
+
+test_that("stcssclass reaches jsTree as li_attr class on both paths (#58)", {
+  classes <- list(
+    a = structure("", stcssclass = c("study", "archived")),
+    b = list(c = structure("", stcssclass = "  hot  urgent ", sttooltip = "x"), d = ""),
+    e = structure("", stcssclass = character())
+  )
+  flat <- get_flatList(classes)
+  expect_equal(flat[[1]]$li_attr$class, "study archived")
+  expect_equal(flat[[3]]$li_attr$class, "hot urgent")
+  expect_null(flat[[2]]$li_attr)
+  expect_null(flat[[5]]$li_attr)
+  ## The data-frame path gives nodes without classes an empty li_attr (and
+  ## a_attr), which jsTree ignores; everything else matches the list path.
+  expect_identical(gsub(',"(a_attr|li_attr)":\\{\\}', "", Rlist2json(classes)),
+                   list_json(classes))
+  ## Without classes the JSON is unchanged.
+  plain <- list(a = "", b = list(c = ""))
+  expect_identical(Rlist2json(plain), list_json(plain))
+})

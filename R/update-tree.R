@@ -98,6 +98,10 @@ flatListToFrame <- function(flatList) {
   if (any(!is.na(title))) {
     frame$a_attr <- data.frame(title = title, stringsAsFactors = FALSE)
   }
+  cssClass <- vapply(flatList, function(x) x$li_attr$class %||% NA_character_, character(1))
+  if (any(!is.na(cssClass))) {
+    frame$li_attr <- data.frame(class = cssClass, stringsAsFactors = FALSE)
+  }
   frame
 }
 
@@ -204,5 +208,26 @@ flatNode <- function(node, name, id, parent) {
   if (!is.null(attrs$sttooltip)) {
     nodeData$a_attr <- list(title = as.character(attrs$sttooltip))
   }
+  # CSS classes on the node's <li>, so a stylesheet can style it (#58). Any
+  # number may be given, as a vector or a space-separated string. stclass is
+  # still passed through as data too, so get_selected(format = "classid")
+  # keeps returning it.
+  cssClass <- nodeCssClass(attrs$stcssclass)
+  if (!is.null(cssClass)) {
+    nodeData$li_attr <- list(class = cssClass)
+  }
   nodeData
+}
+
+# The space-separated class string for stcssclass, or NULL if there is none.
+nodeCssClass <- function(x) {
+  if (is.null(x)) {
+    return(NULL)
+  }
+  classes <- unlist(strsplit(as.character(unlist(x)), "[[:space:]]+"))
+  classes <- unique(classes[!is.na(classes) & nzchar(classes)])
+  if (!length(classes)) {
+    return(NULL)
+  }
+  paste(classes, collapse = " ")
 }
