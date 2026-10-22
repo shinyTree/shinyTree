@@ -1,5 +1,9 @@
 var shinyTree = function(){
   callbackCounter = 0;
+  // Output ids that have been sent a tree at least once this session. Used to
+  // tell an element that is being added back -- which needs its tree resent --
+  // from one appearing for the first time, whose tree is already on its way.
+  var treeReceived = {};
 
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
@@ -165,10 +169,18 @@ var shinyTree = function(){
       // and reopened, for example. The output is still considered valid, so the
       // render function does not re-run and the new element stays empty (#79).
       //
-      // Report an empty tree so the server can resend its contents. The check
-      // runs on a timeout because renderValue() may still be on its way for a
-      // genuinely new tree, and sending the signal then would make the server
-      // resend a tree that is about to arrive anyway.
+      // Report an empty tree so the server can resend its contents -- but only
+      // for an element added back after its tree was sent. For one appearing
+      // for the first time the tree is already on its way: asking anyway made
+      // the server send it a second time whenever the render took longer than
+      // the check below, and jsTree rebuild it from scratch. treeReceived is
+      // read now, when
+      // the element is bound, rather than in the timeout, since by then the
+      // first tree may already have arrived.
+      //
+      // The check still runs on a timeout because renderValue() may be on its
+      // way for a tree that is being rebuilt.
+      if (!treeReceived[el.id]) { return; }
       setTimeout(function(){
         if (!document.body.contains(el)) { return; }
         var tree = $.jstree.reference(el);
@@ -280,6 +292,7 @@ var shinyTree = function(){
     receiveMessage: function(el, message) {
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
+          treeReceived[el.id] = true;
           // Mark this refresh as server-initiated so subscribe() does not echo
           // it back and start a feedback loop (#36).
           //
