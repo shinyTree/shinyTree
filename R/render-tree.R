@@ -32,9 +32,16 @@
 #'     \code{\link{shinyTree}}.}
 #'   \item{\code{sttooltip}}{text shown when the pointer rests on the node's
 #'     label. It is shown as plain text, not HTML.}
+#'   \item{\code{stcssclass}}{one or more CSS classes for the node, as a
+#'     character vector or a space-separated string, so the app's own CSS can
+#'     style it. They go on the node's \code{<li>}, so target its label with
+#'     \code{li.myclass > a}. Unlike \code{sttype}, any number can be given.}
 #' }
 #' Any other attribute whose name starts with \code{st} is passed through as
-#' data and comes back on the node in \code{input$tree}.
+#' data and comes back on the node in \code{input$tree}. That includes
+#' \code{stclass}, which despite its name is only data -- it is what
+#' \code{get_selected(format = "classid")} reports -- and is not applied as a
+#' CSS class; use \code{stcssclass} for that.
 #' @section Caching:
 #' \code{renderTree} can be wrapped in \code{\link[shiny]{bindCache}}, in which
 #' case \code{expr} is evaluated only for a cache key that has not been seen

@@ -85,7 +85,24 @@ supplementAttr <- function(ret, json){
   # Only add attributes if non-default
   if(!is.null(ret)){
     for (name in names(json$data)) {
-      attr(ret, name) <- json$data[[name]]
+      value <- json$data[[name]]
+      ret <- tryCatch({
+        attr(ret, name) <- value
+        ret
+      }, error = function(e) {
+        # R gives some attribute names a meaning of its own and refuses values
+        # that do not fit it. Trees built from XML or data.tree often carry a
+        # field called "class" holding a list, which raised "attempt to set
+        # invalid 'class' attribute" and stopped input$tree from being read at
+        # all (#58). Keep such data under an "st" prefix instead -- "class"
+        # becomes "stclass" -- unless the node already has data there. Values
+        # R accepts are set as before.
+        prefixed <- paste0("st", name)
+        if (!prefixed %in% names(json$data)) {
+          attr(ret, prefixed) <- value
+        }
+        ret
+      })
     }
 
     # isTRUE() rather than `!= FALSE`: a state key may be missing entirely --
