@@ -13,6 +13,12 @@
   them correctly but proton's stylesheet omits the rule that hides them, which
   the other themes ship, so every node stayed on screen. shinyTree now
   declares it in its own stylesheet (#113).
+- New `stcssclass` node attribute gives a node one or more CSS classes, so an
+  app's own CSS can style it. `stclass`, despite its name, has only ever been
+  data and is unchanged (#58).
+- Node data that R refuses as an attribute -- a `class` field holding a list,
+  as trees built from XML often have -- no longer stops `input$tree` from being
+  read. It comes back under an `st` prefix, e.g. `stclass` (#58).
 - New `shinyTree(state = TRUE)` remembers which nodes were open, selected and
   checked in the browser, and restores them when the page is reloaded. Each
   tree is stored under its own key (`"shinyTree-<id>"` by default, or pass a

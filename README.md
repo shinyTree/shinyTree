@@ -105,7 +105,9 @@ library(shiny)
 runApp(system.file("examples/08-class", package = "shinyTree"))
 ```
 
-An example demonstrating the use of the ability to style nodes using custom classes.
+An example demonstrating two ways to style nodes: a jsTree type (`sttype`),
+which styles every node of that type, and `stcssclass`, which gives a node any
+number of CSS classes for the app's own CSS to style.
 
 #### 09-themes
 
