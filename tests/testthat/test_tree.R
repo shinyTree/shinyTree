@@ -553,3 +553,25 @@ test_that("shinyTree declares its scripts and styles as dependencies (#18)", {
   ## Nothing is written into <head> directly any more.
   expect_identical(as.character(htmltools::renderTags(shinyTree("a"))$head), "")
 })
+
+test_that("shinyTree's state arguments set the data attributes (#19)", {
+  attrs <- function(res) tree_div(res)$attribs
+
+  ## Off by default: no attributes, so the client does nothing extra.
+  expect_null(attrs(shinyTree("tree"))[["data-st-state"]])
+
+  ## TRUE uses a key per tree id.
+  a <- attrs(shinyTree("tree", state = TRUE))
+  expect_identical(a[["data-st-state"]], "shinyTree-tree")
+  expect_identical(a[["data-st-state-priority"]], "saved")
+
+  ## A string is used as the key; the priority can favour the code.
+  a <- attrs(shinyTree("tree", state = "my-key", state_priority = "code"))
+  expect_identical(a[["data-st-state"]], "my-key")
+  expect_identical(a[["data-st-state-priority"]], "code")
+
+  expect_error(shinyTree("tree", state = 1), "single non-empty string")
+  expect_error(shinyTree("tree", state = ""), "single non-empty string")
+  expect_error(shinyTree("tree", state = c("a", "b")), "single non-empty string")
+  expect_error(shinyTree("tree", state = TRUE, state_priority = "neither"))
+})

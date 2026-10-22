@@ -297,3 +297,37 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+#### 26-state
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/26-state", package = "shinyTree"))
+```
+
+Trees that remember how the user left them. With `state = TRUE` the browser
+saves which nodes are open, selected and checked, and restores them when the
+page is reloaded:
+
+```r
+shinyTree("tree", checkbox = TRUE, state = TRUE)
+```
+
+- **Which wins.** If the remembered state disagrees with the `stopened`,
+  `stselected` or `stchecked` attributes the tree is rendered with, the
+  default `state_priority = "saved"` restores what the user had.
+  `state_priority = "code"` keeps the app's attributes and restores the rest
+  of the remembered state around them. The example shows the two side by side.
+- **When.** The state is restored once, onto the first tree after the page
+  loads. A tree sent later with `updateTree()` or a re-render is shown as the
+  server sent it.
+- **Matching.** Nodes are matched by their path of names from the root, so a
+  node that has been renamed or moved is simply not restored.
+- **Where it is kept.** In the browser's `localStorage`, under
+  `"shinyTree-<id>"` by default; pass `state = "my-key"` to choose the key, for
+  example to keep two apps on one server apart. It is never sent to the server,
+  though the restored state reaches `input$tree` like any other change.
+
+See `?shinyTree` for the details.
+

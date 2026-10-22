@@ -5,6 +5,102 @@ var shinyTree = function(){
   // from one appearing for the first time, whose tree is already on its way.
   var treeReceived = {};
 
+  // --- Remembering state (#19) ----------------------------------------------
+  // jsTree's own state plugin restores as soon as jsTree initialises, which
+  // in shinyTree is before the tree's contents arrive, so it restored onto an
+  // empty tree. shinyTree saves and restores the state itself instead,
+  // restoring once, after the first tree has arrived.
+  //
+  // Nodes are recorded by their path of names from the root rather than by
+  // jsTree's ids, which are just positions: a remembered path either matches a
+  // node with the same ancestry or matches nothing, so it cannot land on an
+  // unrelated node if the tree has changed shape since.
+  var nodePath = function(tree, id) {
+    var node = tree.get_node(id);
+    var names = [];
+    while (node && node.id !== '#') {
+      names.unshift(node.text);
+      node = tree.get_node(node.parent);
+    }
+    return names.join('\u0000');
+  };
+  var nodesByPath = function(tree) {
+    var byPath = {};
+    $.each(tree._model.data, function(id) {
+      if (id === '#') { return; }
+      var path = nodePath(tree, id);
+      // With duplicate sibling names (#104) keep every match, in tree order.
+      (byPath[path] = byPath[path] || []).push(id);
+    });
+    return byPath;
+  };
+  var saveState = function(el) {
+    var key = el.dataset.stState;
+    var tree = $.jstree.reference(el);
+    // Not before the first restore: building the first tree fires the change
+    // events too, and saving then would overwrite the state about to be read.
+    if (!key || !tree || el.stRestoringState || !el.stStateRestored) { return; }
+    var open = [], selected = [], checked = [];
+    $.each(tree._model.data, function(id, node) {
+      if (id === '#') { return; }
+      if (node.state.opened && tree.is_parent(id)) { open.push(nodePath(tree, id)); }
+      if (node.state.selected) { selected.push(nodePath(tree, id)); }
+      if (typeof tree.is_checked === 'function' && el.dataset.stTieSelection == "FALSE" &&
+          tree.is_checked(id)) {
+        checked.push(nodePath(tree, id));
+      }
+    });
+    try {
+      window.localStorage.setItem(key, JSON.stringify(
+        {version: 1, open: open, selected: selected, checked: checked}));
+    } catch (e) { /* Storage full or disabled: remembering is best effort. */ }
+  };
+  var restoreState = function(el) {
+    var key = el.dataset.stState;
+    var tree = $.jstree.reference(el);
+    if (!key || !tree) { return; }
+    el.stStateRestored = true;
+    var saved = null;
+    try { saved = JSON.parse(window.localStorage.getItem(key)); } catch (e) { saved = null; }
+    if (!saved || saved.version !== 1) { return; }
+
+    var byPath = nodesByPath(tree);
+    var ids = function(paths) {
+      var out = [];
+      $.each(paths || [], function(i, path) { out = out.concat(byPath[path] || []); });
+      return out;
+    };
+    // "code": the attributes the tree was rendered with win. A node the app
+    // marked keeps that mark and the rest of the remembered state is restored.
+    // "saved" (default): what the user had replaces what the app rendered.
+    var codeWins = el.dataset.stStatePriority === 'code';
+    var untied = el.dataset.stTieSelection == "FALSE" && typeof tree.check_node === 'function';
+
+    el.stRestoringState = true;
+    try {
+      if (!codeWins) {
+        tree.close_all(null, 0);
+        tree.deselect_all(true);
+        if (untied) { tree.uncheck_all(); }
+      }
+      $.each(ids(saved.open), function(i, id) {
+        // Open each ancestor too, so a remembered open node is visible.
+        $.each(tree.get_node(id).parents, function(j, p) { if (p !== '#') { tree.open_node(p, false, 0); } });
+        tree.open_node(id, false, 0);
+      });
+      $.each(ids(saved.selected), function(i, id) { tree.select_node(id, true, true); });
+      if (untied) {
+        $.each(ids(saved.checked), function(i, id) { tree.check_node(id); });
+      }
+    } finally {
+      el.stRestoringState = false;
+    }
+    // Report the restored state. select_node() above was told not to, so a
+    // single update reaches the server rather than one per node.
+    tree.trigger('changed', {action: 'restore_state', selected: tree.get_selected()});
+    saveState(el);
+  };
+
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
     find: function(scope) {
@@ -229,6 +325,12 @@ var shinyTree = function(){
       $(el).on("changed.jstree", function(e) {
         callback();
       });
+
+      if (el.dataset.stState) {
+        $(el).on("changed.jstree open_node.jstree close_node.jstree check_node.jstree uncheck_node.jstree check_all.jstree uncheck_all.jstree", function(e) {
+          saveState(el);
+        });
+      }
       
       $(el).on("ready.jstree", function(e){
         // Initialize the data.
@@ -292,6 +394,11 @@ var shinyTree = function(){
     receiveMessage: function(el, message) {
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
+          // Restore a remembered state only onto the first tree after the page
+          // loads; one sent later may be shaped differently.
+          if (el.dataset.stState && !treeReceived[el.id]) {
+            $(el).one('refresh.jstree', function() { restoreState(el); });
+          }
           treeReceived[el.id] = true;
           // Mark this refresh as server-initiated so subscribe() does not echo
           // it back and start a feedback loop (#36).
