@@ -107,3 +107,31 @@ test_that("nested children with partial state are parsed and keep their ancestry
   expect_equal(sel[[1]][1], "leaf")
   expect_equal(attr(sel[[1]], "ancestry"), "a")
 })
+
+test_that("node data R refuses as an attribute does not stop input$tree being read (#58)", {
+  ## Trees built from XML (e.g. xmlToList()) or data.tree often have a field
+  ## called "class". As a list it raised "attempt to set invalid 'class'
+  ## attribute" and the whole of input$tree was lost.
+  node <- function(data) {
+    list("0" = list(id = "1", text = "a", state = list(selected = TRUE),
+                    children = list(), data = data))
+  }
+
+  x <- jsonToAttr(node(list(class = list("element"), stinfo = "kept")))
+  expect_equal(attr(x$a, "stclass"), list("element"))
+  expect_equal(attr(x$a, "stinfo"), "kept")
+  expect_false(inherits(x$a, "element"))
+  expect_equal(unlist(get_selected(x)), "a")
+
+  ## The same for other names R refuses values for.
+  expect_equal(attr(jsonToAttr(node(list(dim = 2L)))$a, "stdim"), 2L)
+  expect_equal(attr(jsonToAttr(node(list(tsp = 1)))$a, "sttsp"), 1)
+  expect_equal(attr(jsonToAttr(node(list(comment = 1L)))$a, "stcomment"), 1L)
+
+  ## Data already under the prefixed name is not overwritten.
+  y <- jsonToAttr(node(list(class = list("a"), stclass = "mine")))
+  expect_equal(attr(y$a, "stclass"), "mine")
+
+  ## Values R accepts are set as before.
+  expect_equal(attr(jsonToAttr(node(list(comment = "note")))$a, "comment"), "note")
+})
