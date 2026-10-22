@@ -45,7 +45,8 @@ library(shiny)
 runApp(system.file("examples/02-attributes", package = "shinyTree"))
 ```
 
-Manage properties of your tree by adding attributes to your list when rendering.
+Manage properties of your tree by adding attributes to your list when rendering. See
+`?renderTree` for the full list, including `sttooltip` for hover text.
 
 #### 03-checkbox ([Live Demo](https://trestletech.shinyapps.io/st-03-checkbox/))
 
