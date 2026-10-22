@@ -90,17 +90,16 @@ as well, every click toggles a checkbox and nothing can be selected by
 clicking.}
 
 \item{state}{If \code{TRUE}, the browser remembers which nodes were open,
-selected and checked, and restores them when the page is reloaded. Pass a
-string to choose the key it is stored under; by default it is
-\code{"shinyTree-<outputId>"}, so each tree keeps its own. Two apps on the
-same server share the browser's storage, so give their trees different
-keys if they have the same id. See the \emph{Remembering state} section.}
+selected and checked, and restores them when the page is reloaded. A string
+does the same and is used as the key the state is stored under, instead of
+the default \code{"shinyTree-<outputId>"}. \code{FALSE} (the default)
+turns it off. See \emph{Remembering state} below.}
 
-\item{state_priority}{When a remembered state disagrees with the
-\code{stopened}, \code{stselected} or \code{stchecked} attributes the
-tree was rendered with, which wins: \code{"saved"} (the default) restores
-what the user had, \code{"code"} keeps what the app sets and restores the
-rest.}
+\item{state_priority}{Only used with \code{state}. When the remembered state
+disagrees with the \code{stopened}, \code{stselected} or \code{stchecked}
+attributes the tree was rendered with: \code{"saved"} (the default)
+restores what the user had; \code{"code"} keeps the app's attributes and
+restores the rest around them.}
 }
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
@@ -127,13 +126,43 @@ of \code{tie_selection}, \code{whole_node} and \code{three_state}.
 
 \section{Remembering state}{
 
-With \code{state} set, the open, selected and checked nodes are saved in the
-browser's \code{localStorage} each time they change, and restored the first
-time the tree is filled after the page loads. Nodes are matched by their
-position in the tree, so a remembered state is only applied to that first
-tree: one sent later by \code{\link{updateTree}} or a re-render may be
-shaped differently, so it is shown as the server sent it. The restored
-state is reported in \code{input$tree} as usual.
+With \code{state} set, the browser remembers how the user left the tree and
+puts it back that way when the page is reloaded:
+\preformatted{
+shinyTree("tree", checkbox = TRUE, state = TRUE)
+}
+\describe{
+  \item{What is remembered}{Which nodes are open, which are selected and,
+    with \code{tie_selection = FALSE}, which are checked. It is saved each
+    time one of these changes.}
+  \item{When it is restored}{Once, the first time the tree is filled after
+    the page loads. A tree sent later by \code{\link{updateTree}} or by the
+    render function running again is shown exactly as the server sent it,
+    since it may be a different tree.}
+  \item{How nodes are matched}{By their path of names from the root, such as
+    Europe / France / Paris. A remembered node is restored only if a node
+    with that path still exists, so a node that has been renamed, moved or
+    removed is simply not restored, and a remembered state can never be
+    applied to an unrelated node. Where siblings share a name, each of them
+    matches.}
+  \item{Which wins}{When the remembered state disagrees with the
+    \code{stopened}, \code{stselected} or \code{stchecked} attributes the
+    tree was rendered with, \code{state_priority = "saved"} (the default)
+    restores what the user had, and \code{state_priority = "code"} keeps the
+    app's attributes and restores the rest of the remembered state around
+    them. With \code{"code"} a node the app opens or selects is always open
+    or selected after a reload; with \code{"saved"} the user can close or
+    deselect it and that is remembered.}
+  \item{What the server sees}{The restored state is reported in
+    \code{input$tree} like any change the user makes, in a single update.}
+}
+The state is kept in the browser's \code{localStorage}, so it is per
+browser and per user, survives closing the browser, and is never sent to the
+server. It is stored under \code{"shinyTree-<outputId>"} unless
+\code{state} is a string, which is used as the key instead. Pages from the
+same server share \code{localStorage}, so two apps there whose trees have
+the same id should pass different keys. To forget a remembered state, use a
+new key, or run \code{localStorage.removeItem("<key>")} in the browser.
 }
 
 \section{Options}{
@@ -151,6 +180,32 @@ a feedback loop in apps that call \code{updateTree} from an observer watching
 the option is enabled.
 }
 
+\examples{
+\dontrun{
+library(shiny)
+
+# The tree comes back the way the user left it when the page is reloaded.
+# Europe starts open and Paris selected; with state_priority = "code" they
+# stay that way after every reload, and anything else the user opened or
+# selected is restored as well.
+ui <- fluidPage(
+  shinyTree("tree", state = TRUE, state_priority = "code")
+)
+server <- function(input, output, session) {
+  output$tree <- renderTree(list(
+    Europe = structure(list(
+      France = list(Paris = structure("", stselected = TRUE), Lyon = ""),
+      Spain = list(Madrid = "")
+    ), stopened = TRUE),
+    Asia = list(Japan = list(Tokyo = ""))
+  ))
+}
+shinyApp(ui, server)
+
+# See also the 26-state example:
+runApp(system.file("examples/26-state", package = "shinyTree"))
+}
+}
 \seealso{
 \code{\link{renderTree}}
 }
