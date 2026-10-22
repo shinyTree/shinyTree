@@ -243,6 +243,25 @@ async function testCachedTreeInModal() {
   });
 }
 
+async function testSlowRenderSentOnce() {
+  console.log('a slow render is sent once on page load, not twice');
+  await withApp('test_slow_render', async (page) => {
+    const messages = await page.evaluate(() => new Promise((resolve) => {
+      let n = 0;
+      $(document).on('shiny:message', (e) => {
+        const m = e.message && e.message.inputMessages;
+        if (m) m.forEach((x) => { if (x.id === 'tree') n++; });
+      });
+      // Long enough for a duplicate send after the 0.5s render to arrive.
+      setTimeout(() => resolve(n), 3000);
+    }));
+    await page.waitForFunction(() => document.querySelectorAll('#tree li').length === 2);
+    equal(await nodeCount(page), 2, 'tree renders');
+    equal(messages, 1, 'the tree is sent once');
+    equal(await renderCount(page), 1, 'the render function runs once');
+  });
+}
+
 async function testEmptyTreeDoesNotLoop() {
   console.log('a legitimately empty tree does not resend forever (#79)');
   await withApp('test_empty_tree', async (page) => {
@@ -263,6 +282,7 @@ async function testEmptyTreeDoesNotLoop() {
   await testRepeatedReopen();
   await testSearchAfterReopen();
   await testCachedTreeInModal();
+  await testSlowRenderSentOnce();
   await testEmptyTreeDoesNotLoop();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
