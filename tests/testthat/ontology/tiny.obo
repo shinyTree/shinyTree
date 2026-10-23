@@ -1,0 +1,40 @@
+format-version: 1.2
+ontology: tiny
+
+[Term]
+id: T:0000001
+name: entity
+def: "Anything at all, with \"quotes\" inside." [T:ref]
+
+[Term]
+id: T:0000002
+name: material entity
+is_a: T:0000001 ! entity
+
+[Term]
+id: T:0000003
+name: cell
+def: "A cell." []
+is_a: T:0000002 ! material entity
+is_a: T:0000005 {source="x"} ! tissue part
+
+[Term]
+id: T:0000004
+name: old cell
+is_obsolete: true
+replaced_by: T:0000003
+
+[Term]
+id: T:0000005
+name: tissue part
+is_a: T:0000001
+is_a: X:9999999 ! not defined here
+
+[Typedef]
+id: part_of
+name: part of
+is_a: T:0000001
+
+[Term]
+id: T:0000006
+is_a: T:0000005

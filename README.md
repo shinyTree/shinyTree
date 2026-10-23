@@ -363,3 +363,24 @@ folder. See the *Lazy loading* section of `?renderTree` for searching the whole
 tree, telling same-named siblings apart with `function(path, node)`, errors,
 state, and speed.
 
+#### 28-ontology
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/28-ontology", package = "shinyTree"))
+```
+
+Browses an ontology with `ontologyToTree()`, which reads an OBO or OWL file and
+returns what `renderTree(lazy = TRUE)` needs:
+
+```r
+go <- ontologyToTree("go-basic.obo")
+output$tree <- renderTree(lazy = TRUE, go)
+```
+
+A term with several parents appears under each, obsolete terms are greyed out
+under `obsolete`, and the search box finds a term by name or id anywhere in the
+ontology. The example shows the Anatomical Entity Ontology from issue #33, or
+an ontology you upload; see its README for the AEO's source and licence.
+
