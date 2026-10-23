@@ -1,0 +1,8 @@
+[Term]
+id: W:1
+name: windows line endings
+
+[Term]
+id: W:2
+name: child
+is_a: W:1
