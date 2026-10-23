@@ -461,7 +461,7 @@ test_that("informational signals do not fail the children function", {
   ## dplyr's summarise() with several groups signals one nothing handles.
   sig <- function(path) {
     signalCondition(structure(class = c("dplyr_regroup", "condition"), list(message = "regroup", call = NULL)))
-    rlang::signal("progress", class = "my_progress")
+    signalCondition(structure(class = c("my_progress", "condition"), list(message = "progress", call = NULL)))
     list(a = "")
   }
   r <- call_handler(lazy_state(sig), list(paths = list(list()), generation = 1))
@@ -591,7 +591,9 @@ test_that("data that changes on every fetch does not pile up", {
 
 test_that("an earlier handled signal is not blamed for a later abort", {
   kids <- function(path) {
-    withCallingHandlers(rlang::signal("harmless note", class = "my_progress"), my_progress = function(c) NULL)
+    withCallingHandlers(
+      signalCondition(structure(class = c("my_progress", "condition"), list(message = "harmless note", call = NULL))),
+      my_progress = function(c) NULL)
     invokeRestart("abort")
   }
   r <- call_handler(lazy_state(kids), list(paths = list(list()), generation = 1))
