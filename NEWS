@@ -1,6 +1,23 @@
  v 0.3.2
 --------------------------------------------------------------------------------
 
+- New `renderTree(lazy = TRUE)` loads a tree's nodes from the server as they
+  are opened, for trees too large to send whole. The render expression returns
+  `function(path)` (or `function(path, node)`, to tell same-named siblings
+  apart by their `st*` attributes) giving a node's children; children with
+  `stchildren = TRUE` are fetched when opened. With `shinyTree(search = TRUE)`
+  the whole tree is searched on the server, by walking it or with a `search`
+  function, and the branches leading to the matches are fetched and opened.
+  `state = TRUE` reopens remembered branches after a reload. Branches needed
+  at once are fetched in a single request. Requests are checked: only branches
+  the server has sent can be asked for, with the server's own node data, and
+  errors follow `shiny.sanitize.errors`. `updateTree()` and `expandTree()` stop
+  with an error on a lazy tree. See the new `27-lazy` example (#11).
+- Unticking a child of a ticked parent with `tie_selection = FALSE` and
+  `state = TRUE` is now remembered: the state was saved before the parent was
+  unticked, so a reload ticked everything again.
+- `renderTree()` given a function now stops with a pointer to `lazy = TRUE`,
+  rather than leaving the tree empty with a JSON error in the browser.
 - A tree now repopulates when its element is removed from the page and added
   back -- inside a `modalDialog` that is dismissed and reopened, for example.
   Contents are pushed to the client rather than returned as an output value, so

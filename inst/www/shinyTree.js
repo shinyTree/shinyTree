@@ -5,6 +5,185 @@ var shinyTree = function(){
   // from one appearing for the first time, whose tree is already on its way.
   var treeReceived = {};
 
+  // --- Lazy loading (#11) ---------------------------------------------------
+  // renderTree(lazy = TRUE) sends a URL instead of the tree. jsTree's data
+  // option is then a function, called for each node jsTree needs the children
+  // of; it asks the server for them over HTTP. Requests made in the same tick
+  // are batched into one (jsTree's "massload"), which matters when a search or
+  // a state restore opens many branches at once.
+  //
+  // Nodes are identified to the server by their path of names, which is also
+  // what the children function receives, so ids never have to be stable.
+  // A node's path is the one the server gave it when it was fetched, kept in
+  // its data as stpath, so renaming or moving it with the context menu or
+  // drag and drop does not change what the children function is asked for.
+  // Nodes without one (e.g. created in the browser) fall back to their labels.
+  var lazyPath = function(tree, node) {
+    if (node.id === '#') { return []; }
+    if (node.data && $.isArray(node.data.stpath)) { return node.data.stpath.slice(); }
+    var names = [];
+    while (node && node.id !== '#') {
+      names.unshift(node.text);
+      node = tree.get_node(node.parent);
+    }
+    return names;
+  };
+  // The node's st* data, sent with its path so the children function can tell
+  // siblings with the same name apart (by an stid, say).
+  var lazyNodeData = function(node) {
+    var data = {};
+    if (node && node.id !== '#' && node.data) {
+      $.each(node.data, function(k, v) { if (k !== 'stpath') { data[k] = v; } });
+    }
+    return data;
+  };
+  var lazyPost = function(el, body, done, fail) {
+    var lazy = el.stLazy;
+    body.generation = lazy.generation;
+    $.ajax({
+      url: lazy.url, type: 'POST', contentType: 'application/json',
+      data: JSON.stringify(body), dataType: 'json', cache: false
+    }).done(function(res) {
+      // A tree rebuilt since the request was made ignores its answer.
+      if (el.stLazy !== lazy) { return; }
+      done(res);
+    }).fail(function(xhr) {
+      if (el.stLazy !== lazy) { return; }
+      if (xhr.status === 409) { return; }  // stale: a rebuilt tree is on its way
+      var msg = (xhr.responseJSON && xhr.responseJSON.error) || ('HTTP ' + xhr.status);
+      fail(msg);
+    });
+  };
+  // Children for one node, batched with any others asked for in the same tick.
+  var lazyChildren = function(el, path, data, cb) {
+    var lazy = el.stLazy;
+    lazy.queue.push({path: path, data: data, cb: cb});
+    if (lazy.timer) { return; }
+    lazy.timer = setTimeout(function() {
+      var batch = lazy.queue;
+      lazy.queue = [];
+      lazy.timer = null;
+      lazyPost(el, {paths: batch.map(function(b) { return b.path; }),
+                    data: batch.map(function(b) { return b.data; })}, function(res) {
+        $.each(batch, function(i, b) {
+          var node = res.nodes && res.nodes[i];
+          if (node && node.silent) {
+            // req(FALSE): not an error, just not yet. The node stays closed and
+            // can be opened again.
+            b.cb.call($.jstree.reference(el), false);
+          } else if (!node || node.error) {
+            lazyError(el, b.path, node ? node.error : 'no answer for this node');
+            // false, not [], tells jsTree the load failed: the node stays
+            // closed and loadable, so opening it again retries, rather than
+            // being shown as an empty leaf.
+            b.cb.call($.jstree.reference(el), false);
+          } else {
+            b.cb.call($.jstree.reference(el), node.children || []);
+          }
+        });
+      }, function(msg) {
+        $.each(batch, function(i, b) {
+          lazyError(el, b.path, msg);
+          // false tells jsTree loading failed, so the node can be opened again.
+          b.cb.call($.jstree.reference(el), false);
+        });
+      });
+    }, 0);
+  };
+  var lazyError = function(el, path, msg) {
+    var where = path.length ? path.join(' / ') : 'the top level';
+    if (window.console) { console.error('shinyTree: could not load ' + where + ': ' + msg); }
+    if (typeof Shiny !== 'undefined' && Shiny.setInputValue) {
+      Shiny.setInputValue(el.id + '_lazy_error', {path: path, message: msg, time: Date.now()},
+                          {priority: 'event'});
+    }
+  };
+  // Open every node on each path, including the last, fetching branches on the
+  // way down, then call done(). A path that no longer exists stops where it
+  // stops matching. One level is handled for all paths together, so the
+  // fetches for a level go out as a single batched request.
+  var lazyOpenPaths = function(el, paths, done, stillWanted) {
+    var tree = $.jstree.reference(el);
+    var lazy = el.stLazy;
+    var pending = paths.filter(function(p) { return p.length > 0; })
+                       .map(function(p) { return {path: p, depth: 0, parent: '#'}; });
+    var step = function() {
+      // Stop if the tree has been rebuilt, or the caller -- e.g. a search that
+      // a newer search replaced -- no longer wants these nodes opened.
+      // Otherwise it kept fetching and opening them, hidden, and they all
+      // appeared open once the search was cleared.
+      if (el.stLazy !== lazy || (stillWanted && !stillWanted())) { return; }
+      var next = [];
+      var waiting = 0;
+      var finishOne = function() { if (--waiting === 0) { setTimeout(step, 0); } };
+      var seen = {};
+      $.each(pending, function(i, item) {
+        var parent = tree.get_node(item.parent);
+        if (!parent) { return; }
+        // A step is a name, or {name, nth} from a saved state, nth saying which
+        // of several same-named siblings it is.
+        var want = item.path[item.depth];
+        var name = typeof want === 'string' ? want : want.name;
+        var nth = typeof want === 'string' ? null : want.nth;
+        // With an index, the one sibling it names. With a plain name -- a
+        // search result, which cannot say which of several same-named
+        // siblings it means -- every sibling of that name, so a match under
+        // the second of two "dup"s is opened, not only one under the first.
+        var childIds = [];
+        var seenSame = 0;
+        $.each(parent.children, function(j, cid) {
+          var p = lazyPath(tree, tree.get_node(cid));
+          if (p[p.length - 1] !== name) { return; }
+          if (nth === null || seenSame === nth) { childIds.push(cid); }
+          seenSame++;
+          if (nth !== null && childIds.length) { return false; }
+        });
+        // None: the path no longer exists.
+        $.each(childIds, function(k, childId) {
+          if (item.depth + 1 < item.path.length) {
+            next.push({path: item.path, depth: item.depth + 1, parent: childId});
+          }
+          // Several paths can share a node; open it once. open_node() fetches
+          // a branch that is not loaded yet and calls back once it is open --
+          // loading it separately as well loaded it twice, and jsTree kept
+          // both copies of its children.
+          if (seen[childId] || tree.is_open(childId) || !tree.is_parent(childId)) { return; }
+          seen[childId] = true;
+          waiting++;
+          tree.open_node(childId, finishOne, 0);
+        });
+      });
+      pending = next;
+      if (waiting > 0) { return; }  // finishOne() runs the next level
+      if (!pending.length) { done(); return; }
+      setTimeout(step, 0);
+    };
+    step();
+  };
+
+  // A remembered state on a lazy tree: the open branches have to be fetched
+  // before they can be reopened, and before a remembered selection inside them
+  // exists to restore. Fetch them, then restore as for any tree.
+  var restoreLazyState = function(el) {
+    var key = el.dataset.stState;
+    var saved = null;
+    try { saved = JSON.parse(window.localStorage.getItem(key)); } catch (e) { saved = null; }
+    if (!saved || saved.version !== 1) { restoreState(el); return; }
+    // [{name, nth}] per level; nth is null for state saved without it.
+    var toPaths = function(list) {
+      return (list || []).map(function(p) {
+        return p.split('\u0000').map(splitStep);
+      });
+    };
+    // Open every remembered open branch, and the parents of every remembered
+    // selected or checked node, so all of them are loaded.
+    var paths = toPaths(saved.open);
+    $.each(toPaths(saved.selected).concat(toPaths(saved.checked)), function(i, p) {
+      if (p.length > 1) { paths.push(p.slice(0, p.length - 1)); }
+    });
+    lazyOpenPaths(el, paths, function() { restoreState(el); });
+  };
+
   // --- Remembering state (#19) ----------------------------------------------
   // jsTree's own state plugin restores as soon as jsTree initialises, which
   // in shinyTree is before the tree's contents arrive, so it restored onto an
@@ -15,22 +194,50 @@ var shinyTree = function(){
   // jsTree's ids, which are just positions: a remembered path either matches a
   // node with the same ancestry or matches nothing, so it cannot land on an
   // unrelated node if the tree has changed shape since.
+  // Each name on the path is followed, after a \u0001, by which of its
+  // same-named siblings the node is (0 for the first), so a remembered node
+  // under the second of two siblings called "dup" (#104) is restored under
+  // that one, not the first. A path saved before this had no \u0001 parts;
+  // it still matches, against every same-named sibling as it did then.
   var nodePath = function(tree, id) {
     var node = tree.get_node(id);
     var names = [];
     while (node && node.id !== '#') {
-      names.unshift(node.text);
-      node = tree.get_node(node.parent);
+      var parent = tree.get_node(node.parent);
+      var nth = 0;
+      $.each(parent.children, function(i, cid) {
+        if (cid === node.id) { return false; }
+        if (tree.get_node(cid).text === node.text) { nth++; }
+      });
+      names.unshift(node.text + '\u0001' + nth);
+      node = parent;
     }
     return names.join('\u0000');
+  };
+  // Split one saved step into its name and sibling index. The index comes
+  // after the last \u0001 and is all digits; a name can itself contain \u0001
+  // (one read from a file, say), so splitting on the first lost the rest of
+  // it. A step without an index -- saved by an earlier version -- gives
+  // nth = null.
+  var splitStep = function(part) {
+    var m = /^([\s\S]*)\u0001(\d+)$/.exec(part);
+    return m ? {name: m[1], nth: parseInt(m[2], 10)} : {name: part, nth: null};
+  };
+  var stripSiblingIndex = function(path) {
+    return path.split('\u0000').map(function(p) { return splitStep(p).name; }).join('\u0000');
+  };
+  var hasSiblingIndex = function(path) {
+    return path.split('\u0000').every(function(p) { return splitStep(p).nth !== null; });
   };
   var nodesByPath = function(tree) {
     var byPath = {};
     $.each(tree._model.data, function(id) {
       if (id === '#') { return; }
       var path = nodePath(tree, id);
-      // With duplicate sibling names (#104) keep every match, in tree order.
       (byPath[path] = byPath[path] || []).push(id);
+      // The old form, names only: kept for state saved by earlier versions.
+      var plain = 'plain:' + stripSiblingIndex(path);
+      (byPath[plain] = byPath[plain] || []).push(id);
     });
     return byPath;
   };
@@ -67,7 +274,10 @@ var shinyTree = function(){
     var byPath = nodesByPath(tree);
     var ids = function(paths) {
       var out = [];
-      $.each(paths || [], function(i, path) { out = out.concat(byPath[path] || []); });
+      $.each(paths || [], function(i, path) {
+        var key = hasSiblingIndex(path) ? path : 'plain:' + path;
+        out = out.concat(byPath[key] || []);
+      });
       return out;
     };
     // "code": the attributes the tree was rendered with win. A node the app
@@ -167,6 +377,8 @@ var shinyTree = function(){
           'whole_node': ($elem.data('st-whole-node') === 'TRUE')
         },
         "types" : sttypes,
+        // Filled in when the server sends a tree: a node array for an ordinary
+        // tree, or the lazy loading function below.
         plugins: plugins});
     }
   });
@@ -327,8 +539,13 @@ var shinyTree = function(){
       });
 
       if (el.dataset.stState) {
+        // Deferred like the check_node callback above: these handlers are bound
+        // before jsTree's own, which is where three_state cascades a check to
+        // parents and children. Saving straight away recorded the state before
+        // the cascade, so unticking a child of a ticked parent was saved with
+        // the parent still ticked, and the reload ticked everything again.
         $(el).on("changed.jstree open_node.jstree close_node.jstree check_node.jstree uncheck_node.jstree check_all.jstree uncheck_all.jstree", function(e) {
-          saveState(el);
+          setTimeout(function() { saveState(el); }, 0);
         });
       }
       
@@ -418,6 +635,47 @@ var shinyTree = function(){
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
           $(el).jstree(true).refresh(true, true);
       }
+      // Sent by renderTree(lazy = TRUE) (#11): a URL to fetch nodes from rather
+      // than the nodes themselves. Every message starts the tree afresh.
+      if (message.type == 'lazyTree') {
+        var firstTree = !treeReceived[el.id];
+        treeReceived[el.id] = true;
+        var tree = $(el).jstree(true);
+        if (el.stLazy && el.stLazy.timer) { clearTimeout(el.stLazy.timer); }
+        el.stLazy = {url: message.url, generation: message.generation,
+                     search: message.search, queue: [], timer: null};
+        tree.settings.core.data = function(node, cb) {
+          lazyChildren(el, lazyPath(tree, node), lazyNodeData(node), cb);
+        };
+        // jsTree normally builds nodes in a web worker, from a copy of the tree
+        // taken when the work starts. An answer for the previous tree still
+        // being built when the tree is rebuilt was then written back over the
+        // new tree, leaving the old tree's nodes in it -- and state = TRUE then
+        // saved and restored them. Lazy answers are a single level of nodes, so
+        // build them in place, where a rebuild always comes after.
+        tree.settings.core.worker = false;
+        if (el.dataset.stState && firstTree) {
+          $(el).one('refresh.jstree', function() { restoreLazyState(el); });
+        } else if (el.dataset.stState) {
+          // A rebuilt tree starts closed. Save that once it has loaded, so the
+          // remembered state is the tree on screen rather than the last change
+          // made to the tree it replaced. A restore the rebuild interrupted is
+          // abandoned -- the remembered nodes belonged to the old tree -- so
+          // saving is allowed from here on; otherwise it stayed off for the
+          // rest of the page's life and every later change was lost.
+          $(el).one('refresh.jstree', function() {
+            el.stStateRestored = true;
+            saveState(el);
+          });
+        }
+        el.stServerRefresh = true;
+        if (el.stServerRefreshTimer) { clearTimeout(el.stServerRefreshTimer); }
+        el.stServerRefreshTimer = setTimeout(function(){
+          el.stServerRefresh = false;
+          el.stServerRefreshTimer = null;
+        }, 100);
+        tree.refresh(true, true);
+      }
       // Sent by expandTree()/collapseTree(). The resulting open/close events
       // update input$tree as they would for a user clicking (#42).
       if (message.type == 'openAll') {
@@ -463,11 +721,52 @@ var shinyTree = function(){
         if(to) { clearTimeout(to); }
         to = setTimeout(function () {
           var v = $('#' + searchId).val();
-          $.jstree.reference('#' + treeId).search(v);
+          var el = document.getElementById(treeId);
+          if (el && el.stLazy) {
+            lazySearch(el, v);
+          } else {
+            $.jstree.reference('#' + treeId).search(v);
+          }
         }, searchtime);
       });
     });    
   }
+
+  // Search a lazy tree (#11). The browser only has the nodes fetched so far, so
+  // the server finds the matches; the branches leading to them are then
+  // fetched and opened, and jsTree's search highlights the matching nodes.
+  var lazySearch = function(el, text) {
+    var tree = $.jstree.reference(el);
+    var lazy = el.stLazy;
+    // A newer search makes this one's answer irrelevant.
+    var token = lazy.searchToken = (lazy.searchToken || 0) + 1;
+    if (!text) {
+      tree.clear_search();
+      return;
+    }
+    lazyPost(el, {search: text}, function(res) {
+      if (lazy.searchToken !== token) { return; }
+      var matches = res.matches || [];
+      var key = function(p) { return p.join('\u0000'); };
+      var wanted = {};
+      $.each(matches, function(i, p) { wanted[key(p)] = true; });
+      // Open the parents of every match, so they are fetched and visible.
+      var parents = matches.filter(function(p) { return p.length > 1; })
+                           .map(function(p) { return p.slice(0, p.length - 1); });
+      lazyOpenPaths(el, parents, function() {
+        if (lazy.searchToken !== token) { return; }
+        // Highlight exactly the server's matches, by path.
+        tree.settings.search.search_callback = function(str, node) {
+          return wanted[key(lazyPath(tree, node))] === true;
+        };
+        tree.search(text, true);
+        tree.settings.search.search_callback = false;
+      }, function() { return lazy.searchToken === token; });
+    }, function(msg) {
+      if (lazy.searchToken !== token) { return; }
+      lazyError(el, [], 'search failed: ' + msg);
+    });
+  };
   
   return exports;
 }()
