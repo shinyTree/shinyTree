@@ -1,6 +1,16 @@
  v 0.3.2
 --------------------------------------------------------------------------------
 
+- New `ontologyToTree()` reads an ontology from an OBO (`.obo`) or OWL
+  (`.owl`, RDF/XML) file and returns what `renderTree(lazy = TRUE)` needs, so
+  even a large ontology such as the Gene Ontology's 48,000 terms is shown a
+  level at a time. The hierarchy is `is_a`; a term with several parents
+  appears under each; obsolete terms are greyed out under an `obsolete` node;
+  each node shows its id and definition on hover; search finds terms by name
+  or id anywhere in the ontology. New example `28-ontology` browses the
+  ontology from the issue, or an uploaded file (#33).
+- A lazy tree that is rebuilt now reports the new tree to the server, so
+  `input$tree` no longer keeps the old tree's selection.
 - New `renderTree(lazy = TRUE)` loads a tree's nodes from the server as they
   are opened, for trees too large to send whole. The render expression returns
   `function(path)` (or `function(path, node)`, to tell same-named siblings

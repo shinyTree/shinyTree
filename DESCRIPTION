@@ -38,7 +38,8 @@ Suggests:
     mockery,
     withr,
     later,
-    rmarkdown
+    rmarkdown,
+    xml2
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.2.3

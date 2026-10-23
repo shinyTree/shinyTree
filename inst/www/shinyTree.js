@@ -674,6 +674,19 @@ var shinyTree = function(){
           el.stServerRefresh = false;
           el.stServerRefreshTimer = null;
         }, 100);
+        // Report the rebuilt tree once it has loaded. The refresh itself is
+        // muted (#36), and a new tree with nothing selected fires no "changed"
+        // event, so input$tree otherwise kept the old tree -- and its
+        // selection, of nodes that no longer exist. This is not a loop: the
+        // render function that sent this message does not read input$tree.
+        if (!firstTree) {
+          $(el).one('refresh.jstree', function() {
+            var b = $(el).data('shiny-input-binding');
+            if (b && typeof Shiny !== 'undefined' && Shiny.setInputValue) {
+              Shiny.setInputValue(el.id + ':shinyTree', b.getValue(el), {priority: 'event'});
+            }
+          });
+        }
         tree.refresh(true, true);
       }
       // Sent by expandTree()/collapseTree(). The resulting open/close events
