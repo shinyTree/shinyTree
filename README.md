@@ -333,3 +333,33 @@ shinyTree("tree", checkbox = TRUE, state = TRUE)
 
 See `?shinyTree` for the details.
 
+#### 27-lazy
+
+```
+library(shiny)
+library(shinyTree)
+runApp(system.file("examples/27-lazy", package = "shinyTree"))
+```
+
+Trees whose nodes are fetched from the server as they are opened, with
+`renderTree(lazy = TRUE)`, for trees too large to send whole. The render
+expression returns a function that is given a node's path and returns its
+children:
+
+```r
+output$tree <- renderTree(lazy = TRUE, {
+  function(path) {
+    # path: the names from the root to the node being opened;
+    # character(0) for the top level. Mark children that have children of
+    # their own with stchildren = TRUE.
+    list(a = structure("", stchildren = TRUE), b = "")
+  }
+})
+```
+
+One tree holds every number from 1 to 1,000,000 and finds any of them with a
+`search` function, fetching only the branches on the way; the other browses a
+folder. See the *Lazy loading* section of `?renderTree` for searching the whole
+tree, telling same-named siblings apart with `function(path, node)`, errors,
+state, and speed.
+

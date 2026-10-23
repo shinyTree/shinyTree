@@ -8,6 +8,8 @@
 #' @param data JSON data or nested list representing the new tree structure.
 #' @export
 updateTree <- function(session, treeId, data=NULL) {
+  stopIfLazy(session, treeId, "updateTree",
+             "Change what its render expression returns to rebuild it instead.")
   if(is.list(data)){
     data<-Rlist2json(data)
   }
@@ -47,6 +49,8 @@ updateTree <- function(session, treeId, data=NULL) {
 #' @seealso \code{\link{updateTree}}
 #' @export
 expandTree <- function(session, treeId) {
+  stopIfLazy(session, treeId, "expandTree",
+             "It would have to fetch the whole tree, which may be endless.")
   session$sendInputMessage(treeId, list(type = "openAll"))
 }
 

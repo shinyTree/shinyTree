@@ -326,6 +326,24 @@ async function testStateRemembered() {
   });
 }
 
+async function testStateUntiedUntickSaved() {
+  console.log('unticking a child of a ticked parent is saved after the cascade (#19)');
+  await withApp('test_state', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page, '?tied=0');
+    await changeTree(page, "t.uncheck_all(); t.deselect_all(); t.open_all();");
+    await page.waitForTimeout(300);
+    // Tick root1 (cascading to all of it), then untick one leaf under it.
+    await changeTree(page, "t.check_node(id('root1'));");
+    await page.waitForTimeout(100);
+    await changeTree(page, "t.uncheck_node(id('root1/a/a1'));");
+    await page.waitForTimeout(400);
+    const before = (await treeState(page)).checked;
+    await reloadTree(page, '?tied=0');
+    equal((await treeState(page)).checked, before, 'the reload restores what was visibly ticked');
+  });
+}
+
 async function testStateUntiedCheckboxes() {
   console.log('state = TRUE remembers checkboxes untied from the selection (#19)');
   await withApp('test_state', async (page) => {
@@ -338,6 +356,213 @@ async function testStateUntiedCheckboxes() {
     equal(s.checked, 'root2/b2', 'checked node restored');
     equal(s.selected, '', 'selection restored separately (none)');
     ok(/checked: root2\/b2/.test(s.server), `the restored checks reach the server (got "${s.server}")`);
+  });
+}
+
+// --- Lazy loading (#11) ------------------------------------------------------
+
+const lazyModel = (page) => page.evaluate(() => {
+  const t = $('#tree').jstree(true), m = t._model.data;
+  const path = (id) => { const n = []; let x = t.get_node(id); while (x && x.id !== '#') { n.unshift(x.text); x = t.get_node(x.parent); } return n.join('/'); };
+  const ids = Object.keys(m).filter((i) => i !== '#');
+  const reach = new Set();
+  (function walk(id) { (m[id].children || []).forEach((c) => { reach.add(c); walk(c); }); })('#');
+  const dupKids = ids.filter((i) => m[i].children.length !== new Set(m[i].children.map((c) => m[c].text + '|' + JSON.stringify(m[c].data && m[c].data.stid))).size).length;
+  return {
+    nodes: ids.length, orphans: ids.length - reach.size, duplicated: dupKids,
+    open: ids.filter((i) => t.is_open(i)).map(path).sort().join(','),
+    selected: t.get_selected().map(path).sort().join(','),
+    report: (document.getElementById('report') || {}).textContent || ''
+  };
+});
+const lazyOpen = (page, p) => page.evaluate((p) => new Promise((resolve) => {
+  const t = $('#tree').jstree(true);
+  const id = Object.keys(t._model.data).find((i) => {
+    if (i === '#') return false;
+    const n = []; let x = t.get_node(i);
+    while (x && x.id !== '#') { n.unshift(x.text); x = t.get_node(x.parent); }
+    return n.join('/') === p;
+  });
+  if (!id) { resolve('missing'); return; }
+  t.open_node(id, () => resolve('ok'));
+  setTimeout(() => resolve('timeout'), 8000);
+}), p);
+
+async function testLazyLoading() {
+  console.log('renderTree(lazy = TRUE) fetches nodes as they are opened (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    let s = await lazyModel(page);
+    equal(s.nodes, 5, 'only the top level is sent');
+    equal(await lazyOpen(page, 'g1_1'), 'ok', 'a branch opens');
+    equal(await lazyOpen(page, 'g1_1/g1_1.2'), 'ok', 'a grandchild opens');
+    s = await lazyModel(page);
+    equal(s.nodes, 11, 'only the opened branches were fetched');
+    equal(s.orphans + s.duplicated, 0, 'no orphaned or duplicated nodes');
+
+    // Same-named siblings get their own children (function(path, node)).
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.get_node('#').children.filter((c) => t.get_node(c).text === 'dup').forEach((c) => t.open_node(c)); });
+    await page.waitForFunction(() => document.querySelectorAll('#tree a.jstree-anchor').length >= 13);
+    const dupKids = await page.evaluate(() => Array.from(document.querySelectorAll('#tree a.jstree-anchor')).map((a) => a.textContent).filter((t) => /^child of dup/.test(t)).sort().join(','));
+    equal(dupKids, 'child of dup 1,child of dup 2', 'same-named siblings are told apart by stid');
+
+    // A search finds a node that was never fetched.
+    await page.fill('#tree-search-input', 'g1_3.2.1');
+    await page.evaluate(() => $('#tree-search-input').trigger('keyup'));
+    await page.waitForFunction(() => Array.from(document.querySelectorAll('#tree .jstree-search')).some((a) => a.textContent === 'g1_3.2.1'), null, { timeout: 15000 });
+    s = await lazyModel(page);
+    ok(s.open.includes('g1_3/g1_3.2'), 'the search opened the branches leading to the match');
+    equal(s.orphans + s.duplicated, 0, 'no orphaned or duplicated nodes after a search');
+  });
+}
+
+async function testLazyRebuildDuringFetch() {
+  console.log('a lazy tree rebuilt while a fetch is in flight keeps nothing of the old tree (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page, '?delay=1');
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.open_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'g1_3')); });
+    await page.waitForTimeout(300);
+    await page.click('#rebuild');
+    await page.waitForFunction(() => Array.from(document.querySelectorAll('#tree a.jstree-anchor')).some((a) => a.textContent === 'g2_1'));
+    await page.waitForTimeout(2500);   // let the old tree's answer arrive
+    const s = await lazyModel(page);
+    equal(s.orphans, 0, 'no nodes left over from the old tree');
+    equal(s.open, '', 'nothing from the old tree is open');
+    const stored = await page.evaluate(() => localStorage.getItem('shinyTree-tree') || '');
+    ok(!/g1_/.test(stored), `the saved state holds nothing from the old tree (got ${stored})`);
+  });
+}
+
+async function testLazyStateRestore() {
+  console.log('state = TRUE restores a lazy tree several levels deep (#11, #19)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    await lazyOpen(page, 'g1_1'); await lazyOpen(page, 'g1_1/g1_1.2'); await lazyOpen(page, 'g1_1/g1_1.2/g1_1.2.3');
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.select_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'g1_1.2.3.1')); });
+    await page.waitForTimeout(500);
+    await reloadTree(page);
+    await page.waitForFunction(() => /g1_1\.2\.3\.1/.test(document.getElementById('report').textContent), null, { timeout: 10000 }).catch(() => {});
+    const s = await lazyModel(page);
+    equal(s.open, 'g1_1,g1_1/g1_1.2,g1_1/g1_1.2/g1_1.2.3', 'the open branches are fetched and reopened');
+    equal(s.selected, 'g1_1/g1_1.2/g1_1.2.3/g1_1.2.3.1', 'the selection deep inside them is restored');
+    ok(/g1_1\/g1_1\.2\/g1_1\.2\.3\/g1_1\.2\.3\.1/.test(s.report), 'and reaches the server');
+  });
+}
+
+async function testLazyRebuildDuringRestore() {
+  console.log('a rebuild during a state restore does not stop later changes being saved (#11, #19)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.setItem('shinyTree-tree', JSON.stringify({
+      version: 1,
+      open: ['g1_3', 'g1_3\u0000g1_3.2', 'g1_3\u0000g1_3.2\u0000g1_3.2.1'],
+      selected: ['g1_3\u0000g1_3.2\u0000g1_3.2.1\u0000g1_3.2.1.2'], checked: []
+    })));
+    await reloadTree(page, '?delay=1');
+    // Rebuild while the restore is still fetching its branches.
+    await page.waitForTimeout(800);
+    await page.click('#rebuild');
+    await page.waitForFunction(() => Array.from(document.querySelectorAll('#tree a.jstree-anchor')).some((a) => a.textContent === 'g2_1'));
+    await page.waitForTimeout(3500);
+    // A change to the rebuilt tree must be remembered.
+    equal(await lazyOpen(page, 'g2_1'), 'ok', 'a branch of the rebuilt tree opens');
+    await page.waitForTimeout(500);
+    const stored = await page.evaluate(() => localStorage.getItem('shinyTree-tree') || '');
+    ok(/g2_1/.test(stored) && !/g1_3/.test(stored), `the change is saved, not the old restore (got ${stored})`);
+  });
+}
+
+async function testLazyStateDuplicateSiblings() {
+  console.log('state = TRUE restores the right one of two same-named siblings (#11, #19, #104)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    // Open the SECOND "dup" and select its child.
+    await page.evaluate(() => new Promise((r) => { const t = $('#tree').jstree(true); const dups = t.get_node('#').children.filter((c) => t.get_node(c).text === 'dup'); t.open_node(dups[1], () => r()); }));
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.select_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'child of dup 2')); });
+    await page.waitForTimeout(500);
+    // With checkboxes, three_state also selects the second "dup", whose only
+    // child this is; the restore must give back exactly this.
+    const before = await page.evaluate(() => { const t = $('#tree').jstree(true); return t.get_selected(true).map((n) => n.text + (n.text === 'dup' ? '#' + t.get_node('#').children.indexOf(n.id) : '')).sort().join(','); });
+    await reloadTree(page);
+    await page.waitForTimeout(1500);
+    const st = await page.evaluate(() => {
+      const t = $('#tree').jstree(true);
+      const dups = t.get_node('#').children.filter((c) => t.get_node(c).text === 'dup');
+      return { first_open: t.is_open(dups[0]), second_open: t.is_open(dups[1]),
+               selected: t.get_selected(true).map((n) => n.text + (n.text === 'dup' ? '#' + t.get_node('#').children.indexOf(n.id) : '')).sort().join(',') };
+    });
+    equal(st.second_open && !st.first_open, true, 'the second "dup" is reopened, not the first');
+    equal(st.selected, before, 'and exactly the selection inside it is restored');
+  });
+}
+
+async function testLazySearchDuplicateSiblings() {
+  console.log('a search opens matches under every same-named sibling (#11, #104)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    await page.fill('#tree-search-input', 'shared');
+    await page.evaluate(() => $('#tree-search-input').trigger('keyup'));
+    await page.waitForFunction(() => document.querySelectorAll('#tree .jstree-search').length >= 1, null, { timeout: 10000 });
+    await page.waitForTimeout(600);
+    const st = await page.evaluate(() => {
+      const t = $('#tree').jstree(true);
+      const dups = t.get_node('#').children.filter((c) => t.get_node(c).text === 'dup');
+      return { open: dups.map((d) => t.is_open(d)).join(','), hits: document.querySelectorAll('#tree .jstree-search').length };
+    });
+    equal(st.open, 'true,true', 'both "dup"s are opened');
+    equal(st.hits, 2, 'and both matches are highlighted');
+  });
+}
+
+async function testLazyStateControlCharName() {
+  console.log('state = TRUE restores below a node whose name contains \\u0001 (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    await lazyOpen(page, 'g1_3');
+    await lazyOpen(page, 'g1_3/ctl\u0001x');
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.select_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'inner')); });
+    await page.waitForTimeout(500);
+    await reloadTree(page);
+    await page.waitForTimeout(1200);
+    const s = await lazyModel(page);
+    equal(s.open, 'g1_3,g1_3/ctl\u0001x', 'both branches reopen');
+    equal(s.selected, 'g1_3/ctl\u0001x/inner', 'and the selection inside is restored');
+  });
+}
+
+async function testLazySupersededSearch() {
+  console.log('a search replaced by a newer one stops opening branches (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page, '?delay=0.6&searchfn=1');
+    // A deep match, found at once by the search function, with three levels
+    // of branches to fetch on the way to it at 0.6s each.
+    await page.fill('#tree-search-input', 'g1_3.2.1.3');
+    await page.evaluate(() => $('#tree-search-input').trigger('keyup'));
+    await page.waitForTimeout(900);
+    // Replace it before it has finished opening its branches.
+    await page.fill('#tree-search-input', 'g1_1');
+    await page.evaluate(() => $('#tree-search-input').trigger('keyup'));
+    await page.waitForTimeout(3500);
+    const s = await lazyModel(page);
+    ok(!s.open.includes('g1_3/g1_3.2/g1_3.2.1'), `the first search stopped opening branches (open: ${s.open})`);
+  });
+}
+
+async function testLazyRenameKeepsPath() {
+  console.log('a renamed lazy node still fetches its children by its original path (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.settings.core.check_callback = true; t.rename_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'g1_2'), 'Renamed'); });
+    equal(await lazyOpen(page, 'Renamed'), 'ok', 'the renamed node opens');
+    const kids = await page.evaluate(() => { const t = $('#tree').jstree(true); const id = Object.keys(t._model.data).find((i) => t.get_node(i).text === 'Renamed'); return t.get_node(id).children.map((c) => t.get_node(c).text).join(','); });
+    equal(kids, 'g1_2.1,g1_2.2,g1_2.3', 'with the children of its original path');
   });
 }
 
@@ -364,6 +589,16 @@ async function testEmptyTreeDoesNotLoop() {
   await testSlowRenderSentOnce();
   await testStateRemembered();
   await testStateUntiedCheckboxes();
+  await testStateUntiedUntickSaved();
+  await testLazyLoading();
+  await testLazyRebuildDuringFetch();
+  await testLazyStateRestore();
+  await testLazyRebuildDuringRestore();
+  await testLazyStateDuplicateSiblings();
+  await testLazySearchDuplicateSiblings();
+  await testLazyStateControlCharName();
+  await testLazySupersededSearch();
+  await testLazyRenameKeepsPath();
   await testEmptyTreeDoesNotLoop();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
