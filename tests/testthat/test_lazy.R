@@ -196,7 +196,10 @@ test_that("the default search is linear and bounded, so it cannot freeze the app
   t <- system.time(r <- call_handler(lazy_state(wide(99999)), list(search = "zzz", generation = 1)))
   expect_equal(r$status, 500L)
   expect_match(r$body$error, "too large or slow to search")
-  expect_lt(t[["elapsed"]], 5)
+  ## Bounded: it used to take about a minute. Under covr the code runs slowly
+  ## enough to reach the 5 second time budget instead of the call cap, so the
+  ## limit allows for that budget plus overhead.
+  expect_lt(t[["elapsed"]], 15)
   ## The cap counts children-function calls, not just nodes.
   calls <- 0
   deep <- function(path) { calls <<- calls + 1
