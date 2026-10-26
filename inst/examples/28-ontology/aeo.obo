@@ -1,0 +1,2159 @@
+format-version: 1.2
+data-version: releases/2022-09-13
+date: 04:07:2013 20:24
+saved-by: jonathanbard
+auto-generated-by: OBO-Edit 2.1.1-beta7
+default-namespace: anatomical_entity_ontology
+remark: this version corrects the namespace and includes some flybase alt_IDs
+ontology: aeo
+property_value: typeref "anatomical_entity_ontology" xsd:string
+
+[Term]
+id: AEO:0000013
+name: single-cell tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003013
+def: "Anatomical structure composed of a single cell." [CARO:MAH]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: AEO:0000078
+name: lumen of tube
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003078
+alt_id: UBERON:0005082
+def: "The inner space within a tube." [AEO:JB]
+synonym: "tube lumen" RELATED []
+is_a: AEO:0000221 ! open anatomical space
+
+[Term]
+id: AEO:0000079
+name: lumen of epithelial sac
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003079
+def: "A small cavity bounded by an epithelium." [AEO:JB]
+synonym: "cavity of vesicle" RELATED []
+is_a: AEO:0000222 ! enclosed anatomical space
+
+[Term]
+id: AEO:0000080
+name: foramen
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003080
+def: "A hole in a tissue." [AEO:JB]
+is_a: CARO:0000010 ! anatomical surface
+
+[Term]
+id: AEO:0000081
+name: matrix-based tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003081
+def: "A tissue whose predominant feature is extracellular matrix which may or may not be highly hydrated or calcified." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: AEO:0000082
+name: bone
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003082
+def: "Ossified structure that is predominantly extracellular matrix and forms part of the support system of the body." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000083
+name: endochondral bone
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003083
+def: "Bone that is preformed in cartilage." [AEO:JB, VAO:0000145]
+is_a: AEO:0000082 ! bone
+relationship: has_part CL:0000058 ! chondroblast
+relationship: has_part CL:0000062 ! osteoblast
+relationship: has_part CL:0000138 ! chondrocyte
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000085
+name: membrane bone
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003085
+def: "Bone that forms directly from mesenchyme." [AEO:JB, VAO:0000023]
+is_a: AEO:0000082 ! bone
+relationship: has_part CL:0000062 ! osteoblast
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000086
+name: sesamoid bone
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003086
+def: "An endochondral bone that forms within tendenous or ligamentous matrix." [AEO:JB, VAO:0000137]
+is_a: AEO:0000083 ! endochondral bone
+relationship: has_part CL:0000058 ! chondroblast
+relationship: has_part CL:0000138 ! chondrocyte
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000087
+name: cartilage
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003087
+def: "Dense connective tissue made primarily of type II collagen." [AEO:JB, VAO:0000040]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000090
+name: ligament
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003090
+def: "A strap of predominantly extracellular matrix connecting two bones." [AEO:JB]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: has_part CL:0000057 ! fibroblast
+relationship: has_part CL:0000327 ! extracellular matrix secreting cell
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000091
+name: tendon
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003091
+def: "A strap of predominantly extracellular matrix connecting a muscle to a bone." [AEO:JB]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: has_part CL:0000057 ! fibroblast
+relationship: has_part CL:0000327 ! extracellular matrix secreting cell
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000092
+name: aponeurosis
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003092
+def: "A sheet of extracellular matrix." [AEO:JB]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: has_part CL:0000327 ! extracellular matrix secreting cell
+relationship: has_part CL:0002320 ! connective tissue cell
+
+[Term]
+id: AEO:0000093
+name: non-connected functional system
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003093
+alt_id: FBbt:00007278
+def: "An anatomical group whose component structures share a common function." [AEO:JB]
+is_a: CARO:0000041 ! anatomical cluster
+
+[Term]
+id: AEO:0000094
+name: sense organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003094f
+alt_id: FBbt:00005155
+def: "Multicellular anatomical structure with largely bona fide boundary that transduces some sensory stimulus to the nervous system." [AEO:JB]
+is_a: CARO:0000024 ! compound organ
+
+[Term]
+id: AEO:0000095
+name: fluid-based anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003095
+def: "Fluid anatomical entity containing cells." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000096
+name: gland
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003096
+def: "A multi-tissue structure that produces a secretion for use elsewhere in the body." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000097
+name: ducted gland
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003097
+def: "A gland that releases its secretion through a duct." [AEO:JB]
+synonym: "exocrine gland." RELATED []
+is_a: AEO:0000096 ! gland
+
+[Term]
+id: AEO:0000098
+name: ductless gland
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003098
+def: "A gland that releases its secretion directly into the bloodstream, or equivalent for an invertebrate." [AEO:JB]
+synonym: "endocrine gland." RELATED [AEO:JB]
+is_a: AEO:0000096 ! gland
+
+[Term]
+id: AEO:0000099
+name: keratin-based structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003099
+def: "Acellular anatomical structure whose predominant constituent is keratin." [AEO:JB]
+is_a: CARO:0000040 ! acellular anatomical structure
+
+[Term]
+id: AEO:0000100
+name: chitin-based structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003100
+def: "Acellular anatomical structure whose predominant constituent is chitin." [AEO:JB]
+is_a: CARO:0000040 ! acellular anatomical structure
+
+[Term]
+id: AEO:0000103
+name: body
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003103
+def: "The region of the organism associated with the visceral organs." [AEO:JB]
+is_a: CARO:0000032 ! organism subdivision
+
+[Term]
+id: AEO:0000106
+name: head
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003106
+def: "The region of the body containing the brain and mouth." [AEO:JB]
+is_a: CARO:0000032 ! organism subdivision
+
+[Term]
+id: AEO:0000108
+name: neck
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003108
+def: "The region of the body connecting the head and the body." [AEO:JB]
+is_a: CARO:0000032 ! organism subdivision
+
+[Term]
+id: AEO:0000109
+name: tail
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003109
+def: "An external caudal extension of the body." [AEO:JB]
+is_a: AEO:0000193 ! appendage
+
+[Term]
+id: AEO:0000111
+name: mesothelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003111
+def: "Epithelium derived from mesenchyme." [AEO:JB]
+is_a: CARO:0000070 ! simple squamous epithelium
+
+[Term]
+id: AEO:0000114
+name: epithelial tube
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003114
+def: "An epithelial structure capable of allowing fluid flow." [AEO:JB]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000068 ! duct epithelial cell
+
+[Term]
+id: AEO:0000115
+name: epithelial sac
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003115
+def: "An epithelial pouch with a single opening." [AEO:JB]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0000117
+name: arborising epithelial duct system
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003117
+def: "A group of connected epithelial tubes with a single portal." [AEO:JB]
+is_a: AEO:0000115 ! epithelial sac
+relationship: has_part CL:0000068 ! duct epithelial cell
+
+[Term]
+id: AEO:0000118
+name: epithelial plexus
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003118
+def: "A network of interlinking epithelial tubes." [AEO:JB]
+is_a: AEO:0000114 ! epithelial tube
+relationship: has_part CL:0000068 ! duct epithelial cell
+
+[Term]
+id: AEO:0000119
+name: epithelial vesicle
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003119
+def: "A closed epithelium with a lumen." [AEO:JB]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0000122
+name: muscle tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003122
+def: "A tissue composed of myoblasts or muscle cells." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: AEO:0000123
+name: neural tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003123
+def: "Tissue composed predominantly of neurons." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: AEO:0000125
+name: developing anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003125
+alt_id: UBERON:0005423
+def: "A structure whose morphology or state of differentiation will change during normal development." [AEO:JB]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: AEO:0000126
+name: larva
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003126
+def: "A post-embryonic juvenile form which will undergo metamorphosis to become the adult." [AEO:JB]
+is_a: CARO:0000012 ! multi-cellular organism
+
+[Term]
+id: AEO:0000127
+name: apoptosing developing anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003127
+def: "An embryonic anatomical structure undergoing apoptosis." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+relationship: has_part CL:0000445 ! apoptosis fated cell
+
+[Term]
+id: AEO:0000129
+name: functioning and developing structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003129
+def: "An embryonic entity that displays a physiological function but whose strucuture is not yet fully formed." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0000131
+name: developing structure with stem cells
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003131
+def: "Embronic structure that contains stem cellsr that may contribute to its future development or maintenance or to its future development or maintenance of another tissue." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+relationship: has_part CL:0000034 ! stem cell
+
+[Term]
+id: AEO:0000132
+name: transitional anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003132
+def: "An embryonic anatomical entity that will turn into one or more other anatomical entities, perhaps with other anatomical entities, later in development." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0000135
+name: ganglion
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003135
+def: "A group of neurons, usually outside the CNS, which relay neuronal signals." [AEO:JB]
+is_a: AEO:0000123 ! neural tissue
+
+[Term]
+id: AEO:0000136
+name: neuronal nucleus
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003136
+def: "A localised domain of predominantly neuronal tissue in the central nervous system." [AEO:JB]
+is_a: AEO:0001012 ! neuronal grey matter
+relationship: has_part CL:0000127 ! astrocyte
+relationship: has_part CL:0000128 ! oligodendrocyte
+relationship: has_part CL:0000129 ! microglial cell
+
+[Term]
+id: AEO:0000137
+name: nerve
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003137
+def: "A group of neurons that provides a nervous supply." [AEO:JB]
+is_a: AEO:0000123 ! neural tissue
+
+[Term]
+id: AEO:0000138
+name: nerve plexus
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003138
+def: "A complex of interconnecting nerves." [AEO:JB]
+is_a: AEO:0000123 ! neural tissue
+relationship: has_part CL:0000526 ! afferent neuron
+relationship: has_part CL:0000527 ! efferent neuron
+
+[Term]
+id: AEO:0000139
+name: nerve fiber tract
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003139
+def: "A fasciculated bundle of neuron projections, largely or completely lacking synapses." [CARO:0001001, GO:0043005]
+synonym: "neuron projection bundle" RELATED [GO:0043005]
+is_a: AEO:0001011 ! neuronal white matter
+
+[Term]
+id: AEO:0000140
+name: striated muscle tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003140
+def: "A tissue composed of striated muscle cells." [AEO:JB]
+is_a: AEO:0000122 ! muscle tissue
+relationship: has_part CL:0000737 ! striated muscle cell
+
+[Term]
+id: AEO:0000141
+name: smooth muscle tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003141
+def: "A tissue composed of smooth muscle cells." [AEO:JB]
+is_a: AEO:0000122 ! muscle tissue
+relationship: has_part CL:0000192 ! smooth muscle cell
+
+[Term]
+id: AEO:0000142
+name: cardiac muscle tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003142
+def: "A tissue composed of cardiac muscle cells." [AEO:JB]
+is_a: AEO:0000122 ! muscle tissue
+relationship: has_part CL:0000746 ! cardiac muscle cell
+
+[Term]
+id: AEO:0000143
+name: smooth muscle sphincter
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003143
+def: "A ring of smooth muscle cells whose contraction closes the opening of the ring." [AEO:JB]
+is_a: AEO:0000141 ! smooth muscle tissue
+relationship: has_part CL:0000192 ! smooth muscle cell
+
+[Term]
+id: AEO:0000144
+name: striated muscle sphincter
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003144
+def: "A ring of striated muscle cells whose contraction closes the opening of the ring." [AEO:JB]
+is_a: AEO:0000140 ! striated muscle tissue
+relationship: has_part CL:0000737 ! striated muscle cell
+
+[Term]
+id: AEO:0000145
+name: mesenchymal tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003145
+def: "A group of not-yet-terminally-differentiatied cells that can pack in three dimensions." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: AEO:0000146
+name: dense mesenchyme tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003146
+def: "Mesenchyme with little extracellular matrix." [AEO:JB]
+is_a: AEO:0000145 ! mesenchymal tissue
+relationship: has_part CL:0000057 ! fibroblast
+
+[Term]
+id: AEO:0000147
+name: cartilagenous condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003147
+def: "Cell condensation that is an aggregation of mesenchymal cells that are committed to differentiate into chondroblasts and chondrocytes." [AEO:JB, GO:curator, VAO:0000092]
+is_a: AEO:0000148 ! developing mesenchymal condensation
+relationship: has_part CL:0000058 ! chondroblast
+
+[Term]
+id: AEO:0000148
+name: developing mesenchymal condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003148
+def: "A delimited region of dense mesenchyme within looser mesenchyme." [AEO:JB]
+is_a: AEO:0000146 ! dense mesenchyme tissue
+is_a: AEO:0001016 ! developing mesenchymal structure
+relationship: has_part CL:0000335 ! mesenchyme condensation cell
+
+[Term]
+id: AEO:0000149
+name: pre-muscle condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003149
+def: "A delimited region of dense mesenchyme within looser mesenchyme whose cells are committed to become myoblasts." [AEO:JB]
+is_a: AEO:0000148 ! developing mesenchymal condensation
+relationship: has_part CL:0000680 ! muscle precursor cell
+
+[Term]
+id: AEO:0000150
+name: pre-cartilage condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003150
+def: "A delimited region of dense mesenchyme within looser mesenchyme whose cells are committed to become chondroblasts." [AEO:JB]
+is_a: AEO:0000148 ! developing mesenchymal condensation
+relationship: has_part CL:0000335 ! mesenchyme condensation cell
+
+[Term]
+id: AEO:0000151
+name: loose mesenchyme tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003151
+def: "Mesenchyme whose cells are embedded in obvious amounts fo extracellular matrix." [AEO:JB]
+is_a: AEO:0000145 ! mesenchymal tissue
+relationship: has_part CL:0000057 ! fibroblast
+relationship: has_part CL:0000327 ! extracellular matrix secreting cell
+
+[Term]
+id: AEO:0000152
+name: migrating mesenchyme population
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003152
+def: "Mesenchymal cells that are migrating." [AEO:JB]
+is_a: AEO:0000145 ! mesenchymal tissue
+relationship: has_part CL:0000134 ! mesenchymal cell
+
+[Term]
+id: AEO:0000153
+name: mesenchymal tissue with stem cells
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003153
+def: "Multi-tissue mesenchymal structure one of whose parts contains stem cells that can replace other parts." [AEO:JB]
+is_a: AEO:0000187 ! multi-tissue structure with stem cells
+
+[Term]
+id: AEO:0000154
+name: organism surfacef
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003154
+def: "The collection of structures that form the exxtenal covering of the organism." [AEO:JB]
+is_a: CARO:0000032 ! organism subdivision
+
+[Term]
+id: AEO:0000161
+name: groove
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003161
+alt_id: UBERON:0006846
+alt_id: ZFA:0001690
+def: "A furrow or an incomplete tube." [AEO:JB]
+is_a: CARO:0000010 ! anatomical surface
+
+[Term]
+id: AEO:0000162
+name: ridge
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003162
+def: "A raised strip of tissue." [AEO:JB]
+is_a: CARO:0000010 ! anatomical surface
+
+[Term]
+id: AEO:0000168
+name: skeletal system
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003168
+def: "The rigid support system for the body." [AEO:JB, VAO:0000027]
+is_a: CARO:0000011 ! anatomical system
+
+[Term]
+id: AEO:0000169
+name: embryo
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003169
+alt_id: UBERON:0000922
+alt_id: ZFA:0001105
+def: "That part of the conceptus that will form the organism." [AEO:JB]
+is_a: CARO:0000012 ! multi-cellular organism
+relationship: part_of AEO:0000194 ! conceptus
+
+[Term]
+id: AEO:0000170
+name: anlage
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003170
+def: "Anlagen are populations of contiguous cells, typically arranged in one plane, that are morphologically indistinct, but that already correspond in extent to a later organ/tissue." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0000171
+name: primordium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003171
+def: "Primordia are populations of contiguous cells that are morphologically distinct and already correspond in extent to a later organ/tissue." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0000172
+name: limb
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003172
+def: "Appendage of an animal used for locomotion or grasping." [AEO:JB]
+is_a: AEO:0000193 ! appendage
+
+[Term]
+id: AEO:0000173
+name: surface sense organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003173
+def: "Multicellular anatomical structure with largely bona fide boundary that extends outwards from or is part of the organism surface and transduces some sensory stimulus to the nervous system." [AEO:JB]
+is_a: AEO:0000094 ! sense organ
+relationship: part_of AEO:0000154 ! organism surfacef
+
+[Term]
+id: AEO:0000174
+name: gender-specific anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003174
+def: "A part of the body present only in a specific gender." [AEO:JB]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: AEO:0000175
+name: male anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003175
+def: "A part of the body present only in males." [AEO:JB]
+is_a: AEO:0000174 ! gender-specific anatomical structure
+
+[Term]
+id: AEO:0000176
+name: female anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003176
+def: "A part of the body present only in females." [AEO:JB]
+is_a: AEO:0000174 ! gender-specific anatomical structure
+
+[Term]
+id: AEO:0000177
+name: hermaphrodite anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003177
+def: "A part of the body present only in hermaphrodites." [AEO:JB]
+is_a: AEO:0000174 ! gender-specific anatomical structure
+
+[Term]
+id: AEO:0000178
+name: fibrous joint
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003178
+def: "A flexible joint between two bones that is made of unossified connective tissue." [AEO:JB]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: has_part CL:0002320 ! connective tissue cell
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000179
+name: joint-associated cartilage
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003179
+def: "The articular cartilage covering of the region of bone within a synoval joint." [AEO:JB]
+is_a: AEO:0000087 ! cartilage
+relationship: has_part CL:0000058 ! chondroblast
+relationship: has_part CL:0000138 ! chondrocyte
+relationship: part_of AEO:0000083 ! endochondral bone
+relationship: part_of AEO:0000183 ! synovial joint
+
+[Term]
+id: AEO:0000180
+name: non-joint-associated cartilage
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003180
+def: "Cartilage that may provide the template for an endochondral bone or that may be a disinct entity in the skeleton." [AEO:JB]
+is_a: AEO:0000087 ! cartilage
+relationship: has_part CL:0000058 ! chondroblast
+relationship: has_part CL:0000138 ! chondrocyte
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000181
+name: synovial membrane
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003181
+def: "The epithelial membrane between bone ends that forms the lateral borders of the synovial cavity and secretes synovial fluid." [AEO:JB]
+is_a: CARO:0000069 ! multilaminar epithelium
+relationship: has_part CL:0000079 ! stratified epithelial cell
+relationship: part_of AEO:0000183 ! synovial joint
+
+[Term]
+id: AEO:0000183
+name: synovial joint
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003183
+def: "A joint connecting two or more bones with cartilage at the bone ends and a synovial membrane that secretes synovial fluid conecting the bones and sealing the synovial cavity." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000185
+name: exoskeletal tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003185
+def: "A component of the exoskeleton." [AEO:JB]
+is_a: AEO:0000081 ! matrix-based tissue
+relationship: has_part CL:0000658 ! cuticle secreting cell
+relationship: part_of AEO:0000168 ! skeletal system
+
+[Term]
+id: AEO:0000186
+name: body cavity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003186
+alt_id: UBERON:0002323
+def: "The cavity within the body that contains the visceral organs." [AEO:JB]
+is_a: CARO:0000005 ! anatomical space
+
+[Term]
+id: AEO:0000187
+name: multi-tissue structure with stem cells
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003187
+def: "Multi-tissue structure one of whose parts contains stem cells that can replace other parts." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000188
+name: acellular fluid anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003188
+def: "An acellular fluid portion of organism substance that is produced by the organism for some non-waste purpose." [AEO:JB]
+is_a: CARO:0000040 ! acellular anatomical structure
+
+[Term]
+id: AEO:0000189
+name: epithelial tissue with stem cells
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003189
+def: "Multi-tissue epithelial structure one of whose parts contains stem cells that can replace other parts." [AEO:JB]
+is_a: AEO:0000187 ! multi-tissue structure with stem cells
+
+[Term]
+id: AEO:0000192
+name: anatomical surface feature
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003010
+def: "Non-material anatomical entity of two dimensions, that is demarcated by anatomical lines or points on the external or internal surfaces of anatomical structures." [CARO:MAH]
+synonym: "anatomical surface." RELATED []
+is_obsolete: true
+
+[Term]
+id: AEO:0000193
+name: appendage
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003193
+alt_id: UBERON:0000026
+def: "Organ or organ part that is attached to the body of an organism. For example a limb[GO, modified]. An appendage is an external body part, or natural prolongation, that protrudes from an organism's body, such as a vertebrate's limbs." [CARO:MAH]
+is_a: CARO:0000032 ! organism subdivision
+
+[Term]
+id: AEO:0000194
+name: conceptus
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003205
+def: "All the products of the fertilized egg." [AEO:JB]
+is_a: CARO:0000012 ! multi-cellular organism
+
+[Term]
+id: AEO:0000195
+name: extraembryonic component
+namespace: http://www.xspan.org/obo.owl#
+def: "The part of the conceptus that may be lost before birth or will be discarded at birth, or when the embryo becomes an independent organism." [AEO:JB]
+is_a: CARO:0000055 ! multi-tissue structure
+relationship: part_of AEO:0000194 ! conceptus
+
+[Term]
+id: AEO:0000196
+name: larval anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: HDAA2:0003126
+def: "An anatomical structure present in the larval form of an animal." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+relationship: part_of AEO:0000126 ! larva
+
+[Term]
+id: AEO:0000198
+name: antenna
+namespace: http://www.xspan.org/obo.owl#
+def: "A head-associated surface sense organ." [CARO:MAH]
+is_a: AEO:0000173 ! surface sense organ
+relationship: part_of AEO:0000106 ! head
+relationship: part_of AEO:0000154 ! organism surfacef
+
+[Term]
+id: AEO:0000199
+name: mucous membrane
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003234
+def: "A membranous structure with more than one cell type, one or more of which secretes mucus, that lines body passages which communicate with the exterior." [AEO:JB]
+synonym: "mucosa" RELATED []
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000200
+name: regenerating anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003233
+def: "An anatomical structure that, as part of its normal physiology, undergoes regeneration. Examples include endometrium and antlers." [AEO:JB]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: AEO:0000201
+name: afferent nerve
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003200
+def: "A group of neurons that provides a nervous response from a tissue." [AEO:JB]
+is_a: AEO:0000137 ! nerve
+relationship: has_part CL:0000526 ! afferent neuron
+
+[Term]
+id: AEO:0000202
+name: efferent nerve
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003231
+def: "A group of neurons that provides a nervous signal to a tissue." [AEO:JB]
+is_a: AEO:0000137 ! nerve
+relationship: has_part CL:0000527 ! efferent neuron
+
+[Term]
+id: AEO:0000203
+name: syncytium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: HDAA2:0003248
+def: "An anatomical entity consisting of a single or a few multinucleated structures." [AEO.:JB]
+is_a: CARO:0000043 ! simple tissue
+relationship: has_part CL:0000228 ! multinucleate cell
+
+[Term]
+id: AEO:0000204
+name: pit
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:003249
+def: "An roughly circular indentation in a surface." [AEO:JB]
+is_a: CARO:0000010 ! anatomical surface
+
+[Term]
+id: AEO:0000205
+name: protuberance
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003250
+def: "A roughly circular bulge in a surface." [AEO:JB]
+is_a: CARO:0000010 ! anatomical surface
+
+[Term]
+id: AEO:0000206
+name: migrating epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003251
+def: "An epithelium that extends its surface area by peripheral movement." [AEO:JB]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000066 ! epithelial cell
+
+[Term]
+id: AEO:0000207
+name: blood vessel
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003252
+def: "An epithelial tube that transports blood." [AEO:JB]
+is_a: AEO:0000114 ! epithelial tube
+relationship: has_part CL:0000071 ! blood vessel endothelial cell
+
+[Term]
+id: AEO:0000208
+name: artery
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003253
+def: "An epithelial tube that transports blood away from the heart." [AEO:JB]
+is_a: AEO:0000207 ! blood vessel
+relationship: has_part CL:0000071 ! blood vessel endothelial cell
+
+[Term]
+id: AEO:0000209
+name: vein
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003254
+def: "An epithelial tube that transports blood towards the heart." [AEO:JB]
+is_a: AEO:0000207 ! blood vessel
+relationship: has_part CL:0000071 ! blood vessel endothelial cell
+
+[Term]
+id: AEO:0000210
+name: row
+namespace: http://www.xspan.org/obo.owl#
+alt_id: FBbt:00100152
+alt_id: HDAA2:0003255
+def: "Anatomical group whose component structures are arranged in a row." [DBft:DOS]
+is_a: CARO:0000054 ! anatomical group
+
+[Term]
+id: AEO:0000211
+name: non-connected developing functional system
+namespace: http://www.xspan.org/obo.owl#
+alt_id: FBbt:0004003
+alt_id: HDAA2:0003256
+def: "The sum of all the anlagen and primordia that will develop into a single functional system." [FBbt:DOS]
+is_a: AEO:0000125 ! developing anatomical structure
+is_a: CARO:0000041 ! anatomical cluster
+
+[Term]
+id: AEO:0000212
+name: sclerotome
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003257
+def: "The mesenchymal derivative of a somite that will migrate to surround the neural tube and form vertebrae." [AEO:JB]
+is_a: AEO:0000152 ! migrating mesenchyme population
+is_a: AEO:0001016 ! developing mesenchymal structure
+relationship: has_part CL:0000134 ! mesenchymal cell
+
+[Term]
+id: AEO:0000213
+name: bone condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003258
+def: "A delimited region of osteoblasts representing the early stages of bone formation." [AEO:JB]
+is_a: AEO:0000148 ! developing mesenchymal condensation
+relationship: has_part CL:0000062 ! osteoblast
+
+[Term]
+id: AEO:0000214
+name: dermomyotome
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003259
+def: "The bilaminar epithelium formed from the myotome and dermatome." [AEO:JB]
+is_a: AEO:0000132 ! transitional anatomical structure
+is_a: CARO:0000069 ! multilaminar epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0000215
+name: open cavity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003078
+def: "A volume that is mainly bounded but has an opening to another cavity or to the outside." [JB:AEO]
+is_a: AEO:0000221 ! open anatomical space
+
+[Term]
+id: AEO:0000216
+name: epithelial cord
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004052
+def: "A cord of epithelial cells without a lumen and usually several cells thick." [JB:AEO]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000079 ! stratified epithelial cell
+
+[Term]
+id: AEO:0000217
+name: migrating developing tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004053
+def: "A simple coherent tissue or a localized population of similar cells that are actively migrating." [JB:AEO]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0000218
+name: developing epithelial placode
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003112
+def: "A domain of columnar epithelium in an embryo that represents the early stage of the development of the epithelial component of a new anatomical structure." [JB:AEO]
+is_a: AEO:0001007 ! developing epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0000219
+name: vascular plexus
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004112
+def: "A network of interlinked veins." [JB:AEO]
+is_a: AEO:0000118 ! epithelial plexus
+relationship: has_part CL:0000071 ! blood vessel endothelial cell
+
+[Term]
+id: AEO:0000220
+name: tooth
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004605
+def: "Each of a set of hard, bony enamel-coated structures in the jaws of most vertebrates, used for biting and chewing." [JB:AEO]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: AEO:0000221
+name: open anatomical space
+namespace: http://www.xspan.org/obo.owl#
+def: "An anatomical space with at least one opening to another space or the exterior." [JB:AEO]
+is_a: CARO:0000005 ! anatomical space
+
+[Term]
+id: AEO:0000222
+name: enclosed anatomical space
+namespace: http://www.xspan.org/obo.owl#
+def: "An anatomical space with no opening to another space or to the exterior." [JB:AEO]
+is_a: CARO:0000005 ! anatomical space
+
+[Term]
+id: AEO:0000493
+name: fat tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003120
+def: "Tissue that is predominantly made of fat cells." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+relationship: has_part CL:0000136 ! fat cell
+
+[Term]
+id: AEO:0001000
+name: sensory ganglion
+namespace: http://www.xspan.org/obo.owl#
+def: "A ganglion containing sensory neurons." [JB:AEO]
+is_a: AEO:0000135 ! ganglion
+relationship: has_part CL:0000101 ! sensory neuron
+relationship: has_part CL:0000243 ! glial cell (sensu Vertebrata)
+relationship: has_part CL:0002573 ! Schwann cell
+
+[Term]
+id: AEO:0001001
+name: autonomic ganglion
+namespace: http://www.xspan.org/obo.owl#
+def: "A ganglion that is part of the autonomic nervous system." [JB:AEO]
+is_a: AEO:0000135 ! ganglion
+relationship: has_part CL:0000107 ! autonomic neuron
+relationship: has_part CL:0000243 ! glial cell (sensu Vertebrata)
+relationship: has_part CL:0000526 ! afferent neuron
+relationship: has_part CL:0000527 ! efferent neuron
+relationship: has_part CL:0002573 ! Schwann cell
+
+[Term]
+id: AEO:0001002
+name: capillary bed
+namespace: http://www.xspan.org/obo.owl#
+def: "A localized group of blood capillaries." [JB:AEO]
+is_a: AEO:0000118 ! epithelial plexus
+
+[Term]
+id: AEO:0001003
+name: acellular extracellular matrix
+namespace: http://www.xspan.org/obo.owl#
+def: "An acellular structure typically composed of collagen, glycoproteins and glycosaminoglycans." [JB:AEO]
+is_a: CARO:0000040 ! acellular anatomical structure
+
+[Term]
+id: AEO:0001004
+name: fin
+namespace: http://www.xspan.org/obo.owl#
+def: "A flattened appendage on a marine animal." [JB:AEO, VAO:0000099]
+is_a: AEO:0000193 ! appendage
+
+[Term]
+id: AEO:0001005
+name: secretion
+namespace: http://www.xspan.org/obo.owl#
+alt_id: UBERON:0000456
+def: "A non-cellular substance released by a cell, gland or tissue." [JB:AEO]
+is_a: CARO:0000004 ! non-tissue substance
+
+[Term]
+id: AEO:0001006
+name: excreta
+namespace: http://www.xspan.org/obo.owl#
+alt_id: UBERON:0000174
+def: "Excreta are bodily fluids consisting of waste matter, such as sweat or feces, discharged from the body." [JB:AEO]
+is_a: CARO:0000004 ! non-tissue substance
+
+[Term]
+id: AEO:0001007
+name: developing epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004653
+def: "An epithelium within an embryo or larva that is undergoing a major developmental change." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+is_a: CARO:0000066 ! epithelium
+
+[Term]
+id: AEO:0001008
+name: neuroepithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004654
+def: "An embryonic or larval epithelium that is committed to form part of the nervous system." [AEO:JB]
+is_a: AEO:0001007 ! developing epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0001009
+name: proliferating neuroepithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004655
+def: "An epithelium that is undergoing proliferation to provide large numbers of neuronal cells." [AEO:JB]
+is_a: AEO:0001008 ! neuroepithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: AEO:0001010
+name: differentiating neuroepithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004656
+def: "A neuroepithelium some of whose cells are undergoing terminal differentiation to become neuronal cells." [AEO:JB]
+is_a: AEO:0001008 ! neuroepithelium
+relationship: has_part CL:0000031 ! neuroblast
+relationship: has_part CL:0000468 ! neuroglioblast
+
+[Term]
+id: AEO:0001011
+name: neuronal white matter
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004657
+def: "Neuronal tissue composed predominantly of axons." [AEO:JB]
+is_a: AEO:0000123 ! neural tissue
+
+[Term]
+id: AEO:0001012
+name: neuronal grey matter
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004658
+def: "A neuronal tissue composed predominantly of nerve bodies and neuronal support cells." [AEO:JB]
+is_a: AEO:0000123 ! neural tissue
+
+[Term]
+id: AEO:0001013
+name: neuronal column
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004659
+def: "An extended columnar domain of predominantly neuronal tissue in the central nervous system." [AEO:JB]
+is_a: AEO:0001012 ! neuronal grey matter
+relationship: has_part CL:0000127 ! astrocyte
+relationship: has_part CL:0000128 ! oligodendrocyte
+relationship: has_part CL:0000129 ! microglial cell
+
+[Term]
+id: AEO:0001014
+name: differentiating neuronal condensation
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0004660
+def: "A compact group of cells differentiating to become a ganglion or a neuronal nucleus." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+relationship: has_part CL:0000031 ! neuroblast
+relationship: has_part CL:0000468 ! neuroglioblast
+
+[Term]
+id: AEO:0001015
+name: somite
+namespace: http://www.xspan.org/obo.owl#
+def: "An epithelial ball that forms from paraxial mesoderm." [JB:AEO]
+is_a: AEO:0000119 ! epithelial vesicle
+
+[Term]
+id: AEO:0001016
+name: developing mesenchymal structure
+namespace: http://www.xspan.org/obo.owl#
+def: "A mesenchyme-derived anatomical entity undergoing a transtion to become another structure." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0001017
+name: dermatome
+namespace: http://www.xspan.org/obo.owl#
+def: "A transitional population of migrating mesenchymal cells that derive from somites and that will become dermal cells." [AEO:JB]
+is_a: AEO:0000217 ! migrating developing tissue
+is_a: AEO:0001016 ! developing mesenchymal structure
+
+[Term]
+id: AEO:0001018
+name: myotome
+namespace: http://www.xspan.org/obo.owl#
+def: "A transitional population of migrating mesenchymal cells that derive from somites and that will become muscle cells." [AEO:JB]
+is_a: AEO:0000217 ! migrating developing tissue
+is_a: AEO:0001016 ! developing mesenchymal structure
+
+[Term]
+id: AEO:0001019
+name: developing germ cell population
+namespace: http://www.xspan.org/obo.owl#
+def: "A germ cell population that has not undergone meiosis." [AEO:JB]
+is_a: AEO:0000125 ! developing anatomical structure
+
+[Term]
+id: AEO:0001020
+name: reproductive cell population
+namespace: http://www.xspan.org/obo.owl#
+def: "A population of cells that are predominantly immature or mature germ cells." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+relationship: has_part CL:0000039 ! germ line cell
+
+[Term]
+id: AEO:0001021
+name: stem cell population
+namespace: http://www.xspan.org/obo.owl#
+def: "A group of cells capable of regenerating themselves and also of producing one or more populations of differentiated cells." [AEO:JB]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: CARO:0000000
+name: anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003000
+alt_id: UBERON:0001062
+def: "Biological entity that is either an individual member of a biological species or constitutes the structural organization of an individual member of a biological species." [CARO:MAH]
+
+[Term]
+id: CARO:0000003
+name: anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003003
+alt_id: UBERON:0000061
+def: "Material anatomical entity that has inherent 3D shape and is generated by coordinated expression of the organism's own genome." [CARO:MAH]
+is_a: CARO:0000006 ! material anatomical entity
+
+[Term]
+id: CARO:0000004
+name: non-tissue substance
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003004
+alt_id: UBERON:0000463
+def: "Material anatomical entity in a gaseous, liquid, semisolid or solid state; produced by anatomical structures or derived from inhaled and ingested substances that have been modified by anatomical structures as they pass through the body." [CARO:MAH]
+synonym: "portion of organism substance" RELATED []
+is_a: CARO:0000006 ! material anatomical entity
+
+[Term]
+id: CARO:0000005
+name: anatomical space
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003005
+alt_id: UBERON:0000464
+def: "Non-material anatomical entity of three dimensions, that is generated by morphogenetic or other physiologic processes; is surrounded by one or more anatomical structures; contains one or more organism substances or anatomical structures." [CARO:MAH]
+is_a: CARO:0000007 ! immaterial anatomical entity
+
+[Term]
+id: CARO:0000006
+name: material anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003006
+alt_id: UBERON:0000465
+def: "Anatomical entity that has mass." [CARO:MAH]
+is_a: CARO:0000000 ! anatomical entity
+
+[Term]
+id: CARO:0000007
+name: immaterial anatomical entity
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003007
+alt_id: UBERON:0000466
+def: "Anatomical entity that has no mass." [CARO:MAH]
+is_a: CARO:0000000 ! anatomical entity
+
+[Term]
+id: CARO:0000008
+name: anatomical line
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003008
+def: "Non-material anatomical entity of one dimension, which forms a boundary of an anatomical surface or is a modulation of an anatomical surface." [CARO:MAH]
+is_a: CARO:0000007 ! immaterial anatomical entity
+
+[Term]
+id: CARO:0000009
+name: anatomical point
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003009
+def: "Non-material anatomical entity of zero dimension, which forms a boundary of an anatomical line or surface." [CARO:MAH]
+is_a: CARO:0000007 ! immaterial anatomical entity
+
+[Term]
+id: CARO:0000010
+name: anatomical surface
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003192
+alt_id: UBERON:0000015
+def: "Non-material anatomical entity of two dimensions, that is demarcated by anatomical lines or points on the external or internal surfaces of anatomical structures." [CARO:MAH]
+is_a: CARO:0000007 ! immaterial anatomical entity
+
+[Term]
+id: CARO:0000011
+name: anatomical system
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003011
+def: "Anatomical group that is has as its parts distinct anatomical structures interconnected by anatomical structures at a lower level of granularity." [CARO:MAH]
+is_a: CARO:0000054 ! anatomical group
+
+[Term]
+id: CARO:0000012
+name: multi-cellular organism
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003191
+alt_id: UBERON:0000468
+def: "Anatomical structure that is an individual member of a species and consists of more than one cell." [JB:DEF]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000013
+name: cell
+namespace: http://www.xspan.org/obo.owl#
+def: "Anatomical structure that has as its parts a maximally connected cell compartment surrounded by a plasma membrane." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000014
+name: cell component
+namespace: http://www.xspan.org/obo.owl#
+def: "Anatomical structure that is a direct part of the cell." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+relationship: part_of CARO:0000013 ! cell
+
+[Term]
+id: CARO:0000019
+name: compound organ component
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003019
+def: "Multi-tissue structure that is part of a compound organ." [CARO:MAH]
+is_a: CARO:0000055 ! multi-tissue structure
+relationship: part_of CARO:0000024 ! compound organ
+
+[Term]
+id: CARO:0000021
+name: simple organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003190
+def: "Multi-tissue structure that is not part of a compound organ." [CARO:MAH]
+is_a: CARO:0000055 ! multi-tissue structure
+
+[Term]
+id: CARO:0000024
+name: compound organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003024
+def: "Anatomical structure that has as its parts two or more multi-tissue structures of at least two different types and which through specific morphogenetic processes forms a single distinct structural unit demarcated by bona fide boundaries from other distinct anatomical structures of different types." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000027
+name: male organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Gonochoristic organism that can produce male gametes." [CARO:MAH]
+is_a: CARO:0000048 ! gonochoristic organism
+
+[Term]
+id: CARO:0000028
+name: female organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Gonochoristic organism that can produce female gametes." [CARO:MAH]
+is_a: CARO:0000048 ! gonochoristic organism
+
+[Term]
+id: CARO:0000029
+name: hermaphroditic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Multi-cellular organism that can produce both male and female gametes." [CARO:MAH]
+synonym: "dioecious organism" RELATED []
+is_a: CARO:0000012 ! multi-cellular organism
+
+[Term]
+id: CARO:0000032
+name: organism subdivision
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003032
+alt_id: UBERON:0000475
+def: "Anatomical structure which is a primary subdivision of whole organism. The mereological sum of these is the whole organism." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000040
+name: acellular anatomical structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003040
+alt_id: UBERON:0000476
+def: "Anatomical structure that consists of cell parts and cell substances and together does not constitute a cell or a tissue." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000041
+name: anatomical cluster
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003041
+alt_id: UBERON:0000477
+def: "Anatomical group that has its parts adjacent to one another. Anatomical structure, which has as its parts a heterogeneous collection of organs, organ parts, cells or body part subdivisions that are adjacent to, or continuous with one another; does not constitute an organ, organ system or organ system subdivision, or body part or body part subdivision." [CARO:MAH]
+is_a: CARO:0000054 ! anatomical group
+
+[Term]
+id: CARO:0000042
+name: extraembryonic structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003042
+alt_id: UBERON:0000478
+def: "Anatomical structure that is contiguous with the embryo and is comprised of portions of tissue or cells that will not contribute to the embryo." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000043
+name: simple tissue
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003043
+alt_id: UBERON:0000479
+def: "Anatomical structure, that consists of similar cells and intercellular matrix, aggregated according to genetically determined spatial relationships." [CARO:MAH]
+synonym: "portion of tissue." RELATED []
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000045
+name: sequential hermaphroditic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Hermaphroditic organism that produces gametes first of one sex, and then later of the other sex." [CARO:MAH]
+synonym: "consecutive hermaphroditic organism" RELATED []
+is_a: CARO:0000029 ! hermaphroditic organism
+
+[Term]
+id: CARO:0000046
+name: synchronous hermaphroditic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Hermaphroditic organism that produces both male and female gametes at the same time." [CARO:MAH]
+synonym: "serially hermaphroditic organism" RELATED []
+is_a: CARO:0000029 ! hermaphroditic organism
+
+[Term]
+id: CARO:0000048
+name: gonochoristic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Multi-cellular organism that has male and female sexes." [CARO:MAH]
+synonym: "monoecious organism" RELATED []
+is_a: CARO:0000012 ! multi-cellular organism
+
+[Term]
+id: CARO:0000049
+name: protandrous hermaphroditic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Sequential hermaphroditic organism that produces gametes first of the male sex, and then later of the female sex." [CARO:MAH]
+is_a: CARO:0000045 ! sequential hermaphroditic organism
+
+[Term]
+id: CARO:0000050
+name: protogynous hermaphroditic organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Sequential hermaphroditic organism that produces gametes first of the female sex, and then later of the male sex." [CARO:MAH]
+is_a: CARO:0000045 ! sequential hermaphroditic organism
+
+[Term]
+id: CARO:0000054
+name: anatomical group
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003054
+alt_id: UBERON:0000480
+def: "Anatomical structure consisting of at least two non-overlapping organs, multi-tissue aggregates or portion of tissues or cells of different types that does not constitute an organism, organ, multi-tissue aggregate, or portion of tissue." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000055
+name: multi-tissue structure
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003055
+alt_id: UBERON:0000481
+def: "Anatomical structure that has as its parts two or more portions of tissue of at least two different types and which through specific morphogenetic processes forms a single distinct structural unit demarcated by bona-fide boundaries from other distinct structural units of different types." [CARO:MAH]
+is_a: CARO:0000003 ! anatomical structure
+
+[Term]
+id: CARO:0000062
+name: cell space
+namespace: http://www.xspan.org/obo.owl#
+def: "Anatomical space that is part of a cell." [CARO:mah]
+is_a: CARO:0000005 ! anatomical space
+
+[Term]
+id: CARO:0000063
+name: asexual organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Multi-cellular organism that does not produce gametes." [CARO:MAH]
+is_a: CARO:0000012 ! multi-cellular organism
+
+[Term]
+id: CARO:0000064
+name: single cell organism
+namespace: http://www.xspan.org/obo.owl#
+def: "Cell that is an individual member of a species." [CARO:MAH]
+is_a: CARO:0000013 ! cell
+
+[Term]
+id: CARO:0000065
+name: basal lamina
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003065
+def: "Acellular anatomical structure that consists of a thin sheet of fibrous proteins that underlie and support the cells of an epithelium. It separates the cells of an epithelium from any underlying tissue." [CARO:MAH]
+is_a: CARO:0000040 ! acellular anatomical structure
+relationship: part_of CARO:0000066 ! epithelium
+
+[Term]
+id: CARO:0000066
+name: epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003066
+def: "Portion of tissue, that consists of one or more layers of epithelial cells connected to each other by cell junctions and which is underlain by a basal lamina." [CARO:MAH]
+is_a: CARO:0000043 ! simple tissue
+
+[Term]
+id: CARO:0000067
+name: simple cuboidal epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003067
+def: "Unilaminar epithelium that consists of a single layer of cuboidal cells." [CARO:MAH]
+is_a: CARO:0000073 ! unilaminar epithelium
+relationship: has_part CL:0000075 ! columnar/cuboidal epithelial cell
+
+[Term]
+id: CARO:0000068
+name: columnar epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003068
+def: "Unilaminar epithelium that consists of a single layer of columnar cells." [CARO:MAH]
+is_a: CARO:0000073 ! unilaminar epithelium
+
+[Term]
+id: CARO:0000069
+name: multilaminar epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003069
+def: "Epithelium that consists of more than one layer of epithelial cells." [CARO:MAH]
+is_a: CARO:0000066 ! epithelium
+
+[Term]
+id: CARO:0000070
+name: simple squamous epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003070
+def: "Unilaminar epithelium that consists of a single layer of squamous cells." [CARO:MAH]
+is_a: CARO:0000073 ! unilaminar epithelium
+relationship: has_part CL:0000076 ! squamous epithelial cell
+
+[Term]
+id: CARO:0000071
+name: atypical epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003071
+def: "Epithelium that consists of epithelial cells not arranged in one ore more layers." [CARO:MAH]
+is_a: CARO:0000066 ! epithelium
+relationship: has_part CL:0000066 ! epithelial cell
+
+[Term]
+id: CARO:0000072
+name: cavitated compound organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003072
+def: "Compound organ that contains one or more macroscopic anatomical spaces." [CARO:MAH]
+is_a: CARO:0000024 ! compound organ
+
+[Term]
+id: CARO:0000073
+name: unilaminar epithelium
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003073
+def: "Epithelium that consists of a single layer of epithelial cells." [CARO:MAH]
+is_a: CARO:0000066 ! epithelium
+
+[Term]
+id: CARO:0000074
+name: solid compound organ
+namespace: http://www.xspan.org/obo.owl#
+alt_id: EHDAA2:0003074
+def: "Compound organ that does not contain macroscopic anatomical spaces." [CARO:MAH]
+is_a: CARO:0000024 ! compound organ
+
+[Term]
+id: CARO:0000077
+name: epithelial cell
+namespace: http://www.xspan.org/obo.owl#
+def: "Cell which has as its part a cytoskeleton that allows for tight cell to cell contact and which has apical-basal cell polarity." [CARO:MAH, CL:0000066]
+is_a: CARO:0000013 ! cell
+
+[Term]
+id: CL:0000000
+name: cell
+namespace: cell
+def: "Anatomical structure that has as its parts a maximally connected cell compartment surrounded by a plasma membrane." [CARO:mah]
+
+[Term]
+id: CL:0000003
+name: cell in vivo
+namespace: cell
+is_a: CL:0000000 ! cell
+
+[Term]
+id: CL:0000012
+name: cell by class
+namespace: cell
+is_a: CL:0000003 ! cell in vivo
+
+[Term]
+id: CL:0000015
+name: male germ cell
+namespace: cell
+def: "A germline cell that contributes to the development of the oocyte by transferring cytoplasm directly to oocyte." [GOC:tfm, PMID:15848391]
+synonym: "nurse cell" RELATED []
+is_a: CL:0000586 ! germ cell
+
+[Term]
+id: CL:0000021
+name: female germ cell
+namespace: cell
+def: "Female germ cell is a germ cell that supports female gamete production." [GOC:tfm, PMID:11023867, PMID:20454446]
+is_a: CL:0000586 ! germ cell
+
+[Term]
+id: CL:0000029
+name: neuron neural crest derived
+namespace: cell
+is_a: CL:0000540 ! neuron
+
+[Term]
+id: CL:0000031
+name: neuroblast
+namespace: cell
+is_a: CL:0000055 ! non-terminally differentiated cell
+
+[Term]
+id: CL:0000034
+name: stem cell
+namespace: cell
+def: "A relatively undifferentiated cell that retains the ability to divide and proliferate throughout life to provide progenitor cells that can differentiate into specialized cells." [GOC:tfm, MESH:A.11.872]
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000039
+name: germ line cell
+namespace: cell
+def: "A cell that is within the developmental lineage of gametes and is able to pass along its genetic material to offspring." [GOC:tfm, ISBN:0721662544]
+comment: Originally this term had some plant germ line cell children
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000055
+name: non-terminally differentiated cell
+namespace: cell
+def: "A precursor cell with a limited number of potential fates." [SANBI:mhl]
+synonym: "blast cell" RELATED []
+is_a: CL:0000012 ! cell by class
+
+[Term]
+id: CL:0000057
+name: fibroblast
+namespace: cell
+def: "A connective tissue cell which secretes an extracellular matrix rich in collagen and other macromolecules. Flattened and irregular in outline with branching processes; appear fusiform or spindle-shaped." [http://63.198.234.228/OpenFMA/Fibroblast.html, ISBN:0517223651, MESH:A.11.329.228]
+is_a: CL:0002320 ! connective tissue cell
+
+[Term]
+id: CL:0000058
+name: chondroblast
+namespace: cell
+def: "An immature cartilage-producing cell found in growing cartilage." [GOC:tfm, ISBN:0618947256]
+synonym: "chrondoplast" RELATED []
+is_a: CL:0000055 ! non-terminally differentiated cell
+is_a: CL:0000667 ! collagen secreting cell
+
+[Term]
+id: CL:0000062
+name: osteoblast
+namespace: cell
+def: "A bone-forming cell which secretes an extracellular matrix. Hydroxyapatite crystals are then deposited into the matrix to form bone." [MESH:A.11.329.629]
+is_a: CL:0000055 ! non-terminally differentiated cell
+is_a: CL:0002320 ! connective tissue cell
+
+[Term]
+id: CL:0000063
+name: cell by histology
+namespace: cell
+def: "A classification of cells by their microscopic appearance." [FB:ma, GOC:tfm]
+is_a: CL:0000012 ! cell by class
+
+[Term]
+id: CL:0000066
+name: epithelial cell
+namespace: cell
+def: "A cell that is usually found in a two-dimensional sheet with a free surface. The cell has a cytoskeleton that allows for tight cell to cell contact and for cell polarity where apical part is directed towards the lumen and the basal part to the basal lamina." [FB:ma, GOC:tfm, MESH:A.11.436]
+synonym: "Epitheliocyte" RELATED []
+is_a: CL:0000063 ! cell by histology
+
+[Term]
+id: CL:0000068
+name: duct epithelial cell
+namespace: cell
+is_a: CL:0000066 ! epithelial cell
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0000071
+name: blood vessel endothelial cell
+namespace: cell
+def: "An endothelial cell that lines the vasculature." [GOC:tfm]
+synonym: "Cuboidal endothelial cell of vascular tree" RELATED []
+is_a: CL:0000076 ! squamous epithelial cell
+
+[Term]
+id: CL:0000075
+name: columnar/cuboidal epithelial cell
+namespace: cell
+is_a: CL:0000066 ! epithelial cell
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0000076
+name: squamous epithelial cell
+namespace: cell
+is_a: CL:0000066 ! epithelial cell
+
+[Term]
+id: CL:0000079
+name: stratified epithelial cell
+namespace: cell
+is_a: CL:0000066 ! epithelial cell
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0000080
+name: circulating cell
+namespace: cell
+def: "A cell which moves among different tissues of the body, via blood, lymph, or other medium." [GOC:add]
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000081
+name: blood cell
+namespace: cell
+def: "A cell found predominately in the blood." [GOC:add, GOC:tfm]
+is_a: CL:0000988 ! hematopoietic cell
+
+[Term]
+id: CL:0000095
+name: neuron associated cell
+namespace: cell
+is_a: CL:0002319 ! neural cell
+
+[Term]
+id: CL:0000099
+name: interneuron
+namespace: cell
+def: "Most generally any neuron which is not motor or sensory. Interneurons may also refer to neurons whose axons remain within a particular brain region as contrasted with projection neurons which have axons projecting to other brain regions." [GOC:tfm, MESH:A.08.663.358]
+is_a: CL:0000540 ! neuron
+
+[Term]
+id: CL:0000101
+name: sensory neuron
+namespace: cell
+def: "Any neuron having a sensory function; an afferent neuron conveying sensory impulses." [ISBN:0721662544]
+is_a: CL:0000526 ! afferent neuron
+
+[Term]
+id: CL:0000107
+name: autonomic neuron
+namespace: cell
+def: "A neruon whose cell body is within an autonomic ganglion." [GOC:tfm]
+is_a: CL:0000540 ! neuron
+
+[Term]
+id: CL:0000125
+name: glial cell
+namespace: cell
+def: "A non-neuronal cell of the nervous system. They not only provide physical support, but also respond to injury, regulate the ionic and chemical composition of the extracellular milieu. Guide neuronal migration during development, and exchange metabolites with neurons." [MESH:A.08.637]
+synonym: "neuroglia" RELATED []
+synonym: "neuroglial cell" RELATED []
+is_a: CL:0000095 ! neuron associated cell
+
+[Term]
+id: CL:0000126
+name: macroglial cell
+namespace: cell
+def: "A neuroglial cell of ectodermal origin, i.e., the astrocytes and oligodendrocytes considered together." [GOC:tfm, ISBN:0721662544]
+synonym: "Macrogliocyte" RELATED []
+is_a: CL:0000243 ! glial cell (sensu Vertebrata)
+
+[Term]
+id: CL:0000127
+name: astrocyte
+namespace: cell
+def: "A class of large neuroglial (macroglial) cells in the central nervous system - the largest and most numerous neuroglial cells in the brain and spinal cord. Astrocytes (from 'star' cells) are irregularly shaped with many long processes, including those with 'end feet' which form the glial (limiting) membrane and directly and indirectly contribute to the blood-brain barrier. They regulate the extracellular ionic and chemical environment, and 'reactive astrocytes' (along with microglia) respond to injury." [GOC:_tfm, GOC:dsd, MESH:A.08.637.200, MESH:D001253, PMID:11746784, PMID:12162730, PMID:12898703, PMID:20942978]
+synonym: "astrocytic glia" RELATED []
+is_a: CL:0000128 ! oligodendrocyte
+
+[Term]
+id: CL:0000128
+name: oligodendrocyte
+namespace: cell
+def: "A class of large neuroglial (macroglial) cells in the central nervous system. Form the insulating myelin sheath of axons in the central nervous system." [MESH:A.08.637.600]
+synonym: "oligodendroglia" RELATED []
+is_a: CL:0000126 ! macroglial cell
+
+[Term]
+id: CL:0000129
+name: microglial cell
+namespace: cell
+def: "A central nervous system macrophage found in the parenchyma of the central nervous system. Marker include CD11b-positive, F4/80-positive, and CD68-positive." [GOC:add, GOC:dsd, GOC:tfm, ISBN:0721601464, MESH:D017628, PMID:11517395, PMID:12430718, PMID:14561199, PMID:14612429, PMID:16177057, PMID:19461673, PMID:2089275]
+synonym: "brain macrophage" RELATED []
+synonym: "brain-resident macrophage" RELATED []
+synonym: "hortega cells" RELATED [http://www.copewithcytokines.de/]
+synonym: "MF.microglia.CNS" RELATED []
+synonym: "microglia" RELATED []
+synonym: "microgliocyte" RELATED [http://www.copewithcytokines.de/]
+is_a: CL:0000243 ! glial cell (sensu Vertebrata)
+
+[Term]
+id: CL:0000134
+name: mesenchymal cell
+namespace: cell
+alt_id: CL:0002452
+def: "A connective tissue cell that normally gives rise to other cells that are organized as three-dimensional masses. This cell type is CD73-positive, CD90-positive, CD105-positive, CD45-negative, CD34-negative, and MHCII-negative. They may further differentiate into osteoblasts, adipocytes, myocytes, neurons, or chondroblasts in vitro.  Originally described as residing in the bone marrow, this cell type is now known to reside in many, if not all, adult organs." [FB:ma, GOC:dsd, http://en.wikipedia.org/wiki/Mesenchymal_stem_cell, http://www.copewithcytokines.de/cope.cgi?key=mesenchymal%20stem%20cells, PMCID:PMC2613570, PMID:10102814j, PMID:16923606, PMID:_17986482, PMID:_19960544]
+synonym: "BMSC" RELATED []
+synonym: "bone marrow stromal cells" RELATED []
+synonym: "CFU-F" RELATED []
+synonym: "colony-forming unit-fibroblast" RELATED []
+synonym: "marrow stromal cells" RELATED [PMID:11378515]
+synonym: "mesenchymal precursor cell" RELATED []
+synonym: "mesenchymal progenitor cells" RELATED [MESH:D044982]
+synonym: "mesenchymal stem cell" RELATED []
+synonym: "mesenchymal stromal cell" RELATED []
+synonym: "mesenchymal stromal cells" RELATED []
+synonym: "MSC" RELATED [PMID:11378515]
+synonym: "Stem Cells, Mesenchymal" RELATED [MESH:D044982]
+is_a: CL:0000063 ! cell by histology
+
+[Term]
+id: CL:0000136
+name: fat cell
+namespace: cell
+alt_id: CL:0000450
+def: "A fat-storing cell found mostly in the abdominal cavity and subcutaneous tissue of mammals. Fat is usually stored in the form of triglycerides." [MESH:A.11.329.114]
+synonym: "adipocyte" RELATED []
+synonym: "adipose cell" RELATED []
+is_a: CL:0002320 ! connective tissue cell
+
+[Term]
+id: CL:0000138
+name: chondrocyte
+namespace: cell
+def: "Polymorphic cell that form cartilage." [MESH:A.11.329.171]
+synonym: "cartilage cell" RELATED []
+is_a: CL:0000667 ! collagen secreting cell
+
+[Term]
+id: CL:0000144
+name: cell by function
+namespace: cell
+def: "A classification of cells by their primary end goal or behavior." [FB:ma]
+is_a: CL:0000012 ! cell by class
+
+[Term]
+id: CL:0000151
+name: secretory cell
+namespace: cell
+def: "A cell that specializes in controlled release of one or more substances." [GOC:tfm, ISBN:0721662544]
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000165
+name: neuroendocrine cell
+namespace: cell
+def: "An endocrine cell that has the specialized function to produce and secrete hormones in response to neuronal signals." [MESH:A.06.688]
+synonym: "neurosecretory cell" RELATED []
+is_a: CL:0000393 ! electrically responsive cell
+
+[Term]
+id: CL:0000187
+name: muscle cell
+namespace: cell
+def: "A mature contractile cell, commonly known as a myocyte. This cell has as part of its cytoplasm myofibrils organized in various patterns." [MESH:A.11.620]
+synonym: "myocyte" RELATED []
+is_a: CL:0000393 ! electrically responsive cell
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0000188
+name: skeletal muscle cell
+namespace: cell
+def: "A somatic cell located in skeletal muscle." [GOC:tfm]
+is_a: CL:0000187 ! muscle cell
+
+[Term]
+id: CL:0000192
+name: smooth muscle cell
+namespace: cell
+alt_id: CL:0000191
+def: "A non-striated, elongated, spindle-shaped cell found lining the digestive tract, uterus, and blood vessels. They develop from specialized myoblasts (smooth muscle myoblast)." [MESH:A.11.620.520, MESH:D032389, PMID:9315361]
+synonym: "myocytes, smooth muscle" RELATED [MESH:D032389]
+synonym: "non-striated muscle cell" RELATED []
+synonym: "SMCs" RELATED [PMID:9315361]
+synonym: "smooth muscle fiber" RELATED []
+is_a: CL:0000187 ! muscle cell
+
+[Term]
+id: CL:0000196
+name: flight muscle cell
+namespace: cell
+is_a: CL:0000187 ! muscle cell
+
+[Term]
+id: CL:0000211
+name: electrically active cell
+namespace: cell
+def: "A cell whose function is determined by the generation or the reception of an electric signal." [FB:ma]
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000224
+name: cell by nuclear number
+namespace: cell
+def: "A classification of cells by the number of their nuclei." [FB:ma, GOC:tfm]
+is_a: CL:0000012 ! cell by class
+
+[Term]
+id: CL:0000228
+name: multinucleate cell
+namespace: cell
+def: "A cell with more than one nucleus." [FB:ma]
+synonym: "syncitium" RELATED []
+synonym: "syncytial cell" RELATED []
+synonym: "syncytium" RELATED []
+is_a: CL:0002242 ! nucleate cell
+
+[Term]
+id: CL:0000243
+name: glial cell (sensu Vertebrata)
+namespace: cell
+def: "A non-neuronal cell of the nervous system. They not only provide physical support, but also respond to injury, regulate the ionic and chemical composition of the extracellular milieu. Form the myelin insulation of nervous pathways, guide neuronal migration during development, and exchange metabolites with neurons. Neuroglia have high-affinity transmitter uptake systems, voltage-dependent and transmitter-gated ion channels, and can release transmitters, but their role in signaling (as in many other functions) is unclear." [MESH:A.08.637]
+is_a: CL:0000125 ! glial cell
+
+[Term]
+id: CL:0000327
+name: extracellular matrix secreting cell
+namespace: cell
+is_a: CL:0000151 ! secretory cell
+is_a: CL:0000499 ! stromal cell
+
+[Term]
+id: CL:0000335
+name: mesenchyme condensation cell
+namespace: cell
+def: "A mesenchymal cell in embryonic development found in a contracting mass and that gives rise to osteoprogenitors." [GOC:tfm, PMID:5025404]
+is_a: CL:0000134 ! mesenchymal cell
+
+[Term]
+id: CL:0000393
+name: electrically responsive cell
+namespace: cell
+def: "A cell whose function is determined by its response to an electric signal." [FB:ma]
+is_a: CL:0000211 ! electrically active cell
+
+[Term]
+id: CL:0000414
+name: cell by ploidy
+namespace: cell
+def: "A classification of cells by the number of haploid genome equivalents of their nucleus or nuclei." [FB:ma, GOC:tfm]
+is_a: CL:0000012 ! cell by class
+
+[Term]
+id: CL:0000444
+name: obliquely striated muscle cell
+namespace: cell
+is_a: CL:0000737 ! striated muscle cell
+
+[Term]
+id: CL:0000445
+name: apoptosis fated cell
+namespace: cell
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0000468
+name: neuroglioblast
+namespace: cell
+is_a: CL:0000055 ! non-terminally differentiated cell
+
+[Term]
+id: CL:0000499
+name: stromal cell
+namespace: cell
+def: "A connective tissue cell of an organ found in the loose connective tissue. These are most often associated with the uterine mucosa and the ovary as well as the hematopoietic system and elsewhere." [GOC:tfm, MESH:A.11.329.830]
+is_a: CL:0002320 ! connective tissue cell
+
+[Term]
+id: CL:0000525
+name: syncytiotrophoblast cell
+namespace: cell
+def: "A cell from the outer syncytial layer of the trophoblast of an early mammalian embryo. It It secretes hCG in order to maintain progesterone secretion and sustain a pregnancy." [GOC:tfm, ISBN:0323052908]
+synonym: "plasmidotrophoblast" RELATED []
+synonym: "syncytial trophoblast" RELATED []
+synonym: "syntrophoblast" RELATED []
+is_a: CL:0000228 ! multinucleate cell
+
+[Term]
+id: CL:0000526
+name: afferent neuron
+namespace: cell
+def: "A neuron which conveys sensory information centrally from the periphery." [GOC:tfm, MESH:A.08.663.650]
+synonym: "input neuron" RELATED []
+is_a: CL:0000540 ! neuron
+
+[Term]
+id: CL:0000527
+name: efferent neuron
+namespace: cell
+def: "A neuron which sends impulses peripherally to activate muscles or secretory cells." [MESH:A.08.663.655]
+synonym: "output neuron" RELATED []
+is_a: CL:0000540 ! neuron
+
+[Term]
+id: CL:0000540
+name: neuron
+namespace: cell
+def: "The basic cellular unit of nervous tissue. Each neuron consists of a body, an axon, and dendrites. Their purpose is to receive, conduct, and transmit impulses in the nervous system." [MESH:A.08.663, MESH:D009474]
+synonym: "nerve cell" RELATED []
+is_a: CL:0000393 ! electrically responsive cell
+
+[Term]
+id: CL:0000586
+name: germ cell
+namespace: cell
+def: "The reproductive cell in multicellular organisms." [MESH:A.05.360.490]
+is_a: CL:0000039 ! germ line cell
+
+[Term]
+id: CL:0000658
+name: cuticle secreting cell
+namespace: cell
+def: "An epithelial cell that secretes cuticle." [GOC:tfm]
+is_a: CL:0000066 ! epithelial cell
+is_a: CL:0000327 ! extracellular matrix secreting cell
+
+[Term]
+id: CL:0000667
+name: collagen secreting cell
+namespace: cell
+def: "An extracellular matrix secreting cell that secretes collagen." [GOC:tfm]
+is_a: CL:0000327 ! extracellular matrix secreting cell
+
+[Term]
+id: CL:0000670
+name: primordial germ cell
+namespace: cell
+def: "A primordial germ cell is a diploid germ cell precursors that transiently exist in the embryo before they enter into close association with the somatic cells of the gonad and become irreversibly committed as germ cells." [GOC:tfm, PMID:1381289]
+synonym: "Gonocyte" RELATED []
+synonym: "Primitive germ cell" RELATED []
+is_a: CL:0000039 ! germ line cell
+
+[Term]
+id: CL:0000680
+name: muscle precursor cell
+namespace: cell
+is_a: CL:0000055 ! non-terminally differentiated cell
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0000737
+name: striated muscle cell
+namespace: cell
+def: "Muscle cell which has as its direct parts myofilaments organized into sarcomeres." [GOC:tfm, ISBN:0721662544]
+is_a: CL:0000187 ! muscle cell
+
+[Term]
+id: CL:0000746
+name: cardiac muscle cell
+namespace: cell
+def: "A myocyte located in the heart. The contractile fiber resembles those of skeletal muscle but are only one third as large in diameter, are richer in sarcoplasm, and contain centrally located instead of peripheral nuclei." [GOC:tfm, ISBN:0323052908]
+synonym: "cardiac myocyte" RELATED []
+synonym: "cardiocyte" RELATED []
+synonym: "cardiomyocyte" RELATED []
+synonym: "heart muscle cell" RELATED []
+is_a: CL:0000737 ! striated muscle cell
+
+[Term]
+id: CL:0000988
+name: hematopoietic cell
+namespace: cell
+def: "A cell of a hematopoietic lineage." [GO_REF:0000031, GOC:add]
+synonym: "haematopoietic cell" RELATED []
+synonym: "haemopoietic cell" RELATED []
+synonym: "hemopoietic cell" RELATED []
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0002242
+name: nucleate cell
+namespace: cell
+def: "A cell containing at least one nucleus." [GOC:tfm]
+is_a: CL:0000224 ! cell by nuclear number
+
+[Term]
+id: CL:0002319
+name: neural cell
+namespace: cell
+def: "A cell that is part of the nervous system." [GOC:tfm, ISBN:0618947256]
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0002320
+name: connective tissue cell
+namespace: cell
+alt_id: CL:1000406
+def: "A cell of the supporting or framework tissue of the body, arising chiefly from the embryonic mesoderm and including adipose tissue, cartilage, and bone." [GOC:tfm, ISBN:0618947256]
+is_a: CL:0002371 ! somatic cell
+
+[Term]
+id: CL:0002371
+name: somatic cell
+namespace: cell
+def: "A cell of an organism that does not pass on its genetic material to the organism's offspring (i.e. a non-germ line cell)." [GOC:tfm, ISBN:0721662544]
+is_a: CL:0000144 ! cell by function
+
+[Term]
+id: CL:0002372
+name: myotube
+namespace: cell
+alt_id: CL:0000369
+def: "A myotube is a multinucleated cells that is formed when proliferating myoblasts exit the cell cycle, differentiate and fuse." [GOC:tfm, ISBN:0323052908]
+synonym: "myotubule" RELATED []
+synonym: "single cell sarcomere" RELATED []
+synonym: "skeletal muscle fiber" RELATED []
+is_a: CL:0000188 ! skeletal muscle cell
+is_a: CL:0000228 ! multinucleate cell
+is_a: CL:0000737 ! striated muscle cell
+
+[Term]
+id: CL:0002573
+name: Schwann cell
+namespace: cell
+def: "A glial cell that ensheathes axons of neuron in the peripheral nervous system and are necessary for their maintainance and function." [GOC:tfm]
+is_a: CL:0000243 ! glial cell (sensu Vertebrata)
+
+[Typedef]
+id: derives_from
+name: derives_from
+
+[Typedef]
+id: descends
+name: descends
+
+[Typedef]
+id: develops_from
+name: develops_from
+
+[Typedef]
+id: endStage
+name: endStage
+
+[Typedef]
+id: hasMapping
+name: hasMapping
+
+[Typedef]
+id: has_part
+name: has_part
+
+[Typedef]
+id: isReferenceForMapping
+name: isReferenceForMapping
+
+[Typedef]
+id: part_of
+name: part_of
+
+[Typedef]
+id: startStage
+name: startStage
+
+[Typedef]
+id: subEventOf
+name: subEventOf
+
+[Typedef]
+id: type
+name: type
+

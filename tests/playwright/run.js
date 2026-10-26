@@ -452,6 +452,23 @@ async function testLazyStateRestore() {
   });
 }
 
+async function testLazyRebuildReportsNewTree() {
+  console.log('a rebuilt lazy tree is reported to the server, dropping the old selection (#11)');
+  await withApp('test_lazy', async (page) => {
+    await page.evaluate(() => localStorage.clear());
+    await reloadTree(page);
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.select_node(t.get_node('#').children[0]); });
+    await page.waitForFunction(() => /selected: g1_1/.test(document.getElementById('report').textContent), null, { timeout: 10000 });
+    await page.click('#rebuild');
+    await page.waitForFunction(() => Array.from(document.querySelectorAll('#tree a.jstree-anchor')).some((a) => a.textContent === 'g2_1'));
+    await page.waitForTimeout(1500);
+    const browser = await page.evaluate(() => $('#tree').jstree(true).get_selected().length);
+    const server = await page.evaluate(() => document.getElementById('report').textContent.trim());
+    equal(browser, 0, 'the rebuilt tree has nothing selected');
+    ok(!/g1_/.test(server), `input$tree no longer reports the old tree's selection (got "${server}")`);
+  });
+}
+
 async function testLazyRebuildDuringRestore() {
   console.log('a rebuild during a state restore does not stop later changes being saved (#11, #19)');
   await withApp('test_lazy', async (page) => {
@@ -593,6 +610,7 @@ async function testEmptyTreeDoesNotLoop() {
   await testLazyLoading();
   await testLazyRebuildDuringFetch();
   await testLazyStateRestore();
+  await testLazyRebuildReportsNewTree();
   await testLazyRebuildDuringRestore();
   await testLazyStateDuplicateSiblings();
   await testLazySearchDuplicateSiblings();
