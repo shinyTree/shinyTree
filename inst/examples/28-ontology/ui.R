@@ -17,14 +17,14 @@ shinyUI(
       ),
       helpText(HTML("<code>ontologyToTree()</code> reads an OBO or OWL ontology
                     and <code>renderTree(lazy = TRUE)</code> shows it a level at a
-                    time, so even the Gene Ontology's 48,000 terms load at once.
+                    time, so even the Gene Ontology's 48,000 terms load quickly.
                     <br><br>Hover over a term for its identifier and definition. A
                     term with several parents appears under each of them; obsolete
                     terms are greyed out under <em>obsolete</em>. The search box
                     finds a term by name or identifier anywhere in the ontology.
                     <br><br>The AEO is the example from issue #33; see this example's
                     README for its source and licence.
-                    <hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+                    <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       textOutput("summary"),

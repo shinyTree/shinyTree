@@ -16,23 +16,12 @@ test_that("get_checked reflects ticked boxes with the default tie_selection = TR
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox_tied"),
-      name = "shinytree-checkbox-tied",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox_tied"), "shinytree-checkbox-tied")
   withr::defer(app$stop())
 
   ## Sanity check: this app really does use the tied default.
   expect_equal(app$get_js("document.getElementById('tree').dataset.stTieSelection"), "TRUE")
-  expect_null(app$get_value(input = "tree"))
+  expect_length(get_checked(app$get_value(input = "tree")), 0)
 
   ## Tick the checkbox next to "root1".
   app$click(selector = "[id=\"1_anchor\"] .jstree-checkbox")
@@ -72,18 +61,7 @@ test_that("tie_selection = FALSE keeps checked and selected independent (#121/#1
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox_untied"),
-      name = "shinytree-checkbox-untied-independence",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox_untied"), "shinytree-checkbox-untied-independence")
   withr::defer(app$stop())
 
   expect_equal(app$get_js("document.getElementById('tree').dataset.stTieSelection"), "FALSE")

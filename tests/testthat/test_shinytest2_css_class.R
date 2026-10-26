@@ -4,18 +4,7 @@ test_that("stcssclass puts CSS classes on a node (#58)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_css_class"),
-      name = "shinytree-css-class",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_css_class"), "shinytree-css-class")
   withr::defer(app$stop())
 
   ## Each node's label, its own classes (not jsTree's) and how it is styled.

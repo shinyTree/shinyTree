@@ -3,25 +3,35 @@
 #' This creates a spot in your Shiny UI for a shinyTree which can then be filled
 #' in using \code{\link{renderTree}}.
 #' 
-#' A shinyTree is an output *and* an input element in the same time. While you can 
+#' A shinyTree is an output \emph{and} an input element at the same time. While you can 
 #' fill it via \code{\link{renderTree}} you can access its content via \code{input$tree} 
 #' (for example after the user rearranged some nodes). By default, \code{input$tree} will
-#' return a list similiar to the one you use to fill the tree. This behaviour is controlled
+#' return a list similar to the one you use to fill the tree. This behaviour is controlled
 #' by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
-#' to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
+#' to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned
+#' (see \emph{Options}).
+#'
+#' Any valid Shiny id can be used, including one containing \code{.} or
+#' \code{-}, as Shiny modules produce.
 #' 
 #' @param outputId The ID associated with this element
 #' @param checkbox If \code{TRUE}, will enable checkboxes next to each node to 
 #' make the selection of multiple nodes in the tree easier.
-#' @param searchplaceholder Add a placeholder value to the search box
+#' @param searchplaceholder Add a placeholder value to the search box. Only
+#' used when \code{search = TRUE}, since a search field given by its id has its
+#' own.
 #' @param search If \code{TRUE}, will enable search functionality in the tree by adding
 #' a search box above the produced tree. Alternatively, you can set the parameter
 #' to the ID of the text input you wish to use as the search field.
-#' @param searchtime Determines the reaction time of the search algorithm.
-#' Default is 250ms.
+#' @param searchtime How long to wait, in milliseconds, after the user stops
+#' typing before searching. Default is 250ms.
 #' @param dragAndDrop If \code{TRUE}, will allow the user to rearrange the nodes in the
 #' tree.
-#' @param types enables jstree types functionality when sent proper json (please see the types example)
+#' @param types A JavaScript object literal, as a string, giving jsTree's
+#' types settings: each type's icon, valid children and so on. Nodes are given
+#' a type with the \code{sttype} attribute. It is written into the page as
+#' JavaScript, not parsed as JSON, so single quotes work; see the
+#' \code{12-types} example and \url{https://www.jstree.com/plugins/}.
 #' @param theme jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.
 #' @param themeIcons If \code{TRUE}, will show theme icons for each item.
 #' @param themeDots If \code{TRUE}, will include level dots.
@@ -48,7 +58,9 @@
 #' @param animation The open / close animation duration in milliseconds.
 #' Set this to \code{FALSE} to disable the animation (default is 200).
 #' @param contextmenu If \code{TRUE}, will enable a contextmenu to
-#' create/rename/delete/cut/copy/paste nodes.
+#' create/rename/delete/cut/copy/paste nodes. jsTree cannot show checkboxes
+#' and the contextmenu together, so \code{checkbox} is then turned off, with a
+#' warning.
 #' @param state If \code{TRUE}, the browser remembers which nodes were open,
 #' selected and checked, and restores them when the page is reloaded. A string
 #' does the same and is used as the key the state is stored under, instead of
@@ -108,17 +120,26 @@
 #' new key, or run \code{localStorage.removeItem("<key>")} in the browser.
 #'
 #' @section Options:
-#' Two options control whether additional jsTree events update \code{input$tree}.
-#' Both default to \code{FALSE}:
 #' \describe{
-#'   \item{\code{shinyTree.refresh}}{report \code{refresh.jstree} events.}
-#'   \item{\code{shinyTree.setState}}{report \code{set_state.jstree} events.}
+#'   \item{\code{shinyTree.defaultParser}}{What \code{input$tree} holds:
+#'     \code{"list"} (the default), a nested list like the one passed to
+#'     \code{\link{renderTree}}, or \code{"tree"}, a
+#'     \code{\link[data.tree]{data.tree}} Node, which needs the
+#'     \pkg{data.tree} package. A data.tree cannot hold siblings with the same
+#'     name, so the \code{"tree"} parser warns if the tree has any. It can be
+#'     set before or after the package is loaded.}
+#'   \item{\code{shinyTree.refresh}}{\code{TRUE} to report
+#'     \code{refresh.jstree} events. Default \code{FALSE}.}
+#'   \item{\code{shinyTree.setState}}{\code{TRUE} to report
+#'     \code{set_state.jstree} events. Default \code{FALSE}.}
 #' }
-#' A refresh triggered by \code{\link{updateTree}} is never reported, since the
-#' server already knows about a change it made itself; reporting it back caused
-#' a feedback loop in apps that call \code{updateTree} from an observer watching
-#' \code{input$tree}. Refreshes from any other source are still reported when
-#' the option is enabled.
+#' The last two must be set before the UI is built, as they are written into
+#' the page. They only matter for refreshes started in the browser, e.g. by
+#' the app's own JavaScript: a tree sent by \code{\link{renderTree}} or
+#' \code{\link{updateTree}} is reported once it has loaded either way, and the
+#' refresh that loads it is not reported again -- that caused a feedback loop
+#' in apps that call \code{updateTree} from an observer watching
+#' \code{input$tree}.
 #' @examples
 #' \dontrun{
 #' library(shiny)
@@ -144,6 +165,8 @@
 #' # See also the 26-state example:
 #' runApp(system.file("examples/26-state", package = "shinyTree"))
 #' }
+#' @return A tag list holding the tree and the scripts and stylesheets it
+#'   needs, for the app's UI.
 #' @seealso \code{\link{renderTree}}
 #' @export
 shinyTree <- function(outputId, checkbox=FALSE, search=FALSE, 
@@ -160,20 +183,23 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
     stop("`state` must be TRUE, FALSE or a single non-empty string (the storage key).")
   }
   
-  if ((!is.null(contextmenu) && contextmenu) && (!is.null(checkbox) && checkbox)) {
+  if (isTRUE(contextmenu) && isTRUE(checkbox)) {
     warning("The plugins contextmenu and checkbox cannot be used together. \nSet checkbox to FALSE")
     checkbox = FALSE
   }
   
-  searchEl <- shiny::div("")
-  if (search == TRUE){
+  searchEl <- NULL
+  if (isTRUE(search)){
     search <- paste0(outputId, "-search-input")
     searchEl <- shiny::tags$input(id=search, class="input", type="text", value="", placeholder = searchplaceholder)
   }
   if (is.character(search)){
-    # Either the search field we just created or the given text field ID
-    searchEl <- shiny::tagAppendChild(searchEl, shiny::tags$script(type="text/javascript", shiny::HTML(
-      paste0("shinyTree.initSearch('",outputId,"','",search,"', ", searchtime,");"))))
+    # Either the search field we just created or the given text field ID. The
+    # script follows the field rather than sitting inside it, and the ids are
+    # written as JSON strings so a quote or backslash in one cannot break it.
+    searchEl <- shiny::tagList(searchEl, shiny::tags$script(type="text/javascript", shiny::HTML(
+      sprintf("shinyTree.initSearch(%s, %s, %s);", jsString(outputId), jsString(search),
+              as.numeric(searchtime)))))
   }
   
   if(!theme %in% c("default","default-dark","proton")) { stop(paste("shinyTree theme, ",theme,", doesn't exist!",sep="")) }
@@ -181,14 +207,17 @@ shinyTree <- function(outputId, checkbox=FALSE, search=FALSE,
   opts <- jsonlite::toJSON(list(
     'setState' = getOption('shinyTree.setState'),
     'refresh' = getOption('shinyTree.refresh')
-    ), auto_unbox = T)
+    ), auto_unbox = TRUE)
   
-  if(!animation){
+  if (!isTRUE(as.logical(animation)) && !(is.numeric(animation) && animation > 0)) {
     animation = 'false'
   }
   if(!is.null(types)){
-    outputnohyp <- gsub("-","_",outputId, fixed=T)
-    types <- paste0(outputnohyp,"_sttypes = ",types)
+    # shinyTree.js looks the types up as window["<id>_sttypes"], with each
+    # hyphen in the id replaced by an underscore. Assigning through window[]
+    # rather than to a bare name works for any id, including "my.tree".
+    outputnohyp <- gsub("-","_",outputId, fixed=TRUE)
+    types <- paste0("window[", jsString(paste0(outputnohyp, "_sttypes")), "] = ", types, ";")
   }
   shiny::tagList(
     # The scripts and stylesheets are declared as dependencies rather than
@@ -271,4 +300,11 @@ shinyTreeDependencies <- function(theme) {
       )
     )
   )
+}
+
+# A JavaScript string literal for x, safe to write into a <script>: JSON
+# escapes quotes and backslashes, and "</" is broken up so the string cannot
+# close the script element.
+jsString <- function(x) {
+  gsub("</", "<\\/", as.character(jsonlite::toJSON(as.character(x), auto_unbox = TRUE)), fixed = TRUE)
 }

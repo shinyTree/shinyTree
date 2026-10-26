@@ -10,18 +10,7 @@ test_that("the 25-duplicate-names example reports each duplicate's own data", {
   example_dir <- system.file("examples/25-duplicate-names", package = "shinyTree")
   skip_if(example_dir == "", "25-duplicate-names example not installed")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = example_dir,
-      name = "example-25-duplicate-names",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(example_dir, "example-25-duplicate-names")
   withr::defer(app$stop())
 
   ## Both quarters render every child, repeated names included.

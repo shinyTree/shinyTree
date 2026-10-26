@@ -11,9 +11,33 @@ updateTree(session, treeId, data = NULL)
 
 \item{treeId}{The identifier for the shinyTree object}
 
-\item{data}{JSON data or nested list representing the new tree structure.}
+\item{data}{The new tree: a named nested list, as for
+\code{\link{renderTree}}, or JSON in jsTree's format, as from
+\code{\link{treeToJSON}}. \code{NULL} leaves the tree as it is.}
+}
+\value{
+Called for its side effect; returns \code{NULL} invisibly.
 }
 \description{
-Extract the nodes from the tree that are selected in a more
-convenient format. You can choose which format you prefer.
+Replaces the contents of a \code{\link{shinyTree}} with a new tree, for
+example from an observer. Like the tree \code{\link{renderTree}} sends, the
+new one is reported in \code{input$tree} once it has loaded -- unless it is
+the tree \code{input$tree} already holds, so an observer of
+\code{input$tree} that sends the tree back does not loop.
+}
+\details{
+A tree rendered with \code{renderTree(lazy = TRUE)} cannot be updated this
+way, and \code{updateTree} stops with an error: change what its render
+expression returns instead. If the tree has not been shown yet -- it is in
+a tab that has not been opened -- the update is applied when it is.
+}
+\examples{
+\dontrun{
+observeEvent(input$reset, {
+  updateTree(session, "tree", list(root = list(leaf = "")))
+})
+}
+}
+\seealso{
+\code{\link{renderTree}}, \code{\link{expandTree}}
 }

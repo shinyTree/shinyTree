@@ -5,10 +5,11 @@ library(shinyTree)
 jsFun <- "
   shinyjs.resetTree = function(id) {
     // Deselect all of the leaves and nodes  
-    $('#' + id).jstree(true).deselect_all();
+    var tree = $.jstree.reference(document.getElementById(id));
+    tree.deselect_all();
 
     // Close all of the nodes
-    $('#' + id).jstree(true).close_all();
+    tree.close_all();
   };
   "
 
@@ -20,13 +21,14 @@ shinyUI(
     
     sidebarPanel(      
       helpText(p(""),
-               HTML("<hr />The reset button uses the `deselect_all` and `close_all` functions, found in the <a href = \"https://www.jstree.com/api\">API documentation</a>, to deselect all of the selected nodes/leaves and then close all nodes.")),
+               HTML("<hr />The reset button uses the `deselect_all` and `close_all` functions, found in the <a href = \"https://www.jstree.com/api\">API documentation</a>, to deselect all of the selected nodes/leaves and then close all nodes.",
+                    "To open or close every node from R, without any JavaScript, see <code>expandTree()</code> and <code>collapseTree()</code>.")),
       actionButton("reset", "Reset Tree")
     ),
     
     mainPanel(
       useShinyjs(),
-      extendShinyjs(text = jsFun),
+      extendShinyjs(text = jsFun, functions = "resetTree"),
       shinyTree("tree", checkbox = TRUE)
     )
   ))

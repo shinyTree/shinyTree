@@ -10,18 +10,7 @@ test_that("the 04-selected example contrasts selected and checked in each mode",
   example_dir <- system.file("examples/04-selected", package = "shinyTree")
   skip_if(example_dir == "", "04-selected example not installed")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = example_dir,
-      name = "example-04-selected",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(example_dir, "example-04-selected")
   withr::defer(app$stop())
 
   reported <- function(fun) {

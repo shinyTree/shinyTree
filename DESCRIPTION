@@ -1,15 +1,12 @@
 Package: shinyTree
 Type: Package
 Title: jsTree Bindings for Shiny
-Version: 0.3.1
-Date: 2023-7-21
+Version: 0.3.1.9000
 Authors@R: c(
   person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
   person("Jeff", "Allen", role="aut", email="cran@trestletechnology.net"),
   person(family="Institut de Radioprotection et de Sûreté Nucléaire", role=c("cph"), email = "yann.richet@irsn.fr"),
   person("Ivan", "Bozhanov", role=c("ctb", "cph"), comment = "jsTree"),
-  person(family="The Dojo Foundation", role=c("ctb", "cph"), comment="require.js"),
-  person(family="jQuery Foundation, Inc.", role=c("ctb", "cph")),
   person("Mike", "Schaffer", role=c("ctb"), email="mschaff@gmail.com"),
   person("Timm", "Danker", role=c("ctb"), email="tidafr@carina.uberspace.de"),
   person("Michael", "Bell", role=c("cre"), email="bell_michael_a@lilly.com"),
@@ -17,19 +14,19 @@ Authors@R: c(
   person("Thorn", "Thaler", role = c("ctb"), email = "thorn.thaler@thothal.at"))
 Maintainer: Michael Bell <bell_michael_a@lilly.com>
 Description: Exposes bindings to jsTree -- a JavaScript library
-    that supports interactive trees -- to enable a rich, editable trees in
+    that supports interactive trees -- to enable rich, editable trees in
     Shiny.
 License: MIT + file LICENSE
 Depends:
-    R (>= 2.15.1),
-    methods
+    R (>= 3.3.0)
 Imports:
-    shiny (>= 0.9.0),
+    shiny (>= 1.6.0),
     htmltools,
-    htmlwidgets,
     jsonlite,
-    stringr,
-    promises
+    promises,
+    stats,
+    tools,
+    utils
 Suggests:
     testthat,
     shinytest2,
@@ -39,8 +36,12 @@ Suggests:
     withr,
     later,
     rmarkdown,
-    xml2
+    xml2,
+    future,
+    shinyjs,
+    tidyr
+URL: https://github.com/shinyTree/shinyTree
 BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Encoding: UTF-8

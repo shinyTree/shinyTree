@@ -2,7 +2,7 @@
 % Please edit documentation in R/tree_traversal.R
 \name{set_node_attrs}
 \alias{set_node_attrs}
-\title{Tree traversal}
+\title{Set an attribute on every inner node and leaf of a tree}
 \usage{
 set_node_attrs(tree, attr_name, inner_val, leaf_val)
 }
@@ -13,14 +13,14 @@ set_node_attrs(tree, attr_name, inner_val, leaf_val)
 
 \item{inner_val}{value of attribute for inner tree nodes}
 
-\item{leaf_val}{value of attribute for outer tree nodes}
+\item{leaf_val}{value of attribute for leaf nodes}
 }
 \value{
 named nested list
 }
 \description{
 Traverse through tree/list to set node attributes, e.g. change icons.
-Useful for directory structure icons where inner nodes are directories, leafs are files.
+Useful for directory structure icons where inner nodes are directories, leaves are files.
 }
 \examples{
 tree <- dfToTree(data.frame(Titanic),  c("Sex", "Survived"))

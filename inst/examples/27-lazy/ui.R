@@ -19,7 +19,7 @@ shinyUI(
                     function that lists them.
                     <br><br>Both trees remember what was open and selected
                     (<code>state = TRUE</code>): reload the page to see it.
-                    <hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+                    <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       tabsetPanel(

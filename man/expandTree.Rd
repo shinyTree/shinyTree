@@ -14,6 +14,9 @@ collapseTree(session, treeId)
 
 \item{treeId}{The identifier for the shinyTree object.}
 }
+\value{
+Called for its side effect; returns \code{NULL} invisibly.
+}
 \description{
 Opens or closes every node of a \code{\link{shinyTree}} in the browser,
 for example from "Expand all" and "Collapse all" buttons. The tree's
@@ -24,6 +27,10 @@ user click.
 \details{
 To control which nodes start open instead, set \code{stopened = TRUE} on
 them when rendering the tree.
+
+\code{expandTree} cannot be used on a tree rendered with
+\code{renderTree(lazy = TRUE)}, since it would have to fetch the whole
+tree, and stops with an error. \code{collapseTree} works on any tree.
 }
 \examples{
 \dontrun{

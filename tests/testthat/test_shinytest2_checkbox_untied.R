@@ -13,22 +13,11 @@ test_that("checking a box updates input$tree when tie_selection = FALSE (issue #
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox_untied"),
-      name = "shinytree-checkbox-untied",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox_untied"), "shinytree-checkbox-untied")
   withr::defer(app$stop())
 
   ## Nothing selected/checked yet.
-  expect_null(app$get_value(input = "tree"))
+  expect_length(get_checked(app$get_value(input = "tree")), 0)
 
   ## Click the checkbox icon next to "root1" (jsTree node id "1").
   app$click(selector = "[id=\"1_anchor\"] .jstree-checkbox")

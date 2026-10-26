@@ -13,7 +13,7 @@ shinyUI(
                     <code>stcssclass</code>, styled by the CSS in this page:
                     <code>done</code> is struck through, <code>important</code> is bold,
                     and a node can have both.
-                    <hr />Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+                    <hr />Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       tags$style(HTML("

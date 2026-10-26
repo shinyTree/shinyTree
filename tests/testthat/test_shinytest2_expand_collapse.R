@@ -4,18 +4,7 @@ test_that("expandTree() and collapseTree() open and close every node (#42)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_expand_collapse"),
-      name = "shinytree-expand-collapse",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_expand_collapse"), "shinytree-expand-collapse")
   withr::defer(app$stop())
 
   ## Parents in the client: their open state, keyed by label.

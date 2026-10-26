@@ -9,18 +9,7 @@ test_that("input$tree reflects three_state cascades when tie_selection = FALSE",
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox_untied_cascade"),
-      name = "shinytree-checkbox-untied-cascade",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox_untied_cascade"), "shinytree-checkbox-untied-cascade")
   withr::defer(app$stop())
 
   checked_in_r <- function() {

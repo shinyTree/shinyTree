@@ -18,14 +18,33 @@ inspect.}
 \code{names} to get a simple list of the names (with attributes
 describing the node's ancestry), or \code{slices} to get a list
 of lists, each of which is a slice of the list used to get down
-to the selected node.}
+to the checked node. \code{classid} gives each name with its
+\code{stclass}, \code{stid} and \code{id} (jsTree's id for the node)
+attributes instead of its ancestry.}
 
 \item{leaves_only}{If \code{TRUE}, return only checked nodes that have no
 children, leaving out checked parents. With \code{three_state = TRUE} a
 parent is checked whenever all of its children are, so this gives just the
 items that were ticked.}
 }
+\value{
+A list with one element per checked node, descendants before their
+  ancestors, in the form \code{format} gives. An empty list if nothing is
+  checked or \code{tree} is \code{NULL}.
+}
 \description{
 Extract the nodes from the tree that are checked in a more
 convenient format. You can choose which format you prefer.
+}
+\examples{
+tree <- list(
+  Fruit = structure(list(
+    Apple = structure(0, stchecked = TRUE),
+    Pear = 0
+  ), stopened = TRUE)
+)
+unlist(get_checked(tree))
+}
+\seealso{
+\code{\link{get_selected}}
 }

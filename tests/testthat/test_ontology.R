@@ -143,8 +143,10 @@ test_that("search cannot hang on a cycle or a many-parent lattice", {
   o <- ontologyToTree(obo_file(c(term("id: R", "name: root"), term("id: A", "name: a", "is_a: B", "is_a: C"),
                                  term("id: B", "name: b", "is_a: A"), term("id: C", "name: c", "is_a: A"),
                                  term("id: X", "name: target", "is_a: A"))))
+  ## Generous bounds: the hang this guards against never ends, and a busy CI
+  ## machine under covr is slow.
   t <- system.time(r <- o$search("target", 5))[["elapsed"]]
-  expect_lt(t, 2)
+  expect_lt(t, 10)
   ## The cycle is broken at the top, so the target is still found, by real
   ## paths that never repeat a term.
   expect_gte(length(r), 1)
@@ -158,7 +160,7 @@ test_that("search cannot hang on a cycle or a many-parent lattice", {
   lines <- c(lines, term("id: LEAF", "name: leafy", "is_a: L30a", "is_a: L30b"))
   o <- ontologyToTree(obo_file(lines))
   t <- system.time(r <- o$search("leafy", 10))[["elapsed"]]
-  expect_lt(t, 2)
+  expect_lt(t, 10)
   expect_length(r, 10)
 })
 
@@ -293,7 +295,7 @@ test_that("pathsTo itself never follows a cycle round", {
   row <- stats::setNames(seq_along(ids), ids)
   budget <- new.env(); budget$n <- 1e5L
   t <- system.time(p <- pathsTo("X", stats::setNames(terms$parents, ids), terms, row, "obsolete", 1000L, budget))
-  expect_lt(t[["elapsed"]], 2)
+  expect_lt(t[["elapsed"]], 10)
   expect_equal(p, list(c("r", "b", "a", "x")))
   ## The budget stops a search with too many paths.
   budget$n <- 2L

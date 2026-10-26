@@ -67,7 +67,7 @@ test_that("renderTreeAsync resolves a promise-returning expression and sends the
   expect_setequal(texts, c("root1", "root2"))
 })
 
-test_that("renderTreeAsync does not send a message when the promise rejects", {
+test_that("renderTreeAsync does not send a tree when the promise rejects", {
   rf <- renderTreeAsync({
     promises::promise(function(resolve, reject) {
       reject("boom")
@@ -75,67 +75,45 @@ test_that("renderTreeAsync does not send a message when the promise rejects", {
   })
 
   session <- make_fake_session()
-  expect_no_condition <- tryCatch({
-    shiny::withReactiveDomain(session, {
-      rf(session, "tree")
-    })
-    flush_promises()
-    TRUE
-  }, error = function(e) FALSE)
-
-  expect_true(expect_no_condition)
-  expect_null(session$sent)
-})
-
-test_that("getAll reads existing bindings and returns NULL for missing ones", {
-  env <- new.env()
-  env$a <- 1
-  env$b <- "two"
-
-  vals <- shinyTree:::getAll(c("a", "b", "c"), env)
-  expect_equal(vals$a, 1)
-  expect_equal(vals$b, "two")
-  expect_null(vals$c)
-})
-
-test_that("setAll assigns each named value into the target environment", {
-  env <- new.env()
-  shinyTree:::setAll(list(a = 10, b = "twenty", c = TRUE), env)
-
-  expect_equal(env$a, 10)
-  expect_equal(env$b, "twenty")
-  expect_true(env$c)
-})
-
-test_that("tempVarsPromiseDomain wraps sync evaluation with temp var swapping", {
-  env <- new.env()
-  env$x <- "original"
-
-  domain <- shinyTree:::tempVarsPromiseDomain(env, x = "swapped")
-  result <- promises::with_promise_domain(domain, {
-    inside <- env$x
-    inside
+  rejected <- NULL
+  shiny::withReactiveDomain(session, {
+    result <- rf(session, "tree")
   })
-
-  expect_equal(result, "swapped")
-  expect_equal(env$x, "original")
-})
-
-test_that("tempVarsPromiseDomain swaps temp vars while an onRejected handler runs", {
-  env <- new.env()
-  env$x <- "original"
-
-  domain <- shinyTree:::tempVarsPromiseDomain(env, x = "swapped")
-
-  result <- NULL
-  p <- promises::promise(function(resolve, reject) reject("boom"))
-  promises::with_promise_domain(domain, {
-    promises::then(p, onRejected = function(e) {
-      result <<- env$x
-    })
-  })
+  promises::catch(result, function(e) rejected <<- conditionMessage(e))
   flush_promises()
 
-  expect_equal(result, "swapped")
-  expect_equal(env$x, "original")
+  expect_null(session$sent)
+  ## Rejected rather than resolved, so Shiny shows the error in place of the tree.
+  expect_equal(rejected, "boom")
+})
+
+test_that("renderTreeAsync accepts a quoted expression and JSON", {
+  json <- Rlist2json(list(q = ""))
+  rf <- renderTreeAsync(quote(json), quoted = TRUE)
+  session <- make_fake_session()
+  shiny::withReactiveDomain(session, rf(session, "tree"))
+  expect_equal(session$sent$message$data, json)
+})
+
+test_that("renderTreeAsync resends its tree when the element is bound again (#79)", {
+  rf <- renderTreeAsync(promises::promise_resolve(list(again = "")))
+  session <- make_fake_session()
+  shiny::withReactiveDomain(session, rf(session, "tree"))
+  flush_promises()
+  first <- session$sent$message$data
+  ## The observer's first run is its ignored initial one, as in an app, where
+  ## it happens before any element can be bound again.
+  session$flushReact()
+  session$sent <- NULL
+
+  session$setInputs(tree_rebind = 1)
+  flush_promises()
+  expect_equal(session$sent$message$data, first)
+})
+
+test_that("renderTreeAsync errors on a function, as renderTree does", {
+  rf <- renderTreeAsync(function(path) list())
+  session <- make_fake_session()
+  expect_error(shiny::withReactiveDomain(session, rf(session, "tree")),
+               "renderTreeAsync\\(\\)'s expression returned a function")
 })

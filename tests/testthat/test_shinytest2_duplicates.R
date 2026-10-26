@@ -13,18 +13,7 @@ test_that("selecting a duplicate-named sibling reports that node's own data (iss
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_duplicates"),
-      name = "shinytree-duplicates",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_duplicates"), "shinytree-duplicates")
   withr::defer(app$stop())
 
   ## All five children render as distinct nodes, duplicates included.

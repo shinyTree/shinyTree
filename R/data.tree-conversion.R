@@ -13,24 +13,24 @@
 #' If the user wants to store some slots not in the data slot but on the top 
 #' level of the node, parameter \code{topLevelSlots} can be used. This is useful
 #' for additional parameters such as \sQuote{icon}, \sQuote{li_attr} or 
-#' \sQuote{a_attr}, which jsTree expect to be on the top level of the node.
+#' \sQuote{a_attr}, which jsTree expects to be on the top level of the node.
 #' 
 #' An example of how to make use of this functionality can be found in the
-#' example folder of this library.
+#' \code{19-data.tree} example.
 #'
-#' @param tree the data.tree which should be parses
+#' @param tree the data.tree which should be parsed
 #' @param keepRoot logical. If \code{FALSE} (default) the root node from the tree
 #'        is pruned
 #' @param topLevelSlots determines which slots should be moved to the top level of the 
 #'        node. If \code{default} or \code{NULL} slots 
 #'        \href{https://www.jstree.com/docs/json/}{used in the jsTree JSON} 
 #'        are kept on the top level, while any other atomic / list slots from the tree
-#'        are stored in an own slot called \sQuote{data}. If \code{all} *all* nodes are
+#'        are stored in an own slot called \sQuote{data}. If \code{all}, all slots are
 #'        stored on the top level. Alternatively, it can be an explicit vector of
 #'        slot names which should be kept. In the latter case it is the user's
 #'        responsibility to ensure that jsTree slots stay on the top level.
 #' @param createNewId logical. If \code{TRUE} a new id will be generated. Any old \sQuote{id} 
-#'        will be stored in \sQuote{id.orig} and a warning will be issued, If \code{FALSE},
+#'        will be stored in \sQuote{id.orig} and a warning will be issued. If \code{FALSE},
 #'        any existing id will be re-used.
 #' @param pretty logical. If \code{TRUE} the resulting JSON is prettified
 #' @return a JSON string representing the data.tree
@@ -72,26 +72,28 @@ treeToJSON <- function(tree,
               domain = NA)
       fields[NOK] <- NULL
     }
-    if (is.null(fields$text)) {
-      fields$text <- if(!is.null(fields$name)) fields$name else node_name
+    # [[ rather than $, which would take a field whose name merely starts
+    # with the one asked for: textColor for text, iconSize for icon.
+    if (is.null(fields[["text"]])) {
+      fields[["text"]] <- if (!is.null(fields[["name"]])) fields[["name"]] else node_name
     }
-    fields$icon <- fixIconName(fields$icon)
-    if (!is.null(fields$state)) {
-      valid_states <- c("opened", "disabled", "selected", "loaded")
+    fields[["icon"]] <- fixIconName(fields[["icon"]])
+    if (!is.null(fields[["state"]])) {
+      valid_states <- c("opened", "disabled", "selected", "checked", "loaded")
       states_template <- stats::setNames(rep(list(FALSE), length(valid_states)),
                                          valid_states)
-      NOK <- !names(fields$state) %in% valid_states
+      NOK <- !names(fields[["state"]]) %in% valid_states
       if (any(NOK)) {
         msg <- sprintf(ngettext(length(which(NOK)),
                                 "invalid state %s",
                                 "invalid states %s"),
-                       paste0(dQuote(names(fields$state)[NOK]),
+                       paste0(dQuote(names(fields[["state"]])[NOK]),
                               collapse = ", "))
         warning(msg,
                 domain = NA)
       }
-      states_template[names(fields$state[!NOK])] <- fields$state[!NOK]
-      fields$state <- states_template
+      states_template[names(fields[["state"]][!NOK])] <- fields[["state"]][!NOK]
+      fields[["state"]] <- states_template
     }
     if (is.null(topLevelSlots)) {
       slots_to_move <- character(0)
@@ -100,13 +102,13 @@ treeToJSON <- function(tree,
     }
     data_slot <- fields[slots_to_move]
     if (length(data_slot)) {
-      fields$data <- data_slot
+      fields[["data"]] <- data_slot
       fields[slots_to_move] <- NULL
     }
     if (!is.null(node$children)) {
       ## purrr::imap would make code cleaner but did not want to add another dependency
       ## unname needed to create an JSON array as opposed to an JSON object
-      fields$children <- unname(lapply(names(node$children), 
+      fields[["children"]] <- unname(lapply(names(node$children), 
                                        function(i) node_to_list(node$children[[i]],
                                                                 i)))
     }
@@ -141,14 +143,18 @@ treeToJSON <- function(tree,
   data.tree::Set(nodes, id = new_ids)
   treeList <- node_to_list(tree)
   if (!keepRoot) {
-    ## to prune off the root node return the first children list
-    treeList <- treeList$children
+    ## to prune off the root node return the first children list; a root
+    ## without children leaves an empty tree, [], rather than {}, which jsTree
+    ## showed as one blank node
+    treeList <- treeList[["children"]] %||% I(list())
   }
   ## use as.character b/c updateTree needs an unparsed JSON string, as 
-  ## the parsing is done in shinyTree.js
+  ## the parsing is done in shinyTree.js; digits = NA keeps numbers at full
+  ## precision rather than rounded to four digits
   as.character(jsonlite::toJSON(treeList, 
                                 auto_unbox = TRUE, 
-                                pretty = pretty))
+                                pretty = pretty,
+                                digits = NA))
 }
 
 
@@ -160,9 +166,16 @@ treeToJSON <- function(tree,
 #' @return list
 #' 
 #' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+#' @keywords internal
 dfrapply <- function(list, f, ...) {
   if (inherits(list, "data.frame")) {
     return(f(list, ...))
+  }
+  # A leaf left by an earlier level, where a branch ended -- its rows had no
+  # value in that column -- stays a leaf. It was an error, so a tree of paths
+  # of different depths, such as a folder listing, could not be built.
+  if (identical(list, "")) {
+    return(list)
   }
   if (inherits(list, "list")) {
     returnval <- lapply(list, function(x) dfrapply(x, f, ...))
@@ -177,21 +190,37 @@ dfrapply <- function(list, f, ...) {
 }
 
 
-#' Converts a data.frame  to a data.tree format
+#' Convert a data.frame to a nested list for renderTree
 #' 
+#' Each column of \code{hierarchy} is one level of the tree, in that order: a
+#' node for each value of the first column, under it a node for each value of
+#' the second column found with it, and so on. A missing value ends the
+#' branch there, which is how \code{\link{treeToDf}} writes a branch shorter
+#' than the deepest one, so a tree survives the round trip. A row whose first
+#' column is missing is left out.
+#'
 #' @param df data.frame
 #' @param hierarchy ordered character vector of column names defining the hierarchy
 #' @examples
-#'\dontrun{
 #' df <- data.frame(Titanic)
 #' tree <- dfToTree(df, c("Sex", "Class", "Survived"))
-#'}
+#' str(tree$Male$`1st`)
 #' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
-#' @return nested list
+#' @return A named nested list, as \code{\link{renderTree}} takes; an empty
+#'   list for a data frame with no rows.
+#' @seealso \code{\link{treeToDf}}, the \code{22-dfToTree} example
 #' @export
 dfToTree <- function(
     df,
     hierarchy = colnames(df)){ 
+  missing <- setdiff(hierarchy, colnames(df))
+  if (length(missing)) {
+    stop("hierarchy names columns that df does not have: ",
+         paste(sQuote(missing), collapse = ", "), call. = FALSE)
+  }
+  if (!nrow(df)) {
+    return(list())
+  }
   l <- df
   for(c in hierarchy){
     l <- dfrapply(
@@ -206,22 +235,33 @@ dfToTree <- function(
 
 #' Convert tree into data.frame
 #' 
+#' The reverse of \code{\link{dfToTree}}: one row per leaf, with the names on
+#' the path down to it in the columns. A path shorter than the deepest one
+#' leaves the remaining columns \code{NA}.
+#'
 #' @param tree named nested list
-#' @param hierarchy sorted character vector with name for each level of the list
+#' @param hierarchy ordered character vector with a column name for each level
+#'   of the tree. If it is \code{NULL} or its length differs from the depth of
+#'   the tree, the columns are named \code{1}, \code{2}, ... instead.
 #' @examples
-#'\dontrun{
 #' df <- data.frame(Titanic)
 #' tree <- dfToTree(df, c("Sex", "Class", "Survived"))
 #' newDf <- treeToDf(tree, c("Sex", "Class", "Survived"))
-#'}
+#' head(newDf)
 #' @return data.frame
+#' @seealso \code{\link{dfToTree}}
 #' 
 #' @author Michael Bell
 #' @export
 treeToDf <- function(tree,hierarchy=NULL){
   depth <- depth(tree)
+  if (!depth || !length(tree)) {
+    df <- data.frame(matrix(ncol = length(hierarchy), nrow = 0))
+    names(df) <- hierarchy
+    return(df)
+  }
   df <- data.frame(matrix(ncol = depth, nrow = 0))
-  if(is.null(hierarchy) | length(hierarchy) != depth){
+  if (is.null(hierarchy) || length(hierarchy) != depth) {
     names(df) <- c(1:depth)
   }else{
     names(df) <- hierarchy
@@ -248,6 +288,10 @@ treeToDf <- function(tree,hierarchy=NULL){
 #' @return integer
 #' 
 #' @author Jasper Schelfhout \email{jasper.schelfhout@@openanalytics.eu}
+#' @keywords internal
 depth <- function(x){
-  ifelse(is.list(x) && !is.data.frame(x), 1L + max(sapply(x, depth)), 0L)
+  if (!is.list(x) || is.data.frame(x)) {
+    return(0L)
+  }
+  1L + max(0L, vapply(x, depth, integer(1)))
 }

@@ -2,7 +2,7 @@ library(shiny)
 library(shinyTree)
 
 
-#' #' Example of storing and retreiving data in the tree
+#' Example of storing and retrieving data in the tree
 
 shinyUI(
   pageWithSidebar(
@@ -11,7 +11,7 @@ shinyUI(
     
     
     sidebarPanel(
-      helpText(HTML("An example of using storing and retreiving data in the tree. Select roo1 or leaf1 to see stored data."))
+      helpText(HTML("An example of storing and retrieving data in the tree. Select root1 or leaf1 to see stored data."))
     ),
     mainPanel(
       "Currently Selected:",

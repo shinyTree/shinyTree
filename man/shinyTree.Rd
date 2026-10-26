@@ -39,15 +39,21 @@ make the selection of multiple nodes in the tree easier.}
 a search box above the produced tree. Alternatively, you can set the parameter
 to the ID of the text input you wish to use as the search field.}
 
-\item{searchtime}{Determines the reaction time of the search algorithm.
-Default is 250ms.}
+\item{searchtime}{How long to wait, in milliseconds, after the user stops
+typing before searching. Default is 250ms.}
 
-\item{searchplaceholder}{Add a placeholder value to the search box}
+\item{searchplaceholder}{Add a placeholder value to the search box. Only
+used when \code{search = TRUE}, since a search field given by its id has its
+own.}
 
 \item{dragAndDrop}{If \code{TRUE}, will allow the user to rearrange the nodes in the
 tree.}
 
-\item{types}{enables jstree types functionality when sent proper json (please see the types example)}
+\item{types}{A JavaScript object literal, as a string, giving jsTree's
+types settings: each type's icon, valid children and so on. Nodes are given
+a type with the \code{sttype} attribute. It is written into the page as
+JavaScript, not parsed as JSON, so single quotes work; see the
+\code{12-types} example and \url{https://www.jstree.com/plugins/}.}
 
 \item{theme}{jsTree theme, one of \code{default}, \code{default-dark}, or \code{proton}.}
 
@@ -71,7 +77,9 @@ than once.}
 Set this to \code{FALSE} to disable the animation (default is 200).}
 
 \item{contextmenu}{If \code{TRUE}, will enable a contextmenu to
-create/rename/delete/cut/copy/paste nodes.}
+create/rename/delete/cut/copy/paste nodes. jsTree cannot show checkboxes
+and the contextmenu together, so \code{checkbox} is then turned off, with a
+warning.}
 
 \item{three_state}{If \code{TRUE}, checking a node cascades to its children,
 and a parent is shown checked only while all of its children are (and as
@@ -101,17 +109,25 @@ attributes the tree was rendered with: \code{"saved"} (the default)
 restores what the user had; \code{"code"} keeps the app's attributes and
 restores the rest around them.}
 }
+\value{
+A tag list holding the tree and the scripts and stylesheets it
+  needs, for the app's UI.
+}
 \description{
 This creates a spot in your Shiny UI for a shinyTree which can then be filled
 in using \code{\link{renderTree}}.
 }
 \details{
-A shinyTree is an output *and* an input element in the same time. While you can 
+A shinyTree is an output \emph{and} an input element at the same time. While you can 
 fill it via \code{\link{renderTree}} you can access its content via \code{input$tree} 
 (for example after the user rearranged some nodes). By default, \code{input$tree} will
-return a list similiar to the one you use to fill the tree. This behaviour is controlled
+return a list similar to the one you use to fill the tree. This behaviour is controlled
 by \code{getOption("shinyTree.defaultParser")}. It defaults to \code{"list"}, but can be set 
-to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned.
+to \code{"tree"}, in which case a \code{\link[data.tree]{data.tree}} is returned
+(see \emph{Options}).
+
+Any valid Shiny id can be used, including one containing \code{.} or
+\code{-}, as Shiny modules produce.
 }
 \section{Checked and selected nodes}{
 
@@ -167,17 +183,26 @@ new key, or run \code{localStorage.removeItem("<key>")} in the browser.
 
 \section{Options}{
 
-Two options control whether additional jsTree events update \code{input$tree}.
-Both default to \code{FALSE}:
 \describe{
-  \item{\code{shinyTree.refresh}}{report \code{refresh.jstree} events.}
-  \item{\code{shinyTree.setState}}{report \code{set_state.jstree} events.}
+  \item{\code{shinyTree.defaultParser}}{What \code{input$tree} holds:
+    \code{"list"} (the default), a nested list like the one passed to
+    \code{\link{renderTree}}, or \code{"tree"}, a
+    \code{\link[data.tree]{data.tree}} Node, which needs the
+    \pkg{data.tree} package. A data.tree cannot hold siblings with the same
+    name, so the \code{"tree"} parser warns if the tree has any. It can be
+    set before or after the package is loaded.}
+  \item{\code{shinyTree.refresh}}{\code{TRUE} to report
+    \code{refresh.jstree} events. Default \code{FALSE}.}
+  \item{\code{shinyTree.setState}}{\code{TRUE} to report
+    \code{set_state.jstree} events. Default \code{FALSE}.}
 }
-A refresh triggered by \code{\link{updateTree}} is never reported, since the
-server already knows about a change it made itself; reporting it back caused
-a feedback loop in apps that call \code{updateTree} from an observer watching
-\code{input$tree}. Refreshes from any other source are still reported when
-the option is enabled.
+The last two must be set before the UI is built, as they are written into
+the page. They only matter for refreshes started in the browser, e.g. by
+the app's own JavaScript: a tree sent by \code{\link{renderTree}} or
+\code{\link{updateTree}} is reported once it has loaded either way, and the
+refresh that loads it is not reported again -- that caused a feedback loop
+in apps that call \code{updateTree} from an observer watching
+\code{input$tree}.
 }
 
 \examples{

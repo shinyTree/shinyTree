@@ -1,7 +1,7 @@
 library(shiny)
 library(shinyTree)
 
-#' Demonstrates icons by using types and by paticular items in the tree
+#' Demonstrates icons by using types and by particular items in the tree
 #' @author Michael Bell \email{bellma@@lilly.com}
 shinyUI(
   pageWithSidebar(

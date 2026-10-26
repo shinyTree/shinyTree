@@ -16,7 +16,7 @@ shinyUI(
                     those stay open and selected and the rest of what you did is
                     restored around them.
                     <br><br>The state is kept in this browser only.
-                    <hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+                    <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       fluidRow(

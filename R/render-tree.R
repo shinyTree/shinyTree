@@ -1,9 +1,27 @@
 #' Render a ShinyTree
 #'
-#' Should return a list from the given expression which will be converted into a
-#' \code{\link{shinyTree}}.
+#' Fills a \code{\link{shinyTree}} with the tree an expression returns, as a
+#' nested list (see \emph{Node attributes}) or as JSON in jsTree's format, such
+#' as \code{\link{treeToJSON}} gives.
 #'
-#' @param expr The expression to be evaluated which should produce a list.
+#' @param expr An expression that returns the tree: a named nested list, or a
+#'   JSON string. With \code{lazy = TRUE}, a function instead.
+#' @return A render function, to assign to \code{output$<id>} for a
+#'   \code{\link{shinyTree}} with that id.
+#' @examples
+#' \dontrun{
+#' library(shiny)
+#' ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
+#' server <- function(input, output, session) {
+#'   output$tree <- renderTree(list(
+#'     Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
+#'                       stopened = TRUE, sticon = "fa fa-folder"),
+#'     Vegetables = list(Leek = "")
+#'   ))
+#'   output$picked <- renderPrint(get_selected(input$tree))
+#' }
+#' shinyApp(ui, server)
+#' }
 #' @param env The environment in which \code{expr} should be evaluated.
 #' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
 #' is useful if you want to save an expression in a variable.
@@ -29,8 +47,13 @@
 #'     \code{tie_selection = TRUE} a ticked box is a selection, so use
 #'     \code{stselected} instead.}
 #'   \item{\code{stdisabled}}{\code{TRUE} to disable it.}
-#'   \item{\code{sticon}}{an icon: a Font Awesome or glyphicon name such as
-#'     \code{"fa fa-file"}, or the URL of an image.}
+#'   \item{\code{sticon}}{an icon: Font Awesome classes such as
+#'     \code{"fa fa-file"} or \code{"fa-solid fa-folder"}, or the URL or
+#'     path of an image. A name on its own, \code{"file"} or
+#'     \code{"fa-file"}, is expanded to \code{"fa fa-file"}, and
+#'     \code{"glyphicon-file"} to \code{"glyphicon glyphicon-file"}.
+#'     Glyphicons need Bootstrap 3, the default for \code{fluidPage()}; any
+#'     other icon set works if the app loads its stylesheet.}
 #'   \item{\code{sttype}}{the node's type, for the \code{types} argument of
 #'     \code{\link{shinyTree}}.}
 #'   \item{\code{sttooltip}}{text shown when the pointer rests on the node's
@@ -40,11 +63,17 @@
 #'     style it. They go on the node's \code{<li>}, so target its label with
 #'     \code{li.myclass > a}. Unlike \code{sttype}, any number can be given.}
 #' }
-#' Any other attribute whose name starts with \code{st} is passed through as
-#' data and comes back on the node in \code{input$tree}. That includes
+#' Any other attribute is passed through as data and comes back on the node in
+#' \code{input$tree}, apart from those R itself gives a node, such as a data
+#' frame's \code{class} and \code{row.names}. \code{\link{get_selected}} and
+#' \code{\link{get_checked}} keep those whose names start with \code{st}, so
+#' that is the convention to follow. That includes
 #' \code{stclass}, which despite its name is only data -- it is what
 #' \code{get_selected(format = "classid")} reports -- and is not applied as a
 #' CSS class; use \code{stcssclass} for that.
+#'
+#' Every node needs a name, and names are shown as HTML, so a name read from a
+#' file or a database can contain markup. Siblings may share a name.
 #' @section Lazy loading:
 #' With \code{lazy = TRUE}, \code{expr} returns a function that is given a
 #' node's \code{path} -- the names from the root down to it,
@@ -80,7 +109,8 @@
 #'     \code{node$stid} to tell them apart. Only an argument called
 #'     \code{node} receives it. \code{stpath} is used by shinyTree for the path
 #'     a node was fetched under, so do not set it yourself.}
-#'   \item{Node attributes}{All the attributes below work on the children,
+#'   \item{Node attributes}{All the attributes in \emph{Node attributes}
+#'     above work on the children,
 #'     including \code{stselected} and \code{stopened}; an opened child's
 #'     children are fetched at once.}
 #'   \item{Reactivity}{\code{expr} is evaluated as usual, so anything reactive
@@ -150,6 +180,21 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE, lazy = FALSE)
   if (isTRUE(lazy)) {
     return(renderTreeLazyFunc(func))
   }
+  treeRenderFunction(func, "renderTree")
+}
+
+#' The render function behind renderTree() and renderTreeAsync()
+#'
+#' The tree is sent to the browser as a message rather than returned as the
+#' output's value, so the render function returns NULL (or, with
+#' \code{async = TRUE} and an expression that returns a promise, a promise of
+#' NULL that is resolved once the tree has been sent).
+#'
+#' @param func the render expression, as a function
+#' @param label the name of the render function, for the cache and errors
+#' @param async whether \code{func} may return a promise
+#' @noRd
+treeRenderFunction <- function(func, label, async = FALSE) {
   ## Guards against registering the rebind observer more than once for a given
   ## output, since the render function runs again whenever expr invalidates.
   observer_registered <- FALSE
@@ -165,23 +210,30 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE, lazy = FALSE)
     }
   }
 
-  renderFunc <- function(shinysession, name, ...) {
-    tree <- func()
+  send_result <- function(shinysession, name, tree) {
     if (is.function(tree)) {
-      stop("renderTree()'s expression returned a function. To load the tree's ",
+      stop(label, "()'s expression returned a function. To load the tree's ",
            "nodes as they are opened, use renderTree(lazy = TRUE, ...).", call. = FALSE)
     }
     ## expr may return a list or JSON, e.g. from treeToJSON().
-    send_tree(shinysession, name, if (is.list(tree)) Rlist2json(tree) else tree)
+    send_tree(shinysession, name, treeJson(tree))
     NULL
+  }
+
+  renderFunc <- function(shinysession, name, ...) {
+    tree <- func()
+    if (async && promises::is.promising(tree)) {
+      return(promises::then(tree, function(value) send_result(shinysession, name, value)))
+    }
+    send_result(shinysession, name, tree)
   }
 
   ## The tree is sent as a message rather than returned as the output value, so
   ## the value bindCache() would store is NULL and replaying it on a cache hit
   ## would leave the tree empty (#109). The hooks store the tree's JSON instead
   ## and send it again on a hit, when the render function itself is skipped.
-  ## The write hook runs straight after the render function, so last_json holds
-  ## the tree it has just sent.
+  ## The write hook runs straight after the render function (or its promise),
+  ## so last_json holds the tree it has just sent.
   cacheWriteHook <- function(value) last_json
   cacheReadHook <- function(json) {
     session <- shiny::getDefaultReactiveDomain()
@@ -192,7 +244,7 @@ renderTree <- function(expr, env = parent.frame(), quoted = FALSE, lazy = FALSE)
   shiny::markRenderFunction(
     shinyTree,
     renderFunc,
-    cacheHint = list(label = "renderTree", userExpr = body(func)),
+    cacheHint = list(label = label, userExpr = body(func)),
     cacheWriteHook = cacheWriteHook,
     cacheReadHook = cacheReadHook
   )
@@ -228,6 +280,7 @@ registerRebindObserver <- function(session, treeId, func = NULL, resend = NULL) 
 #' 
 #' Renders a tree with no defined nodes.
 #'
+#' @return A render function, to assign to \code{output$<id>}.
 #' @seealso \code{\link{shinyTree}}
 #' @export
 renderEmptyTree <- function() {

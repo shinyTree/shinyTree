@@ -4,18 +4,7 @@ test_that("sttooltip shows as the node's hover text (#66)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_tooltip"),
-      name = "shinytree-tooltip",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_tooltip"), "shinytree-tooltip")
   withr::defer(app$stop())
 
   titles <- function() {

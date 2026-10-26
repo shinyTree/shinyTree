@@ -1,101 +1,45 @@
-#' Render an asynchronous ShinyTree 
-#' 
-#' Should return a list from the given expression which will be converted into a
-#' \code{\link{shinyTree}}.
-#' 
-#' @importFrom promises then is.promising with_promise_domain new_promise_domain
-#' @importFrom shiny exprToFunction getDefaultReactiveDomain markRenderFunction
-#' @importFrom htmlwidgets shinyRenderWidget
-#' 
-#' @param expr The expression to be evaluated which should produce a list.
+#' Render a ShinyTree asynchronously
+#'
+#' Like \code{\link{renderTree}}, but \code{expr} may also return a promise
+#' (see the \pkg{promises} package) of the tree, for a tree that is slow to
+#' build: with \pkg{future}, it is built in another process and the app stays
+#' responsive in the meantime. The tree is sent once the promise resolves; if
+#' it is rejected, the error is shown in place of the tree. An expression that
+#' returns a tree straight away works as it does in \code{renderTree}.
+#'
+#' Lazy loading (\code{renderTree(lazy = TRUE)}) is not available here.
+#'
+#' @param expr An expression that returns a nested list or JSON, as for
+#'   \code{\link{renderTree}}, or a promise of one.
 #' @param env The environment in which \code{expr} should be evaluated.
 #' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
 #' is useful if you want to save an expression in a variable.
-#' @seealso \code{\link{shinyTree}}
+#' @return A render function, to assign to \code{output$<id>} for a
+#'   \code{\link{shinyTree}} with that id.
+#' @examples
+#' \dontrun{
+#' library(shiny)
+#' library(promises)
+#' library(future)
+#' plan(multisession)
+#'
+#' ui <- fluidPage(shinyTree("tree"))
+#' server <- function(input, output, session) {
+#'   output$tree <- renderTreeAsync({
+#'     future({
+#'       Sys.sleep(2)  # a tree that is slow to build
+#'       list(root = list(leaf = ""))
+#'     })
+#'   })
+#' }
+#' shinyApp(ui, server)
+#'
+#' # See also the 16-async example:
+#' runApp(system.file("examples/16-async", package = "shinyTree"))
+#' }
+#' @seealso \code{\link{renderTree}}, \code{\link{shinyTree}}
 #' @export
 renderTreeAsync <- function(expr, env = parent.frame(), quoted = FALSE){
-  if (!quoted) expr = substitute(expr)
-  
-  outputInfoEnv = new.env(parent = emptyenv())
-  outputInfoEnv[["outputName"]] = NULL
-  outputInfoEnv[["session"]] = NULL
-
-  exprFunc = shiny::exprToFunction(expr, env, quoted = TRUE)
-
-  processWidget = function(instance, shinysession, name, ...) {
-    updateTree(session = shiny::getDefaultReactiveDomain(), treeId = outputInfoEnv[["outputName"]], data = instance)
-  }
-  
-  widgetFunc = function() {
-    instance = exprFunc()
-    if (promises::is.promising(instance)) {
-      promises::then(instance, processWidget)
-    } else {
-      processWidget(instance)
-    }
-  }
-
-  renderFunc = htmlwidgets::shinyRenderWidget(
-    widgetFunc(), shinyTree, environment(), FALSE
-  )
-
-  func = shiny::markRenderFunction(shinyTree, function(shinysession, name, ...) {
-    domain = tempVarsPromiseDomain(outputInfoEnv, outputName = name, session = shinysession)
-    promises::with_promise_domain(domain, renderFunc())
-  })
-
-  func
-}
-
-
-getAll = function(x, env) {
-  as.list(mget(x, env, ifnotfound = rep(list(NULL), times = length(x))))
-}
-
-setAll = function(lst, env) {
-  mapply(names(lst), lst, FUN = function(name, val) {
-    assign(name, val, env)
-  })
-  invisible()
-}
-
-tempVarsPromiseDomain = function(env, ...) {
-  force(env)
-  vars = list(...)
-
-  promises::new_promise_domain(
-    wrapOnFulfilled = function(onFulfilled) {
-      # force(onFulfilled)
-      function(...) {
-        old = getAll(names(vars), env)
-        setAll(vars, env)
-        on.exit({
-          setAll(old, env)
-        }, add = TRUE)
-
-        onFulfilled(...)
-      }
-    },
-    wrapOnRejected = function(onRejected) {
-      # force(onRejected)
-      function(...) {
-        old = getAll(names(vars), env)
-        setAll(vars, env)
-        on.exit({
-          setAll(old, env)
-        }, add = TRUE)
-
-        onRejected(...)
-      }
-    },
-    wrapSync = function(expr) {
-      old = getAll(names(vars), env)
-      setAll(vars, env)
-      on.exit({
-        setAll(old, env)
-      }, add = TRUE)
-
-      force(expr)
-    }
-  )
+  func <- shiny::exprToFunction(expr, env, quoted)
+  treeRenderFunction(func, "renderTreeAsync", async = TRUE)
 }

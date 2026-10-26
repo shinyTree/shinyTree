@@ -20,7 +20,7 @@ shinyUI(
                    inline = TRUE),
       hr(),
       uiOutput("explanation"),
-      helpText(HTML("<hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+      helpText(HTML("<hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       uiOutput("tree_ui"),

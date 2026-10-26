@@ -444,7 +444,9 @@ async function testLazyStateRestore() {
     await page.evaluate(() => { const t = $('#tree').jstree(true); t.select_node(Object.keys(t._model.data).find((i) => t.get_node(i).text === 'g1_1.2.3.1')); });
     await page.waitForTimeout(500);
     await reloadTree(page);
-    await page.waitForFunction(() => /g1_1\.2\.3\.1/.test(document.getElementById('report').textContent), null, { timeout: 10000 }).catch(() => {});
+    // Not caught: if the restored selection never reaches the server, the
+    // test fails here rather than going on to check a half-restored tree.
+    await page.waitForFunction(() => /g1_1\.2\.3\.1/.test(document.getElementById('report').textContent), null, { timeout: 15000 });
     const s = await lazyModel(page);
     equal(s.open, 'g1_1,g1_1/g1_1.2,g1_1/g1_1.2/g1_1.2.3', 'the open branches are fetched and reopened');
     equal(s.selected, 'g1_1/g1_1.2/g1_1.2.3/g1_1.2.3.1', 'the selection deep inside them is restored');
@@ -598,6 +600,91 @@ async function testEmptyTreeDoesNotLoop() {
   });
 }
 
+const waitText = (page, id, re, timeout = 10000) => page.waitForFunction(
+  ([id, src]) => new RegExp(src).test(document.getElementById(id).textContent), [id, re.source], { timeout });
+
+async function testTreeReportedWithoutClick() {
+  console.log('input$tree is set once the tree loads, before any click');
+  await withApp('test_js_robust', async (page) => {
+    await waitText(page, 'report', /names: a1,a2 \|/);
+    ok(true, 'input$tree reports the rendered tree without any interaction');
+  });
+}
+
+async function testRerenderAfterReqKeepsInput() {
+  console.log('a tree re-rendered after a req() failure still updates input$tree');
+  await withApp('test_js_robust', async (page) => {
+    await waitText(page, 'report', /names: a1,a2 \|/);
+    await page.click('#show');
+    await page.waitForFunction(() => document.getElementById('tree').classList.contains('recalculating') ||
+                                      !Shiny.shinyapp.$values.tree);
+    await page.waitForTimeout(300);
+    await page.click('#show');
+    await page.waitForFunction(() => document.querySelectorAll('#tree li').length === 2);
+    await page.click('#tree a.jstree-anchor >> text=a1');
+    await waitText(page, 'report', /selected: a1$/);
+    ok(true, 'a click after the re-render reaches the server');
+  });
+}
+
+async function testServerTreeReplacesSelection() {
+  console.log('a new tree from the server replaces the old one in input$tree');
+  await withApp('test_js_robust', async (page) => {
+    await waitText(page, 'report', /names: a1,a2 \|/);
+    await page.click('#tree a.jstree-anchor >> text=a1');
+    await waitText(page, 'report', /selected: a1$/);
+    await page.click('#swap');
+    await waitText(page, 'report', /names: b1,b2 \| selected: $/);
+    ok(true, 'input$tree reports the new tree, with nothing selected');
+  });
+}
+
+async function testIdNeedingEscape() {
+  console.log('a tree whose id contains "." works, and does not stop other inputs binding');
+  await withApp('test_js_dotted_id', async (page) => {
+    await waitText(page, 'plain_report', /names: p/);
+    ok(true, 'an ordinary tree on the same page still reports');
+    await waitText(page, 'dotted', /names: x,y \|/);
+    const info = await page.evaluate(() => {
+      const el = document.getElementById('my.tree');
+      return { checkbox: !!el.querySelector('.jstree-checkbox'), leafIcon: !!el.querySelector('.fa-leaf') };
+    });
+    ok(info.checkbox, 'its options are applied (checkboxes shown)');
+    ok(info.leafIcon, 'its types are applied');
+    await page.click('[id="my.tree"] a.jstree-anchor >> text=y');
+    await waitText(page, 'dotted', /checked: y$/);
+    await page.fill('[id="my.tree-search-input"]', 'x');
+    await page.waitForFunction(() => document.querySelectorAll('[id="my.tree"] .jstree-search').length === 1);
+    ok(true, 'its search box works');
+  });
+}
+
+async function testMessagesBeforeTreeExists() {
+  console.log('updateTree()/expandTree() on a tree that has not rendered do not throw');
+  await withApp('test_js_robust', async (page) => {
+    // Shiny catches an error in receiveMessage() and logs it to the console.
+    const errors = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('console', (m) => { if (m.type() === 'error' && /receiveMessage/.test(m.text())) errors.push(m.text()); });
+    await waitText(page, 'report', /names: a1,a2 \|/);
+    await page.click('#update_hidden');
+    await page.click('#expand_hidden');
+    await waitText(page, 'hidden_report', /updates sent: 2/);
+    await page.waitForTimeout(500);
+    equal(errors.join('; '), '', 'no JavaScript errors');
+  });
+}
+
+async function testDeletingLastNodeReported() {
+  console.log('deleting every node is reported in input$tree');
+  await withApp('test_js_robust', async (page) => {
+    await waitText(page, 'report', /names: a1,a2 \|/);
+    await page.evaluate(() => { const t = $('#tree').jstree(true); t.delete_node(t.get_node('#').children.slice()); });
+    await waitText(page, 'report', /^names:  \| selected: $/);
+    ok(true, 'input$tree is empty after the last node is deleted');
+  });
+}
+
 (async () => {
   await testModalReopen();
   await testRepeatedReopen();
@@ -618,6 +705,12 @@ async function testEmptyTreeDoesNotLoop() {
   await testLazySupersededSearch();
   await testLazyRenameKeepsPath();
   await testEmptyTreeDoesNotLoop();
+  await testTreeReportedWithoutClick();
+  await testRerenderAfterReqKeepsInput();
+  await testServerTreeReplacesSelection();
+  await testIdNeedingEscape();
+  await testMessagesBeforeTreeExists();
+  await testDeletingLastNodeReported();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
   if (failures > 0) {

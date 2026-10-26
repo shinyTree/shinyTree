@@ -10,7 +10,8 @@ ontologyToTree(file, format = NULL, obsolete = "obsolete")
 \item{file}{Path to an \code{.obo} or \code{.owl} file.}
 
 \item{format}{\code{"obo"} or \code{"owl"}; by default guessed from the
-file's extension.}
+file's extension: \code{.obo} is OBO, and \code{.owl}, \code{.rdf} and
+\code{.xml} are OWL.}
 
 \item{obsolete}{Label of the top-level node holding the obsolete terms, or
 \code{NULL} to leave them out.}
@@ -28,7 +29,7 @@ A list for \code{renderTree(lazy = TRUE)}: \code{children}, the
 Reads an ontology from an OBO (\code{.obo}) or OWL (\code{.owl}, RDF/XML)
 file and returns a children function for \code{\link{renderTree}(lazy =
 TRUE)}, so even a large ontology such as the Gene Ontology is shown a level
-at a time.
+at a time. Reading OWL needs the \pkg{xml2} package.
 }
 \details{
 The hierarchy is formed by \code{is_a} (in OWL, \code{rdfs:subClassOf}
@@ -68,6 +69,11 @@ carries its identifier as \code{stid} and its definition, if any, as
 }
 }
 \examples{
+# The Anatomical Entity Ontology, which comes with the 28-ontology example
+aeo <- ontologyToTree(system.file("examples/28-ontology/aeo.obo", package = "shinyTree"))
+names(aeo$children(character(0)))
+head(attr(aeo, "ontology")[, c("id", "name")])
+
 \dontrun{
 library(shiny)
 go <- ontologyToTree("go-basic.obo")

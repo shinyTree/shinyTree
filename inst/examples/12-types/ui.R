@@ -10,8 +10,7 @@ shinyUI(
     
     sidebarPanel(
       helpText(HTML("A shinyTree example using types to dictate the behavior of specific nodes.
-                  <hr>Created using shinyTree<hr>Update button exists to make sure the output of the update tree is the same as renderTree</a>.")),
-      actionButton(inputId = "renderTree", "Render"),
+                  <hr>Created using shinyTree<hr>The Update button sends the same tree again with updateTree(), to show it gives the same result as renderTree().")),
       actionButton(inputId = "updateTree", "Update")
     ),
     mainPanel(

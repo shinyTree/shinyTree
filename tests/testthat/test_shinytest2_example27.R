@@ -8,14 +8,7 @@ test_that("the 27-lazy example loads, searches and fetches only what it needs (#
   example_dir <- system.file("examples/27-lazy", package = "shinyTree")
   skip_if(example_dir == "", "27-lazy example not installed")
 
-  app <- tryCatch(
-    AppDriver$new(app_dir = example_dir, name = "example-27-lazy", variant = NULL,
-                  load_timeout = 30000),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(example_dir, "example-27-lazy")
   withr::defer(app$stop())
 
   app$run_js("localStorage.clear()")

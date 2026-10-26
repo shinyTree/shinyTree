@@ -1,35 +1,43 @@
 [![R-CMD-check](https://github.com/shinyTree/shinyTree/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/shinyTree/shinyTree/actions/workflows/R-CMD-check.yaml)
 [![cran checks](https://badges.cranchecks.info/worst/shinyTree.svg)](https://cran.r-project.org/web/checks/check_results_shinyTree.html)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/shinyTree?color=brightgreen)](https://www.r-pkg.org/pkg/shinyTree)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.rpackages.io/package/shinyTree)
+[![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/shinyTree)](https://www.r-pkg.org/pkg/shinyTree)
 [![codecov](https://app.codecov.io/gh/shinyTree/shinyTree/branch/master/graph/badge.svg)](https://app.codecov.io/gh/shinyTree/shinyTree)
 
 shinyTree
 ==========
 
 The `shinyTree` package enables Shiny application developers to use the 
-[jsTree](http://jstree.com) library in their applications.
+[jsTree](https://www.jstree.com) library in their applications.
 
 ![shiny tree screenshot](https://shinyTree.github.io/shinyTree/images/st.png)
 
 Installation
 ------------
 
-You can install the latest development version of the code using the devtools R package.
+Install the released version from CRAN:
 
 ```
-# Install devtools, if you haven't already.
-install.packages("devtools")
-
-library(devtools)
-install_github("shinyTree/shinyTree")
+install.packages("shinyTree")
 ```
+
+or the development version from GitHub:
+
+```
+# install.packages("remotes")
+remotes::install_github("shinyTree/shinyTree")
+```
+
+Some examples use packages shinyTree does not need itself: `16-async` needs
+promises and future, `19-data.tree` needs data.tree and shinyjs, `20-api` needs
+shinyjs, `23-file-icons` needs tidyr, and `28-ontology` needs xml2 to read OWL
+files.
 
 
 Getting Started
 ---------------
 
-#### 01-simple ([Live Demo](https://trestletech.shinyapps.io/st-01-simple/))
+#### 01-simple
 
 ```
 library(shiny)
@@ -38,7 +46,7 @@ runApp(system.file("examples/01-simple", package = "shinyTree"))
 
 A simple example to demonstrate the usage of the shinyTree package.
 
-#### 02-attributes ([Live Demo](https://trestletech.shinyapps.io/st-02-attributes/))
+#### 02-attributes
 
 ```
 library(shiny)
@@ -48,7 +56,7 @@ runApp(system.file("examples/02-attributes", package = "shinyTree"))
 Manage properties of your tree by adding attributes to your list when rendering. See
 `?renderTree` for the full list, including `sttooltip` for hover text.
 
-#### 03-checkbox ([Live Demo](https://trestletech.shinyapps.io/st-03-checkbox/))
+#### 03-checkbox
 
 ```
 library(shiny)
@@ -57,7 +65,7 @@ runApp(system.file("examples/03-checkbox", package = "shinyTree"))
 
 Use checkboxes to allow users to more easily manage which nodes are selected.
 
-#### 04-selected ([Live Demo](https://shinyTree.shinyapps.io/st-04-selected/))
+#### 04-selected
 
 ```
 library(shiny)
@@ -70,7 +78,7 @@ switch checkboxes on and off and toggle `tie_selection`, `whole_node` and
 `tie_selection = TRUE`, checked and selected are the same thing, while with
 `tie_selection = FALSE` a node can be checked without being selected.
 
-#### 05-structure ([Live Demo](https://trestletech.shinyapps.io/st-05-structure/))
+#### 05-structure
 
 ```
 library(shiny)
@@ -80,7 +88,7 @@ runApp(system.file("examples/05-structure", package = "shinyTree"))
 Demonstrates the low-level usage of a shinyTree as an input in which all attributes describing the state of the tree can be read.
 
 
-#### 06-search ([Live Demo](https://trestletech.shinyapps.io/st-06-search/))
+#### 06-search
 
 ```
 library(shiny)
@@ -89,7 +97,7 @@ runApp(system.file("examples/06-search", package = "shinyTree"))
 
 An example showing the use of the search plugin to allow users to more easily navigate the nodes in your tree.
 
-#### 07-drag-and-drop ([Live Demo](https://trestletech.shinyapps.io/st-07-drag-and-drop/))
+#### 07-drag-and-drop
 
 ```
 library(shiny)
@@ -98,7 +106,7 @@ runApp(system.file("examples/07-drag-and-drop", package = "shinyTree"))
 
 An example demonstrating the use of the drag-and-drop feature which allows the user to reorder the nodes in the tree.
 
-#### 08-class ([Live Demo](https://trestletech.shinyapps.io/st-08-class/))
+#### 08-class
 
 ```
 library(shiny)
@@ -134,8 +142,10 @@ library(shiny)
 runApp(system.file("examples/11-tree-update", package = "shinyTree"))
 ```
 
-An example demonstrating the ability to update a tree with a new tree model.  This was broken in the original version as the tree was destroyed upon initialization. It also has "Expand all" and "Collapse all" buttons, using `expandTree()` and
-`collapseTree()` to open or close every node without resending the tree.
+An example demonstrating the ability to update a tree with a new tree model
+using `updateTree()`. It also has "Expand all" and "Collapse all" buttons, using
+`expandTree()` and `collapseTree()` to open or close every node without resending
+the tree.
 
 #### 12-types
 
@@ -164,14 +174,14 @@ runApp(system.file("examples/14-files", package = "shinyTree"))
 
 Demonstrates how to create a file browser tree.
 
-#### 15-files
+#### 15-data
 
 ```
 library(shiny)
 runApp(system.file("examples/15-data", package = "shinyTree"))
 ```
 
-Demonstrates how to attach and retreive metadata from a node.
+Demonstrates how to attach and retrieve metadata from a node.
 
 #### 16-async
 
@@ -180,7 +190,9 @@ library(shiny)
 runApp(system.file("examples/16-async", package = "shinyTree"))
 ```
 
-Demonstrates how to render a tree asynchronously.
+Demonstrates how to render a tree asynchronously with `renderTreeAsync()`, so a
+tree that is slow to build -- with promises and future -- does not hold up the
+app.
 
 #### 17-contextmenu
 
@@ -223,21 +235,29 @@ the [jsTree's core functionality](https://www.jstree.com/api/).
 
 ```
 library(shiny)
-runApp(system.file("examples/21-options/app_setState_refresh.R", package="shinyTree"))
+runApp(system.file("examples/21-options", package = "shinyTree"))
 ```
 
-Demonstrates how to fine-tune shinyTree's behaviour with options. Specifically:
-When internal `jstree` code calls `set_state` or `refresh`, a callback is made so that the shiny
-server is notified and `observe` and `observeEvents` for the tree are fired.
-This can be useful if the developer would like `observe` and `observeEvents` to run after
-using `updateTree`. (By default, `updateTree` does not run `observe` or `observeEvent` because it
-is assumed that the shiny application knows that the tree is being changed already.)
+Demonstrates the `shinyTree.refresh` and `shinyTree.setState` options, which
+decide whether a refresh or `set_state` started in the browser -- by the app's
+own JavaScript, say -- is reported in `input$tree`. A tree sent by the server
+with `renderTree()` or `updateTree()` is reported once it has loaded either
+way. See the *Options* section of `?shinyTree`.
+
+#### 22-dfToTree
+
+```
+library(shiny)
+runApp(system.file("examples/22-dfToTree", package = "shinyTree"))
+```
+
+Builds a tree from a data frame with `dfToTree()`, one level per column, and
+turns `input$tree` back into a data frame with `treeToDf()`.
 
 #### 23-file-icons
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/23-file-icons", package = "shinyTree"))
 ```
 
@@ -247,7 +267,6 @@ An example demonstrating how to create a file tree with individual icons.
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/24-checkbox-options", package = "shinyTree"))
 ```
 
@@ -258,7 +277,6 @@ An example of a tree whose checkboxes are decoupled from the selection, using
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/25-duplicate-names", package = "shinyTree"))
 ```
 
@@ -272,7 +290,6 @@ node.
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/26-state", package = "shinyTree"))
 ```
 
@@ -305,7 +322,6 @@ See `?shinyTree` for the details.
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/27-lazy", package = "shinyTree"))
 ```
 
@@ -335,7 +351,6 @@ state, and speed.
 
 ```
 library(shiny)
-library(shinyTree)
 runApp(system.file("examples/28-ontology", package = "shinyTree"))
 ```
 

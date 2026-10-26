@@ -3,3 +3,5 @@
 ^\.github$
 ^\.playwright-mcp$
 ^tests/playwright$
+^tmp_debugging$
+^shinyTree\.Rcheck$

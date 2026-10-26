@@ -10,7 +10,7 @@ shinyUI(
     
     sidebarPanel(
       helpText(HTML("An example of a shinyTree with the <code>checkbox</code> parameter enabled to allow users to more easily make multiple selections in the tree.
-                  <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
+                  <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       # Show a simple table.

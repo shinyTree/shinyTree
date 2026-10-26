@@ -5,7 +5,7 @@ context("test_large_tree")
 
 ## The original serialisation: the flat list of nodes handed straight to jsonlite.
 list_json <- function(tree) {
-  as.character(jsonlite::toJSON(get_flatList(tree), auto_unbox = TRUE))
+  as.character(jsonlite::toJSON(get_flatList(tree), auto_unbox = TRUE, digits = NA))
 }
 
 test_that("Rlist2json matches serialising the node list directly", {
@@ -36,15 +36,33 @@ test_that("Rlist2json matches serialising the node list directly", {
 })
 
 test_that("trees the data-frame path cannot represent fall back to the list", {
-  unnamed <- list("", "")
-  na_name <- setNames(list("", ""), c("a", NA))
-
-  expect_null(flatListToFrame(get_flatList(unnamed)))
-  expect_null(flatListToFrame(get_flatList(na_name)))
   expect_null(flatListToFrame(list()))
-  expect_identical(Rlist2json(unnamed), list_json(unnamed))
-  expect_identical(Rlist2json(na_name), list_json(na_name))
   expect_identical(Rlist2json(list()), list_json(list()))
+})
+
+test_that("type, icon and tooltip values that are not one string still render", {
+  ## A number, a factor (from a data frame column, say), NA or several values
+  ## made the whole tree fail to serialise.
+  odd <- list(
+    a = structure("", sttype = 1),
+    b = structure("", sttype = factor("file"), sticon = factor("folder")),
+    c = structure("", sticon = c("file", "folder"), sttooltip = c("x", "y")),
+    d = structure("", sttype = NA, sticon = NA)
+  )
+  nodes <- jsonlite::fromJSON(Rlist2json(odd), simplifyVector = FALSE)
+  expect_equal(nodes[[1]]$type, "1")
+  expect_equal(nodes[[2]]$type, "file")
+  expect_equal(nodes[[2]]$icon, "fa fa-folder")
+  expect_equal(nodes[[3]]$icon, "fa fa-file")
+  expect_equal(nodes[[3]]$a_attr$title, "x\ny")
+  expect_null(nodes[[4]]$type)
+  expect_null(nodes[[4]]$icon)
+})
+
+test_that("a node without a name is an error, not a node labelled {}", {
+  expect_error(Rlist2json(list("", "")), "needs a name")
+  expect_error(Rlist2json(setNames(list("", ""), c("a", NA))), "needs a name")
+  expect_error(Rlist2json(list(a = list("x"))), "needs a name")
 })
 
 test_that("node ids follow depth-first order", {

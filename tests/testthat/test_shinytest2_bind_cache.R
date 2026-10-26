@@ -7,18 +7,7 @@ test_that("renderTree works inside bindCache (issue #109)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_bind_cache"),
-      name = "shinytree-bind-cache",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_bind_cache"), "shinytree-bind-cache")
   withr::defer(app$stop())
 
   root <- function() {

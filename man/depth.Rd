@@ -18,3 +18,4 @@ Check depth of a list
 \author{
 Jasper Schelfhout \email{jasper.schelfhout@openanalytics.eu}
 }
+\keyword{internal}

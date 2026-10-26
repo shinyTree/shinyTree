@@ -6,6 +6,9 @@
 \usage{
 renderEmptyTree()
 }
+\value{
+A render function, to assign to \code{output$<id>}.
+}
 \description{
 Renders a tree with no defined nodes.
 }
