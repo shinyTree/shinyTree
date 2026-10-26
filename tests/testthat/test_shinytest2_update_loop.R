@@ -20,17 +20,6 @@ library(shinytest2)
 ## Counts input$tree updates by reading the app's own counter output.
 updates <- function(app) as.integer(app$get_value(output = "updates"))
 
-start_app <- function(dir, name) {
-  app <- tryCatch(
-    AppDriver$new(app_dir = test_path(dir), name = name, variant = NULL,
-                  load_timeout = 30000),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
-  app
-}
 
 test_that("a naive observe + updateTree pattern does not loop (#36)", {
   ## The adversarial case. Both callback options are on and the observer calls
@@ -41,12 +30,12 @@ test_that("a naive observe + updateTree pattern does not loop (#36)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_update_loop", "loop-no-runaway")
+  app <- start_app(test_path("apps/test_update_loop"), "loop-no-runaway")
   withr::defer(app$stop())
 
-  ## Give any feedback loop several seconds of wall clock to run away.
-  Sys.sleep(3)
-  app$wait_for_idle()
+  ## Wait until nothing has happened for two seconds: a feedback loop keeps
+  ## Shiny busy, so it runs to the cap first.
+  app$wait_for_idle(duration = 2000)
 
   expect_equal(app$get_value(output = "capped"), "bounded")
   expect_lt(updates(app), 10)
@@ -54,33 +43,61 @@ test_that("a naive observe + updateTree pattern does not loop (#36)", {
   ## An explicit server-side update must also not start the loop.
   before <- updates(app)
   app$click(selector = "#server_update")
-  Sys.sleep(2)
-  app$wait_for_idle()
+  app$wait_for_idle(duration = 2000)
 
   expect_equal(app$get_value(output = "capped"), "bounded")
   expect_equal(updates(app), before)
 })
 
-test_that("a server-initiated updateTree does not notify the server (#36)", {
+test_that("an observer that sends back a changed tree settles (#36)", {
+  ## A server-sent tree is reported when it differs from input$tree, so an
+  ## observer that changes the tree on every report could loop. This one opens
+  ## each selected node and sends the tree back; it must settle after the
+  ## change it makes, both on load and after a click.
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-server-refresh")
+  app <- start_app(test_path("apps/test_update_loop_changing"), "loop-changing")
   withr::defer(app$stop())
 
-  ## Establish a baseline with one real user event so the counter is non-zero
-  ## and we are comparing like with like.
+  app$wait_for_idle(duration = 1500)
+  expect_equal(app$get_value(output = "capped"), "bounded")
+  on_load <- updates(app)
+  expect_lt(on_load, 5)
+
   app$click(selector = "[id=\"1_anchor\"]")
-  app$wait_for_idle()
+  app$wait_for_idle(duration = 1500)
+  expect_equal(app$get_value(output = "capped"), "bounded")
+  expect_lt(updates(app) - on_load, 5)
+  ## The observer's change reached the browser.
+  expect_true(app$get_js("$('#tree').jstree(true).is_open('1')"))
+})
+
+test_that("a server-initiated updateTree is reported once, and only if it changed the tree (#36)", {
+  ## updateTree() refreshes the tree, which fires refresh and set_state. Those
+  ## must not reach the server (#36), but the new tree must: otherwise
+  ## input$tree keeps the old tree and its selection. It is reported once, as
+  ## a single update, and not at all when it matches what input$tree already
+  ## holds -- which is what keeps an observer that sends the tree back from
+  ## looping.
+  skip_on_cran()
+  skip_if_not_installed("shinytest2")
+
+  app <- start_app(test_path("apps/test_events_all"), "events-server-refresh")
+  withr::defer(app$stop())
+
+  ## Select a node, so the tree the server sends back -- with nothing
+  ## selected -- differs from the one input$tree holds.
+  app$click(selector = "[id=\"1_anchor\"]")
+  app$wait_for_value(input = "tree")
+  expect_length(get_selected(app$get_value(input = "tree")), 1)
   baseline <- updates(app)
   expect_gt(baseline, 0)
 
-  ## The refresh and set_state events both fire here -- verified below -- but
-  ## neither may reach the server.
   app$click(selector = "#server_update")
-  Sys.sleep(2)
-  app$wait_for_idle()
-  expect_equal(updates(app), baseline)
+  app$wait_for_idle(duration = 1000)
+  expect_equal(updates(app), baseline + 1)
+  expect_length(get_selected(app$get_value(input = "tree")), 0)
 
   ## Prove the events really did fire, so this test cannot pass by accident if
   ## updateTree() silently stopped refreshing the tree.
@@ -92,22 +109,21 @@ test_that("a server-initiated updateTree does not notify the server (#36)", {
   })()")
   expect_equal(fired, "armed")
 
+  ## The same tree again: nothing has changed, so nothing is reported.
   app$click(selector = "#server_update")
-  Sys.sleep(2)
-  app$wait_for_idle()
+  app$wait_for_idle(duration = 1000)
 
   seen <- jsonlite::fromJSON(app$get_js("JSON.stringify(window.__seen)"))
   expect_true("refresh" %in% seen)
   expect_true("set_state" %in% seen)
-  ## ... and still no notification despite the events firing.
-  expect_equal(updates(app), baseline)
+  expect_equal(updates(app), baseline + 1)
 })
 
 test_that("selecting and deselecting a node notifies the server (changed)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-changed")
+  app <- start_app(test_path("apps/test_events_all"), "events-changed")
   withr::defer(app$stop())
 
   before <- updates(app)
@@ -126,7 +142,7 @@ test_that("opening and closing a node notifies the server", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-open-close")
+  app <- start_app(test_path("apps/test_events_all"), "events-open-close")
   withr::defer(app$stop())
 
   ## root2 starts open, so close then open it.
@@ -145,7 +161,7 @@ test_that("moving a node notifies the server (move_node)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-move")
+  app <- start_app(test_path("apps/test_events_all"), "events-move")
   withr::defer(app$stop())
 
   before <- updates(app)
@@ -158,7 +174,7 @@ test_that("contextmenu create, rename and delete notify the server", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-contextmenu")
+  app <- start_app(test_path("apps/test_events_all"), "events-contextmenu")
   withr::defer(app$stop())
 
   before <- updates(app)
@@ -183,7 +199,7 @@ test_that("checkbox check, uncheck, check_all and uncheck_all notify the server"
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_checkbox", "events-checkbox")
+  app <- start_app(test_path("apps/test_events_checkbox"), "events-checkbox")
   withr::defer(app$stop())
 
   expect_equal(app$get_js("document.getElementById('tree').dataset.stCheckbox"), "TRUE")
@@ -216,15 +232,14 @@ test_that("a server update does not suppress a later user event (#36)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_events_all", "events-not-latched")
+  app <- start_app(test_path("apps/test_events_all"), "events-not-latched")
   withr::defer(app$stop())
 
   app$click(selector = "#server_update")
-  Sys.sleep(2)
-  app$wait_for_idle()
+  app$wait_for_idle(duration = 1000)
   after_server <- updates(app)
 
-  ## A user click immediately after the server update must still be reported.
+  ## A user click straight after the server update must still be reported.
   app$click(selector = "[id=\"1_anchor\"]")
   app$wait_for_idle()
   expect_gt(updates(app), after_server)
@@ -242,15 +257,14 @@ test_that("a rejected change can be repeated and still reaches the server (#34)"
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- start_app("apps/test_reject_change", "reject-repeat")
+  app <- start_app(test_path("apps/test_reject_change"), "reject-repeat")
   withr::defer(app$stop())
 
   expect_equal(as.integer(app$get_value(output = "rejections")), 0)
 
   for (attempt in 1:3) {
     app$click(selector = "[id=\"2_anchor\"]")
-    app$wait_for_idle()
-    Sys.sleep(0.5)
+    app$wait_for_value(output = "rejections", ignore = list(as.character(attempt - 1)))
     expect_equal(as.integer(app$get_value(output = "rejections")), attempt)
   }
 })

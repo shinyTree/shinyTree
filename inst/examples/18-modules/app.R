@@ -21,7 +21,7 @@ tree_module_ui <- function(id) {
   ns <- NS(id)
   tagList(
     actionButton(ns("go"), "Go!"),
-    h4("Tree with Types"),
+    h4("Tree in a module"),
     shinyTree(ns("tree_with_type"))
   )
 }

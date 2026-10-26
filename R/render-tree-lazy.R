@@ -648,7 +648,6 @@ normaliseSearchResult <- function(paths, limit) {
 #'
 #' So updateTree() and expandTree(), which cannot work on one, can say so
 #' rather than replacing it or fetching it whole.
-#' @noRd
 #' The render function is given the full, namespaced output name and the root
 #' session; updateTree() is given the module-local id and the module's
 #' session, so it namespaces the id through that session before looking it up.

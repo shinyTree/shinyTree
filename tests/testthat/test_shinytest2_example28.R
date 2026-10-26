@@ -8,14 +8,7 @@ test_that("the 28-ontology example shows the AEO and searches it (#33)", {
   example_dir <- system.file("examples/28-ontology", package = "shinyTree")
   skip_if(example_dir == "", "28-ontology example not installed")
 
-  app <- tryCatch(
-    AppDriver$new(app_dir = example_dir, name = "example-28-ontology", variant = NULL,
-                  load_timeout = 30000),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(example_dir, "example-28-ontology")
   withr::defer(app$stop())
 
   app$wait_for_js("$('#tree li').length > 0", timeout = 15000)

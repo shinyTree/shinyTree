@@ -5,18 +5,7 @@ test_that("selecting a node and reacting to an updateTree call works end-to-end"
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_selec"),
-      name = "shinytree-select",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_selec"), "shinytree-select")
   withr::defer(app$stop())
 
   ## Initial state: root1 is selected by the app's initial data
@@ -53,22 +42,11 @@ test_that("clicking a node's checkbox in the browser updates input$tree", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox"),
-      name = "shinytree-checkbox",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox"), "shinytree-checkbox")
   withr::defer(app$stop())
 
-  ## Nothing is selected yet.
-  expect_null(app$get_value(input = "tree"))
+  ## The tree is reported as soon as it loads, with nothing selected yet.
+  expect_length(get_selected(app$get_value(input = "tree")), 0)
 
   ## Click the checkbox icon next to "root1" (jsTree node id "1"). This
   ## exercises the client-side jQuery/jsTree input binding in shinyTree.js,
@@ -90,21 +68,10 @@ test_that("clicking a node's label (not its checkbox) also updates input$tree", 
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_checkbox"),
-      name = "shinytree-checkbox-label",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_checkbox"), "shinytree-checkbox-label")
   withr::defer(app$stop())
 
-  expect_null(app$get_value(input = "tree"))
+  expect_length(get_selected(app$get_value(input = "tree")), 0)
 
   ## Click the label itself rather than the checkbox icon.
   app$click(selector = "[id=\"1_anchor\"]")

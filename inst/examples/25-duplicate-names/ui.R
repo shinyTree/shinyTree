@@ -16,7 +16,7 @@ shinyUI(
                   that specific node rather than to the first or last sibling.
                   <br><br>This example uses <code>tie_selection = FALSE</code> so that
                   checking a node is independent of selecting it.
-                  <hr>Created using <a href = \"http://github.com/shinyTree/shinyTree\">shinyTree</a>."))
+                  <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       shinyTree("tree", checkbox = TRUE, tie_selection = FALSE),

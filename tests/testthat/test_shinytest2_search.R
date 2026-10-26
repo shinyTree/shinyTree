@@ -13,18 +13,7 @@ test_that("typing in the search box highlights matching nodes and hides the rest
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_search"),
-      name = "shinytree-search",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_search"), "shinytree-search")
   withr::defer(app$stop())
 
   ## All three leaves visible, none highlighted, before searching.

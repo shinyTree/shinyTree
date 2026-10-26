@@ -7,7 +7,8 @@
 renderTree(expr, env = parent.frame(), quoted = FALSE, lazy = FALSE)
 }
 \arguments{
-\item{expr}{The expression to be evaluated which should produce a list.}
+\item{expr}{An expression that returns the tree: a named nested list, or a
+JSON string. With \code{lazy = TRUE}, a function instead.}
 
 \item{env}{The environment in which \code{expr} should be evaluated.}
 
@@ -18,9 +19,14 @@ is useful if you want to save an expression in a variable.}
 rather than all at once, for trees too large to send whole. \code{expr}
 then returns a function giving a node's children; see \emph{Lazy loading}.}
 }
+\value{
+A render function, to assign to \code{output$<id>} for a
+  \code{\link{shinyTree}} with that id.
+}
 \description{
-Should return a list from the given expression which will be converted into a
-\code{\link{shinyTree}}.
+Fills a \code{\link{shinyTree}} with the tree an expression returns, as a
+nested list (see \emph{Node attributes}) or as JSON in jsTree's format, such
+as \code{\link{treeToJSON}} gives.
 }
 \section{Note}{
 
@@ -45,8 +51,13 @@ it with \code{\link{structure}} or \code{attr()} control how it is shown:
     \code{tie_selection = TRUE} a ticked box is a selection, so use
     \code{stselected} instead.}
   \item{\code{stdisabled}}{\code{TRUE} to disable it.}
-  \item{\code{sticon}}{an icon: a Font Awesome or glyphicon name such as
-    \code{"fa fa-file"}, or the URL of an image.}
+  \item{\code{sticon}}{an icon: Font Awesome classes such as
+    \code{"fa fa-file"} or \code{"fa-solid fa-folder"}, or the URL or
+    path of an image. A name on its own, \code{"file"} or
+    \code{"fa-file"}, is expanded to \code{"fa fa-file"}, and
+    \code{"glyphicon-file"} to \code{"glyphicon glyphicon-file"}.
+    Glyphicons need Bootstrap 3, the default for \code{fluidPage()}; any
+    other icon set works if the app loads its stylesheet.}
   \item{\code{sttype}}{the node's type, for the \code{types} argument of
     \code{\link{shinyTree}}.}
   \item{\code{sttooltip}}{text shown when the pointer rests on the node's
@@ -56,11 +67,17 @@ it with \code{\link{structure}} or \code{attr()} control how it is shown:
     style it. They go on the node's \code{<li>}, so target its label with
     \code{li.myclass > a}. Unlike \code{sttype}, any number can be given.}
 }
-Any other attribute whose name starts with \code{st} is passed through as
-data and comes back on the node in \code{input$tree}. That includes
+Any other attribute is passed through as data and comes back on the node in
+\code{input$tree}, apart from those R itself gives a node, such as a data
+frame's \code{class} and \code{row.names}. \code{\link{get_selected}} and
+\code{\link{get_checked}} keep those whose names start with \code{st}, so
+that is the convention to follow. That includes
 \code{stclass}, which despite its name is only data -- it is what
 \code{get_selected(format = "classid")} reports -- and is not applied as a
 CSS class; use \code{stcssclass} for that.
+
+Every node needs a name, and names are shown as HTML, so a name read from a
+file or a database can contain markup. Siblings may share a name.
 }
 
 \section{Lazy loading}{
@@ -99,7 +116,8 @@ output$tree <- renderTree(lazy = TRUE, {
     \code{node$stid} to tell them apart. Only an argument called
     \code{node} receives it. \code{stpath} is used by shinyTree for the path
     a node was fetched under, so do not set it yourself.}
-  \item{Node attributes}{All the attributes below work on the children,
+  \item{Node attributes}{All the attributes in \emph{Node attributes}
+    above work on the children,
     including \code{stselected} and \code{stopened}; an opened child's
     children are fetched at once.}
   \item{Reactivity}{\code{expr} is evaluated as usual, so anything reactive
@@ -167,6 +185,21 @@ before and the cached tree is sent otherwise. It works with
 \code{\link[shiny]{bindEvent}} as well.
 }
 
+\examples{
+\dontrun{
+library(shiny)
+ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
+server <- function(input, output, session) {
+  output$tree <- renderTree(list(
+    Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
+                      stopened = TRUE, sticon = "fa fa-folder"),
+    Vegetables = list(Leek = "")
+  ))
+  output$picked <- renderPrint(get_selected(input$tree))
+}
+shinyApp(ui, server)
+}
+}
 \seealso{
 \code{\link{shinyTree}}
 }

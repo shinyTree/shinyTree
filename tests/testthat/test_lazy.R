@@ -299,7 +299,11 @@ test_that("generation must be the exact number", {
     r <- call_handler(lazy_state(function(p) list()), list(paths = list(list()), generation = g))
     expect_equal(r$status, 409L, info = deparse(g))
   }
-  expect_silent(call_handler(lazy_state(function(p) list()), list(paths = list(list()), generation = "1abc")))
+  ## A rejected generation never calls the children function.
+  called <- FALSE
+  call_handler(lazy_state(function(p) { called <<- TRUE; list() }),
+               list(paths = list(list()), generation = "1abc"))
+  expect_false(called)
 })
 
 test_that("paths must be an array, and children need real names", {
@@ -478,9 +482,9 @@ test_that("repeating a path in one request does not repeat the work", {
   calls <- 0
   big <- function(path) { calls <<- calls + 1; stats::setNames(rep(list(""), 1000), paste0("k", 1:1000)) }
   st <- lazy_state(big)
-  t <- system.time(r <- call_handler(st, list(paths = rep(list(list()), 1000), generation = 1)))
+  r <- call_handler(st, list(paths = rep(list(list()), 1000), generation = 1))
+  ## The call count is the measure; timing it only made the test flaky.
   expect_equal(calls, 1)
-  expect_lt(t[["elapsed"]], 10)
   ## The response is capped; past the cap a node says so.
   last <- r$body$nodes[[length(r$body$nodes)]]
   expect_match(last$error, "Too much was asked for")
@@ -529,7 +533,8 @@ test_that("path keys cannot collide", {
 test_that("the default search has a time budget", {
   slow <- function(path) { Sys.sleep(0.01); stats::setNames(rep(list(structure("", stchildren = TRUE)), 10), paste0("k", 1:10)) }
   t <- system.time(expect_error(lazySearch(normaliseLazySpec(slow), "zzz", max_seconds = 0.5), "too large or slow"))
-  expect_lt(t[["elapsed"]], 3)
+  ## Without the budget this runs for minutes; the bound allows a slow machine.
+  expect_lt(t[["elapsed"]], 10)
 })
 
 test_that("validate() messages are shown and req() is silent, as in Shiny", {

@@ -17,7 +17,7 @@ shinyUI(
 			),
 			mainPanel(
 			  h4("Tree Update"),
-			  "The tree is initialized, but not populated until a choices is selected in the dropdown menu.",
+			  "The tree is initialized, but not populated until a choice is selected in the dropdown menu.",
 			  shinyTree("tree"),
 			  hr(),
 				"Currently selected:",

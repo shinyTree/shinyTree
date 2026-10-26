@@ -3,7 +3,7 @@ library(shinyTree)
 
 #' @author Sandro Raabe \email{sa.ra.online@posteo.de} 
 shinyServer(function(input, output, session) {
-    if(! "tidyr" %in% installed.packages())
+    if (!requireNamespace("tidyr", quietly = TRUE))
       stop("tidyr must be installed for this example to work")
   
   output$tree <- renderTree({

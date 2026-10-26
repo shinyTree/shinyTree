@@ -27,11 +27,11 @@ library(shinytest2)
 search_and_measure <- function(app, term) {
   app$run_js(sprintf(
     "document.getElementById('tree-search-input').value = '%s';
-     $('#tree-search-input').trigger('keyup');", term
+     $('#tree-search-input').trigger('input');", term
   ))
-  ## The search box debounces (searchtime defaults to 250ms).
-  Sys.sleep(1)
-  app$wait_for_idle()
+  ## The search box debounces (searchtime defaults to 250ms); wait for jsTree
+  ## to mark the nodes that do not match.
+  app$wait_for_js("document.querySelectorAll('#tree li.jstree-hidden').length > 0")
 
   jsonlite::fromJSON(app$get_js(
     "(function(){
@@ -52,14 +52,7 @@ search_and_measure <- function(app, term) {
 }
 
 expect_search_filters <- function(app_dir, name) {
-  app <- tryCatch(
-    AppDriver$new(app_dir = test_path(app_dir), name = name, variant = NULL,
-                  load_timeout = 30000),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path(app_dir), name)
   withr::defer(app$stop(), envir = parent.frame())
 
   res <- search_and_measure(app, "3rd")

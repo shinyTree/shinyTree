@@ -1,18 +1,3 @@
-tree <- list(
-  "folder1" = list(
-    "subfolder1" = list(
-      "file1" = "",
-      "file2" = ""
-    ),
-    "file3" = ""),
-  "folder2" = list(
-    "file4" = "",
-    "file5" = "")
-)
-
-tree_with_icons <- set_node_attrs(tree, attr_name = "sttype", inner_val = "directory", leaf_val = "file")
-
-
 test_that("New attribute is in every node", {
   expect_true("sttype" %in% names(attributes(tree_with_icons$folder1)))
   expect_true("sttype" %in% names(attributes(tree_with_icons$folder1$subfolder1)))

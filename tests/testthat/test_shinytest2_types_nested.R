@@ -16,18 +16,7 @@ test_that("types works for a tree nested two module levels deep (#129)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_types_nested"),
-      name = "types-nested-modules",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_types_nested"), "types-nested-modules")
   withr::defer(app$stop())
 
   info <- jsonlite::fromJSON(app$get_js(
@@ -65,16 +54,13 @@ test_that("types works for a tree nested two module levels deep (#129)", {
   expect_length(js_errors, 0)
 })
 
-test_that("the types global name is built identically on both sides", {
-  ## Pins the contract the bug broke: whatever R names the global, the id-to-name
-  ## transformation must replace every hyphen. Guards the R half without a
-  ## browser.
-  for (id in c("tree", "mod-tree", "outer-inner-tree", "a-b-c-d-tree")) {
-    r_side <- gsub("-", "_", id, fixed = TRUE)
-    expect_false(grepl("-", r_side))
-    ## A JS `String.replace("-", "_")` would leave hyphens behind for the deeper
-    ## ids; `split('-').join('_')` matches gsub().
-    js_equivalent <- paste(strsplit(id, "-", fixed = TRUE)[[1]], collapse = "_")
-    expect_equal(js_equivalent, r_side)
+test_that("shinyTree() names the types global as shinyTree.js looks it up", {
+  ## Pins the contract the bug broke, without a browser: the script shinyTree()
+  ## writes must assign the name that shinyTree.js computes, every hyphen
+  ## replaced -- `id.split('-').join('_') + '_sttypes'`.
+  for (id in c("tree", "mod-tree", "outer-inner-tree", "a-b-c-d-tree", "my.tree")) {
+    html <- as.character(htmltools::renderTags(shinyTree(id, types = "{}"))$html)
+    js_name <- paste0(paste(strsplit(id, "-", fixed = TRUE)[[1]], collapse = "_"), "_sttypes")
+    expect_true(grepl(sprintf('window["%s"] = {};', js_name), html, fixed = TRUE), info = id)
   }
 })

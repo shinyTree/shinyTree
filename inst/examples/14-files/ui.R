@@ -5,7 +5,7 @@ library(shinyTree)
 shinyUI(
   pageWithSidebar(
     # Application title
-    headerPanel("Simple shinyTree!"),
+    headerPanel("shinyTree as a file browser"),
     
     sidebarPanel(
       helpText(HTML("Directory Structure Example."))

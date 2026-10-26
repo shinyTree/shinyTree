@@ -9,20 +9,26 @@ treeToDf(tree, hierarchy = NULL)
 \arguments{
 \item{tree}{named nested list}
 
-\item{hierarchy}{sorted character vector with name for each level of the list}
+\item{hierarchy}{ordered character vector with a column name for each level
+of the tree. If it is \code{NULL} or its length differs from the depth of
+the tree, the columns are named \code{1}, \code{2}, ... instead.}
 }
 \value{
 data.frame
 }
 \description{
-Convert tree into data.frame
+The reverse of \code{\link{dfToTree}}: one row per leaf, with the names on
+the path down to it in the columns. A path shorter than the deepest one
+leaves the remaining columns \code{NA}.
 }
 \examples{
-\dontrun{
 df <- data.frame(Titanic)
 tree <- dfToTree(df, c("Sex", "Class", "Survived"))
 newDf <- treeToDf(tree, c("Sex", "Class", "Survived"))
+head(newDf)
 }
+\seealso{
+\code{\link{dfToTree}}
 }
 \author{
 Michael Bell

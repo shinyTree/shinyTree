@@ -10,7 +10,7 @@ shinyUI(
     
     sidebarPanel(
       helpText(HTML("A simple Shiny Tree example.
-                  <hr>Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
+                  <hr>Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       # Show a simple table.

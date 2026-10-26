@@ -22,3 +22,4 @@ Recursively apply function to all data.frames in a nested list
 \author{
 Jasper Schelfhout \email{jasper.schelfhout@openanalytics.eu}
 }
+\keyword{internal}

@@ -10,14 +10,24 @@ initResourcePaths <- function() {
   shiny::HTML("")
 }
 
+.onUnload <- function(libpath) {
+  shiny::removeInputHandler("shinyTree")
+}
+
 # Parse incoming shinyTree input from the client
-#' @importFrom methods loadMethod
 .onLoad <- function(libname, pkgname) {
   ## set the default parser to list to keep backwards compatibility
-  ## can be set by the user to "tree" to receive a data.tree
-  options(shinyTree.defaultParser = "list")
+  ## can be set by the user to "tree" to receive a data.tree -- including
+  ## before the package is loaded, e.g. in .Rprofile, so a value already set
+  ## is kept
+  if (is.null(getOption("shinyTree.defaultParser"))) {
+    options(shinyTree.defaultParser = "list")
+  }
   
-  shiny::registerInputHandler("shinyTree", function(val, shinysession, name){
+  ## force = TRUE so the package can be loaded again in the same session, as
+  ## devtools::load_all() does, without failing on the handler it registered
+  ## the first time
+  shiny::registerInputHandler("shinyTree", force = TRUE, function(val, shinysession, name){
     #The callbackCounter exists to make sure shiny gets an update after this sequence:
     #1. The user changes the tree
     #2. The R server restores the tree back to the previous version (because of logic that prevents the user change)
@@ -29,7 +39,10 @@ initResourcePaths <- function() {
     ## use the parser specified by option shinyTree.defaultParser
     ## if library data.tree is not installed use list parsing nevertheless
     ## make sure that parser is either 'list' or 'tree'
-    defaultParser <- getOption("shinyTree.defaultParser")
+    defaultParser <- getOption("shinyTree.defaultParser", "list")
+    if (!is.character(defaultParser) || length(defaultParser) != 1 || is.na(defaultParser)) {
+      defaultParser <- "list"
+    }
     
     if (defaultParser == "tree" && !requireNamespace("data.tree", quietly = TRUE)) {
       ## use paste to avoid too long lines
@@ -42,6 +55,7 @@ initResourcePaths <- function() {
     if (defaultParser == "list") {
       jsonToAttr(val)      
     } else if (defaultParser == "tree") {
+      warnDuplicateSiblings(val)
       data.tree::as.Node(list(children = val),
                          "explicit",
                          nameName = "text")
@@ -65,7 +79,7 @@ jsonToAttr <- function(json){
     # Assign positionally and name afterwards: keying by text would let
     # same-named siblings overwrite each other (#104).
     ret <- vector("list", length(json))
-    for (i in 1:length(json)){
+    for (i in seq_along(json)){
       ret[[i]] <- supplementAttr(jsonToAttr(json[[i]]), json[[i]])
     }
     names(ret) <- vapply(json, function(node) node$text, character(1))
@@ -120,9 +134,26 @@ supplementAttr <- function(ret, json){
     if (isTRUE(json$state$opened)){
       attr(ret, "stopened") <- json$state$opened
     }
-    if (exists('id', where=json)) {
-      attr(ret, "id") <- json$id
+    if (!is.null(json[["id"]])) {
+      attr(ret, "id") <- json[["id"]]
     }
   }
   ret
+}
+
+# data.tree keeps one child of each name, so siblings sharing a name -- which
+# shinyTree allows (#104) -- would be merged silently by the "tree" parser.
+warnDuplicateSiblings <- function(nodes) {
+  names <- vapply(nodes, function(node) as.character(node$text %||% ""), character(1))
+  if (anyDuplicated(names)) {
+    warning("input$tree has siblings with the same name, which the \"tree\" parser ",
+            "(options(shinyTree.defaultParser = \"tree\")) cannot keep apart: ",
+            paste(sQuote(unique(names[duplicated(names)])), collapse = ", "),
+            ". Use the \"list\" parser to receive them all.", call. = FALSE)
+    return(invisible())
+  }
+  for (node in nodes) {
+    if (length(node$children)) warnDuplicateSiblings(node$children)
+  }
+  invisible()
 }

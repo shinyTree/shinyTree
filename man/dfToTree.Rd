@@ -2,7 +2,7 @@
 % Please edit documentation in R/data.tree-conversion.R
 \name{dfToTree}
 \alias{dfToTree}
-\title{Converts a data.frame  to a data.tree format}
+\title{Convert a data.frame to a nested list for renderTree}
 \usage{
 dfToTree(df, hierarchy = colnames(df))
 }
@@ -12,16 +12,24 @@ dfToTree(df, hierarchy = colnames(df))
 \item{hierarchy}{ordered character vector of column names defining the hierarchy}
 }
 \value{
-nested list
+A named nested list, as \code{\link{renderTree}} takes; an empty
+  list for a data frame with no rows.
 }
 \description{
-Converts a data.frame  to a data.tree format
+Each column of \code{hierarchy} is one level of the tree, in that order: a
+node for each value of the first column, under it a node for each value of
+the second column found with it, and so on. A missing value ends the
+branch there, which is how \code{\link{treeToDf}} writes a branch shorter
+than the deepest one, so a tree survives the round trip. A row whose first
+column is missing is left out.
 }
 \examples{
-\dontrun{
 df <- data.frame(Titanic)
 tree <- dfToTree(df, c("Sex", "Class", "Survived"))
+str(tree$Male$`1st`)
 }
+\seealso{
+\code{\link{treeToDf}}, the \code{22-dfToTree} example
 }
 \author{
 Jasper Schelfhout \email{jasper.schelfhout@openanalytics.eu}

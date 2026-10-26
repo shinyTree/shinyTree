@@ -1,12 +1,12 @@
-#' Tree traversal
+#' Set an attribute on every inner node and leaf of a tree
 #'
 #' Traverse through tree/list to set node attributes, e.g. change icons.
-#' Useful for directory structure icons where inner nodes are directories, leafs are files.
+#' Useful for directory structure icons where inner nodes are directories, leaves are files.
 #' 
 #' @param tree named nested list
 #' @param attr_name name of attribute to set
 #' @param inner_val value of attribute for inner tree nodes
-#' @param leaf_val value of attribute for outer tree nodes
+#' @param leaf_val value of attribute for leaf nodes
 #' @examples
 #' tree <- dfToTree(data.frame(Titanic),  c("Sex", "Survived"))
 #' str(set_node_attrs(tree, attr_name = "sttype", inner_val = "directory", leaf_val = "file"))

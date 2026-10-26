@@ -6,10 +6,7 @@ shinyServer(function(input, output, session) {
   hierarchy <- c("Sex", "Class", "Survived")
   output$tree <- renderTree({
     df <- data.frame(Titanic)
-    tree <- dfToTree(df, hierarchy)
-    #shiny tree must have a selected element to return the tree in input
-    attr(tree[[1]],"stselected") <- TRUE 
-    tree
+    dfToTree(df, hierarchy)
   })
   
   output$df <- renderTable({

@@ -1,7 +1,7 @@
 library(shiny)
 library(shinyTree)
 
-#' Example of storing and retreiving data in the tree
+#' Example of storing and retrieving data in the tree
 shinyServer(function(input, output, session) {
   log <- c(paste0(Sys.time(), ": Interact with the tree to see the logs here..."))
   

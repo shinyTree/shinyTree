@@ -48,19 +48,7 @@ test_that("a tree renders in an R Markdown document with runtime: shiny (#18)", 
   withr::defer(if (!passed) print_rmarkdown_diagnostics(app, trace, server_log))
 
   step("starting AppDriver")
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_rmarkdown"),
-      name = "shinytree-rmarkdown",
-      variant = NULL,
-      load_timeout = 60000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    passed <- TRUE
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_rmarkdown"), "shinytree-rmarkdown")
   withr::defer(app$stop(), priority = "last")
   step("AppDriver started")
 
@@ -77,13 +65,13 @@ test_that("a tree renders in an R Markdown document with runtime: shiny (#18)", 
        app$get_js("JSON.stringify($('#tree').jstree(true).get_selected())"))
   app$wait_for_js("$('#tree').jstree(true).get_selected().length > 0")
   step("jsTree reports a selection")
-  selected <- list()
-  for (i in 1:50) {
-    selected <- get_selected(app$get_value(input = "tree"))
-    if (length(selected) > 0) break
-    Sys.sleep(0.2)
-  }
-  step("read input$tree ", i, " time(s); selected = [", paste(unlist(selected), collapse = ","), "]")
+  ## Shiny's own record of the input, so this waits for it to reach the server.
+  app$wait_for_js("(function(){ var v = Shiny.shinyapp.$inputValues['tree:shinyTree'];
+                     return !!v && JSON.stringify(v).indexOf('\"selected\":true') >= 0; })()",
+                  timeout = 20000)
+  app$wait_for_idle()
+  selected <- get_selected(app$get_value(input = "tree"))
+  step("selected = [", paste(unlist(selected), collapse = ","), "]")
   expect_length(selected, 1)
   expect_equal(selected[[1]][1], "root1")
   passed <- length(selected) == 1 && identical(selected[[1]][1], "root1")

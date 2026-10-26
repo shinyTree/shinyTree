@@ -16,18 +16,7 @@ test_that("node attribute values keep their whitespace (issue #3)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_attr_whitespace"),
-      name = "shinytree-attr-whitespace",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_attr_whitespace"), "shinytree-attr-whitespace")
   withr::defer(app$stop())
 
   tree <- app$get_value(input = "tree")
@@ -58,22 +47,14 @@ test_that("node names are still trimmed, by design (issue #3)", {
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_attr_whitespace"),
-      name = "shinytree-attr-whitespace-names",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_attr_whitespace"), "shinytree-attr-whitespace-names")
   withr::defer(app$stop())
 
-  ## These names have no padding, so they are unaffected either way -- the point
-  ## is that the list is keyed by trimmed names and that is the documented shape.
+  ## Pad a label in the browser's model of the tree, as a user renaming a node
+  ## with the context menu might, and report it; it comes back trimmed.
+  app$run_js("var t = $('#tree').jstree(true); t.get_node('1').text = '  alpha  ';
+              t.trigger('changed', {action: 'test'});")
+  app$wait_for_idle()
   tree <- app$get_value(input = "tree")
   expect_equal(names(tree), c("alpha", "beta", "gamma", "delta"))
 })

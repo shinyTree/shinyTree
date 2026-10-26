@@ -4,18 +4,7 @@ test_that("dragging a node to a new position reorders the tree and updates input
   skip_on_cran()
   skip_if_not_installed("shinytest2")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_dnd"),
-      name = "shinytree-dnd",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_dnd"), "shinytree-dnd")
   withr::defer(app$stop())
 
   sess <- app$get_chromote_session()

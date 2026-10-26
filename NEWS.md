@@ -1,5 +1,77 @@
- v 0.3.2
---------------------------------------------------------------------------------
+# shinyTree 0.3.1.9000
+
+## Fixes from a review of the whole package
+
+- `input$tree` now holds the tree as soon as it loads, and is updated when the
+  server sends a new tree with `renderTree()` or `updateTree()`: it used to stay
+  `NULL` until the user clicked, and kept a replaced tree -- and its selection of
+  nodes that no longer exist -- until then. A tree is reported once, and only
+  if it differs from what `input$tree` holds, so an observer of `input$tree`
+  that sends the tree back still does not loop (#36).
+- A tree re-rendered after an error in its render function -- a `req()` or
+  `validate()` that fails and then passes -- no longer stops updating
+  `input$tree`. jsTree's teardown removed the input binding's event handlers.
+- Trees whose id contains `.` (or another character with a meaning in CSS
+  selectors) now work. Their options, checkboxes and search were ignored and
+  `input$tree` was never set, and with `types` the page threw an error that
+  stopped every tree on it from reporting.
+- `updateTree()`, `expandTree()` and `collapseTree()` on a tree that has not
+  been shown yet -- in a tab not yet opened -- are applied once it is, rather
+  than throwing an error in the browser.
+- Deleting the last node with the context menu now clears `input$tree`; it
+  kept the deleted nodes.
+- A node attribute such as `sttype_label` or `sticonColor` is no longer taken
+  for `sttype` or `sticon`: attributes were matched by prefix. The same applied
+  to the `text`, `name`, `icon` and `state` fields in `treeToJSON()`.
+- Numbers in node data are sent at full precision; they were rounded to four
+  digits, so a numeric id such as `123456.789` came back changed.
+- `sttype`, `sticon` and `sttooltip` given as a number, a factor (from a data
+  frame column, say), `NA` or more than one value no longer stop the tree from
+  rendering.
+- `sticon` values in current Font Awesome form -- `"fa-solid fa-folder"`,
+  `"fas fa-file"`, `"fa-file fa-lg"` -- other icon sets, and image file names
+  without a path are now used as given. Only a bare name such as `"file"` is
+  expanded, to `"fa fa-file"`.
+- R's own attributes on a node -- a data frame's `class` and `row.names`, say --
+  are no longer sent as node data.
+- A node without a name is now an error naming the problem, rather than a node
+  labelled `{}`.
+- JSON from `jsonlite::toJSON()` can be passed to `renderTree()` and
+  `updateTree()`; it reached the browser already parsed and failed there.
+- `renderTreeAsync()` is now built on `renderTree()`: it repopulates a tree in
+  a modal that is reopened (#79), works with `bindCache()`, and an error in a
+  rejected promise is shown in place of the tree.
+- `options(shinyTree.defaultParser = "tree")` set before the package is loaded,
+  e.g. in `.Rprofile`, is no longer overwritten, and the package can be loaded
+  again in the same session, as `devtools::load_all()` does. The `"tree"`
+  parser warns about siblings with the same name, which a data.tree cannot keep
+  apart.
+- `treeToJSON()` keeps the `checked` state, and gives an empty tree rather than
+  one blank node for a root without children.
+- `dfToTree()` builds a tree whose branches end at different depths, as a
+  folder listing gives, where it stopped with an error; it gives an empty list
+  for a data frame with no rows, and names any `hierarchy` column the data
+  frame lacks. `treeToDf()` handles an empty tree and empty branches.
+- `shinyTree()` accepts `search = NULL` and `animation = NULL`, writes ids into
+  its scripts safely, and puts the search script after the search box rather
+  than inside it. Search also reacts to pasting, not only typing.
+- Examples `16-async`, `20-api` and `23-file-icons` work again, `21-options` has
+  been rewritten to show what the options do since #36 and can be started with
+  `runApp()`, and `14-files` lists every file.
+- Documentation: every exported function documents what it returns; new
+  sections and examples for `renderTree()`, `updateTree()`,
+  `renderTreeAsync()`, `get_checked()`, `dfToTree()` and `treeToDf()`;
+  `format = "classid"`, the `shinyTree.defaultParser` option, the contextmenu
+  turning checkboxes off and the `sticon` forms are documented; and the
+  `ontologyToTree()` example runs on the bundled ontology.
+- Requires R >= 3.3.0 and shiny >= 1.6.0, which the package already needed.
+  stringr, htmlwidgets and methods are no longer used, and the unused copies of
+  jQuery and require.js are no longer bundled.
+- Tests: an example app that fails to start, or a browser test app that errors,
+  now fails the tests instead of skipping them; every example is started and
+  checked; and fixed waits are replaced by waiting for what the test expects.
+
+## New features and other fixes
 
 - New `ontologyToTree()` reads an ontology from an OBO (`.obo`) or OWL
   (`.owl`, RDF/XML) file and returns what `renderTree(lazy = TRUE)` needs, so
@@ -126,44 +198,39 @@
   `get_selected()`/`get_checked()` now report the correct node and its own
   attributes rather than only the last sibling (#104).
 
- v 0.3.1
---------------------------------------------------------------------------------
+# shinyTree 0.3.1
 
-- checkbox functionality
-- bugfixes
+- Checkbox functionality.
+- Bug fixes.
 
+# shinyTree 0.3.0
 
- v 0.3.0
---------------------------------------------------------------------------------
- 
-- new function `set_node_attrs()` to set distinct node or leaf attributes 
-  (useful for creating file tree icons)
- 
- v 0.2.7
---------------------------------------------------------------------------------
+- New function `set_node_attrs()` to set distinct node or leaf attributes
+  (useful for creating file tree icons).
+- New functions `dfToTree()` and `treeToDf()` convert between a data frame and
+  a tree.
+
+# shinyTree 0.2.7
 
 - Added context menu support.
 - Added support for promises/future to render a tree asynchronously.
-- Added additional examples for file browser and metadata retreival.
+- Added additional examples for file browser and metadata retrieval.
 - Added support to display various icons using types and specifying tree items
-- Added support for conversion from/to data.tree 
+- Added support for conversion from/to data.tree
 
- v 0.2.6
---------------------------------------------------------------------------------
+# shinyTree 0.2.6
 
 - Many improvements to expose more jsTree options.
 - Tree can now be correctly updated (see new examples).
 
- v 0.2.0
---------------------------------------------------------------------------------
+# shinyTree 0.2.0
 
 - BREAKING CHANGE: Model the `input$list`-style lists after the list structure
-  provided to `renderTree`, meaning that they are now a simple are list with the
+  provided to `renderTree`, meaning that they are now a simple list with the
   same `st`- prefixed attributes. See `inst/examples/05-structure`.
 - BREAKING CHANGE: removed `selected` attribute from `shinyTree()` in favor of
   `get_selected()`. See `inst/examples/04-selected/`.
 
- v 0.1.0
---------------------------------------------------------------------------------
+# shinyTree 0.1.0
 
 - Initial Release

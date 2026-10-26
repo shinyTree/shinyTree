@@ -18,11 +18,18 @@ inspect.}
 \code{names} to get a simple list of the names (with attributes
 describing the node's ancestry), or \code{slices} to get a list
 of lists, each of which is a slice of the list used to get down
-to the selected node.}
+to the selected node. \code{classid} gives each name with its
+\code{stclass}, \code{stid} and \code{id} (jsTree's id for the node)
+attributes instead of its ancestry.}
 
 \item{leaves_only}{If \code{TRUE}, return only selected nodes that have no
 children, leaving out selected parents. This works however deep each branch
 goes, unlike filtering \code{slices} by depth.}
+}
+\value{
+A list with one element per selected node, descendants before their
+  ancestors, in the form \code{format} gives. An empty list if nothing is
+  selected or \code{tree} is \code{NULL}.
 }
 \description{
 Extract the nodes from the tree that are selected in a more
@@ -42,4 +49,7 @@ tree <- list(
 )
 unlist(get_selected(tree))
 unlist(get_selected(tree, leaves_only = TRUE))
+}
+\seealso{
+\code{\link{get_checked}}
 }

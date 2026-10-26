@@ -14,18 +14,7 @@ test_that("get_selected works on a tree rendered from treeToJSON (issue #103)", 
   skip_if_not_installed("shinytest2")
   skip_if_not_installed("data.tree")
 
-  app <- tryCatch(
-    AppDriver$new(
-      app_dir = test_path("apps/test_treetojson"),
-      name = "shinytree-treetojson",
-      variant = NULL,
-      load_timeout = 30000
-    ),
-    error = function(e) e
-  )
-  if (inherits(app, "error")) {
-    skip(paste("AppDriver could not be started:", conditionMessage(app)))
-  }
+  app <- start_app(test_path("apps/test_treetojson"), "shinytree-treetojson")
   withr::defer(app$stop())
 
   ## The payload really does omit "checked" -- otherwise this test proves nothing.

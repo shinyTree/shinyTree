@@ -7,7 +7,7 @@ shinyServer(function(input, output, session) {
   
   listFiles <- function(maxDepth,path,currentDepth=1){
     dirs <- list.dirs(path,recursive = FALSE, full.names = FALSE)
-    allFiles <- list.files(path,list.dirs(recursive = FALSE, full.names = FALSE))
+    allFiles <- list.files(path)
     files <- setdiff(allFiles, dirs)
     if(length(dirs) != 0 && (maxDepth == 0 || currentDepth < maxDepth)){
       subtree <- append(lapply(dirs,

@@ -54,37 +54,16 @@ test_that("get_flatList", {
   expect_true(all(unlist(lapply(res, length)) == 5))
 })
 
-test_that("renderTree", {  
-  res <- renderTree({
-    list(
-      root1 = "",
-      root2 = list(
-        SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
-        SubListB = list(leafA = "", leafB = "")
-      ),
-      root3 = list(
-        SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
-        SubListB = list(leafA = "", leafB = "")
-      )
-    )
-  })
-  expect_is(res, "function")
-})
-test_that("renderTreeAsync", {  
-  res <- renderTreeAsync({
-    list(
-      root1 = "",
-      root2 = list(
-        SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
-        SubListB = list(leafA = "", leafB = "")
-      ),
-      root3 = list(
-        SubListA = list(leaf1 = "", leaf2 = "", leaf3=""),
-        SubListB = list(leafA = "", leafB = "")
-      )
-    )
-  })
-  expect_is(res, "function")
+test_that("renderTree sends the tree it is given", {
+  sent <- NULL
+  session <- shiny::MockShinySession$new()
+  session$sendInputMessage <- function(id, message) sent <<- message
+  res <- renderTree(list(root1 = "", root2 = list(leaf = "")))
+  expect_is(res, "shiny.render.function")
+  shiny::withReactiveDomain(session, res(session, "tree"))
+  expect_equal(sent$type, "updateTree")
+  texts <- vapply(jsonlite::fromJSON(sent$data, simplifyVector = FALSE), `[[`, "", "text")
+  expect_equal(texts, c("root1", "root2", "leaf"))
 })
 
 test_that("Rlist2json", {  
@@ -190,7 +169,7 @@ test_that("shinyTree", {
                    theme = "default", themeIcons = T, themeDots = T, sort = T, unique = T, 
                    wholerow = T, stripes = T, multiple = T, animation = T)
   expect_is(res, "shiny.tag.list")
-  expect_true(any(grepl("shinyTree.initSearch('tree','searchid', 1000);",
+  expect_true(any(grepl('shinyTree.initSearch("tree", "searchid", 1000);',
                         inline_scripts(res), fixed = TRUE)))
   expect_true(all(
     unlistShinytagList(res, checkbox = T, search = T, dnd = T, themeicon = T, 
@@ -210,7 +189,7 @@ test_that("shinyTree", {
         }"
   res <- shinyTree("tree", types = typs)
   expect_true(all(unlistShinytagList(res, types = TRUE)))
-  expect_true(any(grepl(paste("tree_sttypes =", typs), inline_scripts(res), fixed = TRUE)))
+  expect_true(any(grepl(paste0('window["tree_sttypes"] = ', typs, ";"), inline_scripts(res), fixed = TRUE)))
   
   ## Custom shinyTree with different themes ############
   res <- shinyTree("tree", theme = "default-dark")
@@ -574,4 +553,10 @@ test_that("shinyTree's state arguments set the data attributes (#19)", {
   expect_error(shinyTree("tree", state = ""), "single non-empty string")
   expect_error(shinyTree("tree", state = c("a", "b")), "single non-empty string")
   expect_error(shinyTree("tree", state = TRUE, state_priority = "neither"))
+})
+
+test_that("contextmenu turns checkboxes off, with a warning (and really turns them off)", {
+  expect_warning(res <- shinyTree("t", checkbox = TRUE, contextmenu = TRUE), "cannot be used together")
+  html <- as.character(htmltools::renderTags(res)$html)
+  expect_true(grepl('data-st-checkbox="FALSE"', html, fixed = TRUE))
 })

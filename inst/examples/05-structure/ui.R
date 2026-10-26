@@ -16,7 +16,7 @@ shinyUI(
                     <p>This structure reveals every detail about the current state 
                     of the tree and can be parsed to derive whatever information you 
                     need about your tree.</p>
-                  <hr />Created using <a href = \"http://github.com/trestletech/shinyTree\">shinyTree</a>."))
+                  <hr />Created using <a href = \"https://github.com/shinyTree/shinyTree\">shinyTree</a>."))
     ),
     mainPanel(
       verbatimTextOutput("str")  

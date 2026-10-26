@@ -11,7 +11,20 @@ permissions:
 
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
+
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest,  r: 'release'}
+          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
+          - {os: ubuntu-latest,  r: 'oldrel-1'}
+          - {os: macos-latest,   r: 'release'}
+          - {os: windows-latest, r: 'release'}
+
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       PKG_SYSREQS: false
@@ -24,12 +37,15 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
+          r-version: ${{ matrix.config.r }}
+          http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
       - uses: browser-actions/setup-chrome@v1
         id: setup-chrome
 
       - name: Point chromote at the installed Chrome binary
+        shell: bash
         run: echo "CHROMOTE_CHROME=${{ steps.setup-chrome.outputs.chrome-path }}" >> "$GITHUB_ENV"
 
       # pak would install chromote's "Chrome" system requirement as Chromium from
@@ -37,8 +53,10 @@ jobs:
       # failed whole runs before any test ran. Chrome already comes from
       # setup-chrome above, and chromote is pointed at it, so that Chromium is
       # never used. Install the remaining system requirements from Ubuntu's own
-      # mirror instead, and tell pak not to install any itself.
+      # mirror instead, and tell pak not to install any itself. macOS and
+      # Windows get binary packages and need none.
       - name: Install system requirements
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libicu-dev \
@@ -51,5 +69,8 @@ jobs:
 
       - uses: r-lib/actions/check-r-package@v2
         with:
-          upload-snapshots: true
           build_args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'
+        env:
+          # check-r-package sets this already; stated so the browser tests,
+          # which skip on CRAN, are known to run here.
+          NOT_CRAN: true

@@ -13,22 +13,22 @@ treeToJSON(
 )
 }
 \arguments{
-\item{tree}{the data.tree which should be parses}
+\item{tree}{the data.tree which should be parsed}
 
 \item{keepRoot}{logical. If \code{FALSE} (default) the root node from the tree
 is pruned}
 
 \item{topLevelSlots}{determines which slots should be moved to the top level of the 
 node. If \code{default} or \code{NULL} slots 
-\href{https://www.jstree.com/docs/json}{used in the jsTree JSON} 
+\href{https://www.jstree.com/docs/json/}{used in the jsTree JSON} 
 are kept on the top level, while any other atomic / list slots from the tree
-are stored in an own slot called \sQuote{data}. If \code{all} *all* nodes are
+are stored in an own slot called \sQuote{data}. If \code{all}, all slots are
 stored on the top level. Alternatively, it can be an explicit vector of
 slot names which should be kept. In the latter case it is the user's
 responsibility to ensure that jsTree slots stay on the top level.}
 
 \item{createNewId}{logical. If \code{TRUE} a new id will be generated. Any old \sQuote{id} 
-will be stored in \sQuote{id.orig} and a warning will be issued, If \code{FALSE},
+will be stored in \sQuote{id.orig} and a warning will be issued. If \code{FALSE},
 any existing id will be re-used.}
 
 \item{pretty}{logical. If \code{TRUE} the resulting JSON is prettified}
@@ -51,10 +51,10 @@ the resulting JSON.
 If the user wants to store some slots not in the data slot but on the top 
 level of the node, parameter \code{topLevelSlots} can be used. This is useful
 for additional parameters such as \sQuote{icon}, \sQuote{li_attr} or 
-\sQuote{a_attr}, which jsTree expect to be on the top level of the node.
+\sQuote{a_attr}, which jsTree expects to be on the top level of the node.
 
 An example of how to make use of this functionality can be found in the
-example folder of this library.
+\code{19-data.tree} example.
 }
 \section{Note}{
 

@@ -1,5 +1,5 @@
 var shinyTree = function(){
-  callbackCounter = 0;
+  var callbackCounter = 0;
   // Output ids that have been sent a tree at least once this session. Used to
   // tell an element that is being added back -- which needs its tree resent --
   // from one appearing for the first time, whose tree is already on its way.
@@ -20,7 +20,7 @@ var shinyTree = function(){
   // Nodes without one (e.g. created in the browser) fall back to their labels.
   var lazyPath = function(tree, node) {
     if (node.id === '#') { return []; }
-    if (node.data && $.isArray(node.data.stpath)) { return node.data.stpath.slice(); }
+    if (node.data && Array.isArray(node.data.stpath)) { return node.data.stpath.slice(); }
     var names = [];
     while (node && node.id !== '#') {
       names.unshift(node.text);
@@ -311,15 +311,228 @@ var shinyTree = function(){
     saveState(el);
   };
 
+  // The tree as input$tree reports it, without the callback counter, or
+  // undefined if there is nothing to report yet: each node pruned to its id,
+  // state, text and children, plus its data.
+  var currentValue = function(el) {
+    var tree = $.jstree.reference(el);
+    if (!tree) { return undefined; }  // May not be loaded yet.
+    // The tree may be initialised but empty. Shiny reports undefined as NULL,
+    // so input$tree is cleared when the user deletes the last node.
+    if (tree.get_container().find("li").length === 0) { return undefined; }
+
+    var arrToObj = function(ar) {
+      var obj = {};
+      $.each(ar, function(i, node) {
+        // Node data is never rendered, so unlike the node text it must not
+        // be trimmed -- doing so corrupted padded keys and fixed-width
+        // codes stored in st* attributes (#3).
+        var data = {};
+        $.each(tree.get_node(node.id).data, function(key, val) {
+          data[key] = val;
+        });
+        node.data = data;
+        obj['' + i] = node;
+      });
+      return obj;
+    };
+    var keys = ['id', 'state', 'text', 'children'];
+    var fixOutput = function(arr) {
+      var toReturn = [];
+      $.each(arr, function(i, obj) {
+        if (obj.children && obj.children.length > 0) {
+          obj.children = arrToObj(fixOutput(obj.children));
+        }
+
+        var clean = {};
+        // The node text is kept trimmed on purpose: it is a display label,
+        // HTML collapses surrounding whitespace on screen anyway, and the
+        // renderValue() path builds trees from raw HTML where Shiny's own
+        // pretty-printed indentation would otherwise end up in every name.
+        // It also keys input$tree, so trimming it is load-bearing (#3).
+        $.each(obj, function(key, val) {
+          if (keys.indexOf(key) >= 0) {
+            if (typeof val === 'string') {
+              if (key === "text" && val === "") {
+                val = "New node";
+              }
+              clean[key] = val.trim();
+            } else {
+              clean[key] = val;
+            }
+          }
+        });
+
+        // get_json() reports state.checked straight from the node model, which
+        // the checkbox plugin leaves at false when tie_selection is on -- it
+        // derives checked-ness from the selection instead. is_checked() is the
+        // plugin's own accessor and honours either mode, so ask it rather than
+        // trusting the raw state. It only exists while the checkbox plugin is
+        // loaded, hence the guard (#121).
+        if (clean.state && typeof tree.is_checked === 'function') {
+          clean.state.checked = tree.is_checked(obj.id);
+        }
+
+        toReturn.push(clean);
+      });
+      return toReturn;
+    };
+    return arrToObj(fixOutput(tree.get_json()));
+  };
+
+  // The input binding's handlers. Bound under the "jstree" namespace jsTree
+  // triggers its events in, plus "stbinding" of their own, so unsubscribe()
+  // can remove just these and leave jsTree's own handlers on the element --
+  // removing every ".jstree" handler there left the tree unclickable. jsTree's
+  // destroy() removes these too, so renderValue() binds them again.
+  var bindInputHandlers = function(el, callback) {
+    $(el).off(".stbinding");
+    $(el).on("open_node.jstree.stbinding", function(e) {
+      callback();
+    });
+    
+    $(el).on("close_node.jstree.stbinding", function(e) {
+      callback();
+    });
+    
+    var opts = JSON.parse(el.attributes.options.nodeValue);
+    // A refresh started by updateTree() re-reports a change the server has
+    // just made, so notifying the server about it creates a feedback loop
+    // (#36). receiveMessage() sets stServerRefresh before calling refresh();
+    // the events that refresh emits then skip the callback while it is set.
+    //
+    // The flag is NOT cleared by these handlers. refresh() completes
+    // asynchronously and the observed event order is
+    // model -> load_node -> refresh.jstree -> set_state.jstree, so clearing
+    // on either event unmutes the other one. receiveMessage() instead clears
+    // the flag from a timeout that runs after the whole refresh has settled.
+    //
+    // Both handlers are registered unconditionally so that the suppression
+    // applies regardless of which option is enabled; the option is checked
+    // before notifying the server.
+    $(el).on("set_state.jstree.stbinding", function(e) {
+      if (el.stServerRefresh) { return; }
+      if (opts.setState && opts.setState === true) { callback(); }
+    });
+    $(el).on("refresh.jstree.stbinding", function(e) {
+      if (el.stServerRefresh) { return; }
+      if (opts.refresh && opts.refresh === true) { callback(); }
+    });
+    
+    $(el).on("changed.jstree.stbinding", function(e, data) {
+      // A tree the server sends with nodes selected fires "changed" with
+      // action "model" as it loads. Like the refresh, that is the server's own
+      // change (#36); reportServerTree() reports the result once instead.
+      if (el.stServerRefresh && data && data.action === 'model') { return; }
+      callback();
+    });
+
+    if (el.dataset.stState) {
+      // Deferred like the check_node callback above: these handlers are bound
+      // before jsTree's own, which is where three_state cascades a check to
+      // parents and children. Saving straight away recorded the state before
+      // the cascade, so unticking a child of a ticked parent was saved with
+      // the parent still ticked, and the reload ticked everything again.
+      $(el).on("changed.jstree.stbinding open_node.jstree.stbinding close_node.jstree.stbinding check_node.jstree.stbinding uncheck_node.jstree.stbinding check_all.jstree.stbinding uncheck_all.jstree.stbinding", function(e) {
+        setTimeout(function() { saveState(el); }, 0);
+      });
+    }
+    
+    $(el).on("ready.jstree.stbinding", function(e){
+      // Initialize the data.
+      callback();
+    });
+    
+    $(el).on("move_node.jstree.stbinding", function(e){
+      callback();
+    });
+    
+    // callbacks for contextmenue
+    if (el.dataset.stContextmenu == "TRUE") {
+      $(el).on("create_node.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("rename_node.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("delete_node.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("copy_node.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("cut.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("copy.jstree.stbinding", function(e){
+        callback();
+      });
+      $(el).on("paste.jstree.stbinding", function(e){
+        callback();
+      });
+    }
+    
+    if (el.dataset.stCheckbox == "TRUE" && el.dataset.stTieSelection == "FALSE") {
+      // These handlers are bound when Shiny binds the input, before jsTree
+      // initialises and registers its own check_node/uncheck_node handlers,
+      // which is where three_state cascades the change to parents and
+      // children. jQuery runs handlers in registration order, so reading the
+      // tree here synchronously reported the state from before the cascade.
+      // Defer the read until jsTree's handlers have run.
+      $(el).on("check_node.jstree.stbinding", function(e) {
+        setTimeout(callback, 0);
+      });
+      $(el).on("uncheck_node.jstree.stbinding", function(e) {
+        setTimeout(callback, 0);
+      });
+      $(el).on("check_all.jstree.stbinding", function(e) {
+        callback();
+      });
+      $(el).on("uncheck_all.jstree.stbinding", function(e) {
+        callback();
+      });
+    }
+  };
+
+  // Report a tree the server has just sent once it has loaded, if it differs
+  // from what input$tree last reported. The refresh that loads it is muted
+  // (#36), and a tree with nothing selected fires no "changed" event, so
+  // input$tree otherwise kept the tree it replaced, and its selection of nodes
+  // that no longer exist. Comparing with the last report is what keeps this
+  // from looping: an observer of input$tree that sends the same tree back
+  // gets the same value, which is not reported again.
+  var reportServerTree = function(el) {
+    $(el).one('refresh.jstree', function() {
+      var b = $(el).data('shiny-input-binding');
+      if (!b || typeof Shiny === 'undefined' || !Shiny.setInputValue) { return; }
+      var value = currentValue(el);
+      if (value === undefined || JSON.stringify(value) === el.stLastReported) { return; }
+      Shiny.setInputValue(el.id + ':shinyTree', b.getValue(el), {priority: 'event'});
+    });
+  };
+
+  // Messages that arrived before the tree existed -- updateTree() on a tree
+  // in a tab that has not been shown yet, say -- are replayed once it does.
+  var replayPending = function(el) {
+    var pending = el.stPending;
+    el.stPending = null;
+    $.each(pending || [], function(i, message) { treeInput.receiveMessage(el, message); });
+  };
+
   var treeOutput = new Shiny.OutputBinding();
   $.extend(treeOutput, {
     find: function(scope) {
       return $(scope).find('.shiny-tree');
     },
     renderValue: function(el, data) {
-      // Wipe the existing tree and create a new one.
-      $elem = $('#' + el.id);
+      // Wipe the existing tree and create a new one. $(el), not a selector
+      // built from the id, which matched nothing for ids like "my.tree".
+      var $elem = $(el);
+      var hadTree = !!$.jstree.reference(el);
       
+      // destroy() also removes the input binding's handlers, which are bound
+      // again below. Otherwise a tree re-rendered after an error -- a req()
+      // or validate() in renderTree -- stopped updating input$tree.
       $elem.jstree('destroy');
       
       $elem.html(data);
@@ -380,6 +593,8 @@ var shinyTree = function(){
         // Filled in when the server sends a tree: a node array for an ordinary
         // tree, or the lazy loading function below.
         plugins: plugins});
+      if (hadTree && el.stCallback) { bindInputHandlers(el, el.stCallback); }
+      replayPending(el);
     }
   });
   Shiny.outputBindings.register(treeOutput, 'shinyTree.treeOutput');
@@ -393,81 +608,14 @@ var shinyTree = function(){
       return "shinyTree";
     },
     getValue: function(el, keys) {
-      /**
-       * Prune an object recursively to only include the specified keys.
-       * Then add any data.
-       **/
-        var treeid = $('#' + el.id);
-        var fixOutput = function(arr, keys){
-        var arrToObj = function(ar){
-          var obj = {};
-          $.each(ar, function(i, el){
-            //add the data for this node
-            var data = {};
-            // Node data is never rendered, so unlike the node text it must not
-            // be trimmed -- doing so corrupted padded keys and fixed-width
-            // codes stored in st* attributes (#3).
-            $.each($(treeid).jstree(true).get_node(el.id).data, function(key, val){
-              data[key] = val;
-            });
-            el.data = data;
-            obj['' + i] = el;
-          });
-          return obj;
-        };
-        
-        var toReturn = [];
-        $.each(arr, function(i, obj){
-          if (obj.children && obj.children.length > 0){
-            obj.children = arrToObj(fixOutput(obj.children, keys));
-          }
-
-          var clean = {};
-          // The node text is kept trimmed on purpose: it is a display label,
-          // HTML collapses surrounding whitespace on screen anyway, and the
-          // renderValue() path builds trees from raw HTML where Shiny's own
-          // pretty-printed indentation would otherwise end up in every name.
-          // It also keys input$tree, so trimming it is load-bearing (#3).
-          $.each(obj, function(key, val){
-            if (keys.indexOf(key) >= 0) {
-                if (typeof val === 'string'){
-                  if (key === "text" && val === "") {
-                    val = "New node";
-                  }
-                  clean[key] = val.trim();
-                } else {
-                  clean[key] = val;
-                }
-              }
-          });
-
-          // get_json() reports state.checked straight from the node model, which
-          // the checkbox plugin leaves at false when tie_selection is on -- it
-          // derives checked-ness from the selection instead. is_checked() is the
-          // plugin's own accessor and honours either mode, so ask it rather than
-          // trusting the raw state. It only exists while the checkbox plugin is
-          // loaded, hence the guard (#121).
-          var jstreeRef = $(treeid).jstree(true);
-          if (clean.state && typeof jstreeRef.is_checked === 'function') {
-            clean.state.checked = jstreeRef.is_checked(obj.id);
-          }
-
-          toReturn.push(clean);
-        });
-        result = arrToObj(toReturn);
-        return arrToObj(result);
-      };
-      
-      var tree = $.jstree.reference(el);
-      if (tree) { // May not be loaded yet.
-        if(tree.get_container().find("li").length>0) { // The tree may be initialized but empty
-          var js = tree.get_json();
-          var fixed = fixOutput(js, ['id', 'state', 'text','children']);
-          callbackCounter++;
-          fixed.callbackCounter = callbackCounter;
-          return fixed;
-        }
-      }
+      var value = currentValue(el);
+      if (value === undefined) { return undefined; }
+      el.stLastReported = JSON.stringify(value);
+      // The counter makes every report differ, so Shiny never drops one as a
+      // repeat (see init.R).
+      callbackCounter++;
+      value.callbackCounter = callbackCounter;
+      return value;
     },
     setValue: function(el, value) {},
     initialize: function(el) {
@@ -502,113 +650,19 @@ var shinyTree = function(){
       }, 100);
     },
     subscribe: function(el, callback) {
-      $(el).on("open_node.jstree", function(e) {
-        callback();
-      });
-      
-      $(el).on("close_node.jstree", function(e) {
-        callback();
-      });
-      
-      var opts = JSON.parse(el.attributes.options.nodeValue);
-      // A refresh started by updateTree() re-reports a change the server has
-      // just made, so notifying the server about it creates a feedback loop
-      // (#36). receiveMessage() sets stServerRefresh before calling refresh();
-      // the events that refresh emits then skip the callback while it is set.
-      //
-      // The flag is NOT cleared by these handlers. refresh() completes
-      // asynchronously and the observed event order is
-      // model -> load_node -> refresh.jstree -> set_state.jstree, so clearing
-      // on either event unmutes the other one. receiveMessage() instead clears
-      // the flag from a timeout that runs after the whole refresh has settled.
-      //
-      // Both handlers are registered unconditionally so that the suppression
-      // applies regardless of which option is enabled; the option is checked
-      // before notifying the server.
-      $(el).on("set_state.jstree", function(e) {
-        if (el.stServerRefresh) { return; }
-        if (opts.setState && opts.setState === true) { callback(); }
-      });
-      $(el).on("refresh.jstree", function(e) {
-        if (el.stServerRefresh) { return; }
-        if (opts.refresh && opts.refresh === true) { callback(); }
-      });
-      
-      $(el).on("changed.jstree", function(e) {
-        callback();
-      });
-
-      if (el.dataset.stState) {
-        // Deferred like the check_node callback above: these handlers are bound
-        // before jsTree's own, which is where three_state cascades a check to
-        // parents and children. Saving straight away recorded the state before
-        // the cascade, so unticking a child of a ticked parent was saved with
-        // the parent still ticked, and the reload ticked everything again.
-        $(el).on("changed.jstree open_node.jstree close_node.jstree check_node.jstree uncheck_node.jstree check_all.jstree uncheck_all.jstree", function(e) {
-          setTimeout(function() { saveState(el); }, 0);
-        });
-      }
-      
-      $(el).on("ready.jstree", function(e){
-        // Initialize the data.
-        callback();
-      });
-      
-      $(el).on("move_node.jstree", function(e){
-        callback();
-      });
-      
-      // callbacks for contextmenue
-      if (el.dataset.stContextmenu == "TRUE") {
-        $(el).on("create_node.jstree", function(e){
-          callback();
-        });
-        $(el).on("rename_node.jstree", function(e){
-          callback();
-        });
-        $(el).on("delete_node.jstree", function(e){
-          callback();
-        });
-        $(el).on("copy_node.jstree", function(e){
-          callback();
-        });
-        $(el).on("cut.jstree", function(e){
-          callback();
-        });
-        $(el).on("copy.jstree", function(e){
-          callback();
-        });
-        $(el).on("paste.jstree", function(e){
-          callback();
-        });
-      }
-      
-      if (el.dataset.stCheckbox == "TRUE" && el.dataset.stTieSelection == "FALSE") {
-        // These handlers are bound when Shiny binds the input, before jsTree
-        // initialises and registers its own check_node/uncheck_node handlers,
-        // which is where three_state cascades the change to parents and
-        // children. jQuery runs handlers in registration order, so reading the
-        // tree here synchronously reported the state from before the cascade.
-        // Defer the read until jsTree's handlers have run.
-        $(el).on("check_node.jstree", function(e) {
-          setTimeout(callback, 0);
-        });
-        $(el).on("uncheck_node.jstree", function(e) {
-          setTimeout(callback, 0);
-        });
-        $(el).on("check_all.jstree", function(e) {
-          callback();
-        });
-        $(el).on("uncheck_all.jstree", function(e) {
-          callback();
-        });
-      }
-      
+      el.stCallback = callback;
+      bindInputHandlers(el, callback);
     },
     unsubscribe: function(el) {
-      $(el).off(".jstree");
+      $(el).off(".stbinding");
+      el.stCallback = null;
     },
     receiveMessage: function(el, message) {
+      if (!$.jstree.reference(el)) {
+        // The output has not rendered yet; replayed by renderValue().
+        (el.stPending = el.stPending || []).push(message);
+        return;
+      }
       // This receives messages of type "updateTree" from the server.
       if(message.type == 'updateTree' && typeof message.data !== 'undefined') {
           // Restore a remembered state only onto the first tree after the page
@@ -632,6 +686,7 @@ var shinyTree = function(){
             el.stServerRefresh = false;
             el.stServerRefreshTimer = null;
           }, 100);
+          reportServerTree(el);
           $(el).jstree(true).settings.core.data = JSON.parse(message.data);
           $(el).jstree(true).refresh(true, true);
       }
@@ -674,19 +729,7 @@ var shinyTree = function(){
           el.stServerRefresh = false;
           el.stServerRefreshTimer = null;
         }, 100);
-        // Report the rebuilt tree once it has loaded. The refresh itself is
-        // muted (#36), and a new tree with nothing selected fires no "changed"
-        // event, so input$tree otherwise kept the old tree -- and its
-        // selection, of nodes that no longer exist. This is not a loop: the
-        // render function that sent this message does not read input$tree.
-        if (!firstTree) {
-          $(el).one('refresh.jstree', function() {
-            var b = $(el).data('shiny-input-binding');
-            if (b && typeof Shiny !== 'undefined' && Shiny.setInputValue) {
-              Shiny.setInputValue(el.id + ':shinyTree', b.getValue(el), {priority: 'event'});
-            }
-          });
-        }
+        if (!firstTree) { reportServerTree(el); }
         tree.refresh(true, true);
       }
       // Sent by expandTree()/collapseTree(). The resulting open/close events
@@ -730,15 +773,19 @@ var shinyTree = function(){
   exports.initSearch = function(treeId, searchId, searchtime){
     $(function(){
       var to = false;
-      $('#' + searchId).keyup(function () {
+      // "input" as well as "keyup", so pasting with the mouse searches too.
+      // Scripts that set the value and trigger keyup keep working.
+      $(document.getElementById(searchId)).on('input keyup', function () {
         if(to) { clearTimeout(to); }
         to = setTimeout(function () {
-          var v = $('#' + searchId).val();
+          var v = $(document.getElementById(searchId)).val();
           var el = document.getElementById(treeId);
-          if (el && el.stLazy) {
+          var tree = el && $.jstree.reference(el);
+          if (!tree) { return; }
+          if (el.stLazy) {
             lazySearch(el, v);
           } else {
-            $.jstree.reference('#' + treeId).search(v);
+            tree.search(v);
           }
         }, searchtime);
       });

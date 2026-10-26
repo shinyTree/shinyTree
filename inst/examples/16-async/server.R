@@ -2,7 +2,7 @@ library(shiny)
 library(shinyTree)
 library(promises)
 library(future)
-plan(multiprocess)
+plan(multisession)
 
 dt <- list(
   root1 = structure("123",stinfo="A"),
