@@ -38,6 +38,18 @@ test_that("the 25-duplicate-names example reports each duplicate's own data", {
   expect_false(grepl("INV-001", checked))
   expect_false(grepl("INV-004", checked))
 
+  ## Each line names its own quarter.
+  expect_match(checked, "Invoice  \\| Q1 2026  \\| INV-002", fixed = FALSE)
+  expect_match(checked, "Invoice  \\| Q2 2026  \\| INV-005", fixed = FALSE)
+
+  ## Unticking one duplicate drops only that one.
+  app$click(selector = "[id=\"3_anchor\"]")
+  app$wait_for_idle()
+  checked <- app$get_value(output = "checked_info")
+  expect_false(grepl("INV-002", checked))
+  expect_match(checked, "RCP-900", fixed = TRUE)
+  expect_match(checked, "INV-005", fixed = TRUE)
+
   ## The server receives all duplicates.
   counts <- app$get_value(output = "node_count")
   expect_match(counts, "Q1 2026 - 4 children: Invoice, Invoice, Receipt, Invoice")
