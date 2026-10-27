@@ -23,7 +23,6 @@ jstree.min.js.
 * GitHub Actions: ubuntu-latest (R-devel, R-release, R-oldrel-1),
   macos-latest (R-release), windows-latest (R-release)
 * win-builder: R-devel, R-release, R-oldrelease
-* macOS builder: R-release (arm64)
 
 ## Reverse dependencies
 
