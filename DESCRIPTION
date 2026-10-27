@@ -1,22 +1,28 @@
 Package: shinyTree
 Type: Package
-Title: jsTree Bindings for Shiny
-Version: 0.3.1.9000
+Title: 'jsTree' Bindings for 'Shiny'
+Version: 1.0.0
 Authors@R: c(
   person(family="Trestle Technology, LLC", role="aut", email="cran@trestletechnology.net"),
   person("Jeff", "Allen", role="aut", email="cran@trestletechnology.net"),
   person(family="Institut de Radioprotection et de Sûreté Nucléaire", role=c("cph"), email = "yann.richet@irsn.fr"),
   person("Ivan", "Bozhanov", role=c("ctb", "cph"), comment = "jsTree"),
+  person(family="Orange Hill Development", role=c("ctb", "cph"), comment = "jsTree Bootstrap (proton) theme"),
+  person(family="Accademia di Belle Arti di Urbino", role="cph", comment = "Titillium Web font"),
   person("Mike", "Schaffer", role=c("ctb"), email="mschaff@gmail.com"),
   person("Timm", "Danker", role=c("ctb"), email="tidafr@carina.uberspace.de"),
   person("Michael", "Bell", role=c("cre"), email="bell_michael_a@lilly.com"),
   person("Sebastian", "Gatscha", role=c("ctb"), email="kona1@gmx.at"),
   person("Thorn", "Thaler", role = c("ctb"), email = "thorn.thaler@thothal.at"))
 Maintainer: Michael Bell <bell_michael_a@lilly.com>
-Description: Exposes bindings to jsTree -- a JavaScript library
-    that supports interactive trees -- to enable rich, editable trees in
-    Shiny.
+Description: Bindings to 'jsTree' <https://www.jstree.com>, a 'JavaScript'
+    library for interactive trees, to enable rich, editable trees in 'Shiny'
+    applications. Trees can be searched, checked, rearranged,
+    styled and remembered across visits, loaded lazily for very large
+    hierarchies, and built from data frames, 'data.tree' objects or
+    ontologies.
 License: MIT + file LICENSE
+Copyright: See the file COPYRIGHTS.
 Depends:
     R (>= 3.3.0)
 Imports:
@@ -45,3 +51,4 @@ BugReports: https://github.com/shinyTree/shinyTree/issues
 Roxygen: list()
 RoxygenNote: 7.3.3
 Encoding: UTF-8
+Language: en-GB

@@ -32,10 +32,16 @@ expression returns instead. If the tree has not been shown yet -- it is in
 a tab that has not been opened -- the update is applied when it is.
 }
 \examples{
-\dontrun{
-observeEvent(input$reset, {
-  updateTree(session, "tree", list(root = list(leaf = "")))
-})
+if (interactive()) {
+  library(shiny)
+  ui <- fluidPage(actionButton("reset", "Reset"), shinyTree("tree"))
+  server <- function(input, output, session) {
+    output$tree <- renderTree(list(a = list(b = ""), c = ""))
+    observeEvent(input$reset, {
+      updateTree(session, "tree", list(root = list(leaf = "")))
+    })
+  }
+  shinyApp(ui, server)
 }
 }
 \seealso{

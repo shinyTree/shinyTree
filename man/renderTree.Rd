@@ -186,18 +186,18 @@ before and the cached tree is sent otherwise. It works with
 }
 
 \examples{
-\dontrun{
-library(shiny)
-ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
-server <- function(input, output, session) {
-  output$tree <- renderTree(list(
-    Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
-                      stopened = TRUE, sticon = "fa fa-folder"),
-    Vegetables = list(Leek = "")
-  ))
-  output$picked <- renderPrint(get_selected(input$tree))
-}
-shinyApp(ui, server)
+if (interactive()) {
+  library(shiny)
+  ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
+  server <- function(input, output, session) {
+    output$tree <- renderTree(list(
+      Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
+                        stopened = TRUE, sticon = "fa fa-folder"),
+      Vegetables = list(Leek = "")
+    ))
+    output$picked <- renderPrint(get_selected(input$tree))
+  }
+  shinyApp(ui, server)
 }
 }
 \seealso{

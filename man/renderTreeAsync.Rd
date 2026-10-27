@@ -31,25 +31,27 @@ returns a tree straight away works as it does in \code{renderTree}.
 Lazy loading (\code{renderTree(lazy = TRUE)}) is not available here.
 }
 \examples{
-\dontrun{
-library(shiny)
-library(promises)
-library(future)
-plan(multisession)
+if (interactive() && requireNamespace("future", quietly = TRUE)) {
+  library(shiny)
+  library(promises)
+  library(future)
+  plan(multisession)
 
-ui <- fluidPage(shinyTree("tree"))
-server <- function(input, output, session) {
-  output$tree <- renderTreeAsync({
-    future({
-      Sys.sleep(2)  # a tree that is slow to build
-      list(root = list(leaf = ""))
+  ui <- fluidPage(shinyTree("tree"))
+  server <- function(input, output, session) {
+    output$tree <- renderTreeAsync({
+      future({
+        Sys.sleep(2)  # a tree that is slow to build
+        list(root = list(leaf = ""))
+      })
     })
-  })
+  }
+  shinyApp(ui, server)
 }
-shinyApp(ui, server)
 
 # See also the 16-async example:
-runApp(system.file("examples/16-async", package = "shinyTree"))
+if (interactive()) {
+  shiny::runApp(system.file("examples/16-async", package = "shinyTree"))
 }
 }
 \seealso{

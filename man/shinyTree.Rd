@@ -206,29 +206,31 @@ in apps that call \code{updateTree} from an observer watching
 }
 
 \examples{
-\dontrun{
-library(shiny)
+if (interactive()) {
+  library(shiny)
 
-# The tree comes back the way the user left it when the page is reloaded.
-# Europe starts open and Paris selected; with state_priority = "code" they
-# stay that way after every reload, and anything else the user opened or
-# selected is restored as well.
-ui <- fluidPage(
-  shinyTree("tree", state = TRUE, state_priority = "code")
-)
-server <- function(input, output, session) {
-  output$tree <- renderTree(list(
-    Europe = structure(list(
-      France = list(Paris = structure("", stselected = TRUE), Lyon = ""),
-      Spain = list(Madrid = "")
-    ), stopened = TRUE),
-    Asia = list(Japan = list(Tokyo = ""))
-  ))
+  # The tree comes back the way the user left it when the page is reloaded.
+  # Europe starts open and Paris selected; with state_priority = "code" they
+  # stay that way after every reload, and anything else the user opened or
+  # selected is restored as well.
+  ui <- fluidPage(
+    shinyTree("tree", state = TRUE, state_priority = "code")
+  )
+  server <- function(input, output, session) {
+    output$tree <- renderTree(list(
+      Europe = structure(list(
+        France = list(Paris = structure("", stselected = TRUE), Lyon = ""),
+        Spain = list(Madrid = "")
+      ), stopened = TRUE),
+      Asia = list(Japan = list(Tokyo = ""))
+    ))
+  }
+  shinyApp(ui, server)
 }
-shinyApp(ui, server)
 
 # See also the 26-state example:
-runApp(system.file("examples/26-state", package = "shinyTree"))
+if (interactive()) {
+  shiny::runApp(system.file("examples/26-state", package = "shinyTree"))
 }
 }
 \seealso{
