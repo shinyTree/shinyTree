@@ -1,4 +1,4 @@
-# shinyTree 0.3.1.9000
+# shinyTree 1.0.0
 
 ## Fixes from a review of the whole package
 

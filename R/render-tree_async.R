@@ -17,25 +17,27 @@
 #' @return A render function, to assign to \code{output$<id>} for a
 #'   \code{\link{shinyTree}} with that id.
 #' @examples
-#' \dontrun{
-#' library(shiny)
-#' library(promises)
-#' library(future)
-#' plan(multisession)
+#' if (interactive() && requireNamespace("future", quietly = TRUE)) {
+#'   library(shiny)
+#'   library(promises)
+#'   library(future)
+#'   plan(multisession)
 #'
-#' ui <- fluidPage(shinyTree("tree"))
-#' server <- function(input, output, session) {
-#'   output$tree <- renderTreeAsync({
-#'     future({
-#'       Sys.sleep(2)  # a tree that is slow to build
-#'       list(root = list(leaf = ""))
+#'   ui <- fluidPage(shinyTree("tree"))
+#'   server <- function(input, output, session) {
+#'     output$tree <- renderTreeAsync({
+#'       future({
+#'         Sys.sleep(2)  # a tree that is slow to build
+#'         list(root = list(leaf = ""))
+#'       })
 #'     })
-#'   })
+#'   }
+#'   shinyApp(ui, server)
 #' }
-#' shinyApp(ui, server)
 #'
 #' # See also the 16-async example:
-#' runApp(system.file("examples/16-async", package = "shinyTree"))
+#' if (interactive()) {
+#'   shiny::runApp(system.file("examples/16-async", package = "shinyTree"))
 #' }
 #' @seealso \code{\link{renderTree}}, \code{\link{shinyTree}}
 #' @export

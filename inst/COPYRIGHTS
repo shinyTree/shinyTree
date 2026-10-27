@@ -1,0 +1,22 @@
+shinyTree bundles the following third-party software in inst/www.
+
+jsTree 3.3.7 (inst/www/jsTree-3.3.7/jstree.js, jstree.min.js, and the
+"default" and "default-dark" themes)
+  Copyright (c) 2014 Ivan Bozhanov (http://vakata.com)
+  License: MIT
+  https://www.jstree.com, https://github.com/vakata/jstree
+
+jsTree Bootstrap theme, used as the "proton" theme
+(inst/www/jsTree-3.3.7/themes/proton; license in LICENSE-MIT there)
+  Copyright (c) 2014 Orange Hill Development
+  License: MIT
+  https://github.com/orangehill/jstree-bootstrap-theme
+
+Titillium Web font, used by the "proton" theme
+(inst/www/jsTree-3.3.7/themes/proton/fonts/titillium)
+  Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students
+  of MA course of Visual design
+  License: SIL Open Font License, Version 1.1 (https://openfontlicense.org)
+
+Font Awesome is not bundled; it is loaded from cdnjs.cloudflare.com when a
+tree is shown (https://fontawesome.com, icons under CC BY 4.0, code under MIT).

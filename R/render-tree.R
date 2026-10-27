@@ -9,18 +9,18 @@
 #' @return A render function, to assign to \code{output$<id>} for a
 #'   \code{\link{shinyTree}} with that id.
 #' @examples
-#' \dontrun{
-#' library(shiny)
-#' ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
-#' server <- function(input, output, session) {
-#'   output$tree <- renderTree(list(
-#'     Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
-#'                       stopened = TRUE, sticon = "fa fa-folder"),
-#'     Vegetables = list(Leek = "")
-#'   ))
-#'   output$picked <- renderPrint(get_selected(input$tree))
-#' }
-#' shinyApp(ui, server)
+#' if (interactive()) {
+#'   library(shiny)
+#'   ui <- fluidPage(shinyTree("tree"), verbatimTextOutput("picked"))
+#'   server <- function(input, output, session) {
+#'     output$tree <- renderTree(list(
+#'       Fruit = structure(list(Apple = "", Pear = structure("", stselected = TRUE)),
+#'                         stopened = TRUE, sticon = "fa fa-folder"),
+#'       Vegetables = list(Leek = "")
+#'     ))
+#'     output$picked <- renderPrint(get_selected(input$tree))
+#'   }
+#'   shinyApp(ui, server)
 #' }
 #' @param env The environment in which \code{expr} should be evaluated.
 #' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This

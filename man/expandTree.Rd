@@ -33,17 +33,19 @@ them when rendering the tree.
 tree, and stops with an error. \code{collapseTree} works on any tree.
 }
 \examples{
-\dontrun{
-ui <- fluidPage(
-  actionButton("expand", "Expand all"),
-  actionButton("collapse", "Collapse all"),
-  shinyTree("tree")
-)
-server <- function(input, output, session) {
-  output$tree <- renderTree(list(a = list(b = list(c = ""))))
-  observeEvent(input$expand, expandTree(session, "tree"))
-  observeEvent(input$collapse, collapseTree(session, "tree"))
-}
+if (interactive()) {
+  library(shiny)
+  ui <- fluidPage(
+    actionButton("expand", "Expand all"),
+    actionButton("collapse", "Collapse all"),
+    shinyTree("tree")
+  )
+  server <- function(input, output, session) {
+    output$tree <- renderTree(list(a = list(b = list(c = ""))))
+    observeEvent(input$expand, expandTree(session, "tree"))
+    observeEvent(input$collapse, collapseTree(session, "tree"))
+  }
+  shinyApp(ui, server)
 }
 }
 \seealso{

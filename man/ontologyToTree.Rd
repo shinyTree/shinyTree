@@ -74,17 +74,19 @@ aeo <- ontologyToTree(system.file("examples/28-ontology/aeo.obo", package = "shi
 names(aeo$children(character(0)))
 head(attr(aeo, "ontology")[, c("id", "name")])
 
-\dontrun{
-library(shiny)
-go <- ontologyToTree("go-basic.obo")
-ui <- fluidPage(shinyTree("tree", search = TRUE))
-server <- function(input, output, session) {
-  output$tree <- renderTree(lazy = TRUE, go)
+if (interactive()) {
+  library(shiny)
+  ui <- fluidPage(shinyTree("tree", search = TRUE))
+  server <- function(input, output, session) {
+    output$tree <- renderTree(lazy = TRUE, aeo)
+  }
+  shinyApp(ui, server)
 }
-shinyApp(ui, server)
 
-# The 28-ontology example browses the ontology from shinyTree issue #33:
-runApp(system.file("examples/28-ontology", package = "shinyTree"))
+# The 28-ontology example browses this ontology, or one you upload, such as
+# the Gene Ontology (go-basic.obo from https://geneontology.org):
+if (interactive()) {
+  shiny::runApp(system.file("examples/28-ontology", package = "shinyTree"))
 }
 }
 \seealso{

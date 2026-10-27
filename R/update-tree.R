@@ -18,10 +18,16 @@
 #'   \code{\link{treeToJSON}}. \code{NULL} leaves the tree as it is.
 #' @return Called for its side effect; returns \code{NULL} invisibly.
 #' @examples
-#' \dontrun{
-#' observeEvent(input$reset, {
-#'   updateTree(session, "tree", list(root = list(leaf = "")))
-#' })
+#' if (interactive()) {
+#'   library(shiny)
+#'   ui <- fluidPage(actionButton("reset", "Reset"), shinyTree("tree"))
+#'   server <- function(input, output, session) {
+#'     output$tree <- renderTree(list(a = list(b = ""), c = ""))
+#'     observeEvent(input$reset, {
+#'       updateTree(session, "tree", list(root = list(leaf = "")))
+#'     })
+#'   }
+#'   shinyApp(ui, server)
 #' }
 #' @seealso \code{\link{renderTree}}, \code{\link{expandTree}}
 #' @export
@@ -67,17 +73,19 @@ treeJson <- function(data) {
 #' @param treeId The identifier for the shinyTree object.
 #' @return Called for its side effect; returns \code{NULL} invisibly.
 #' @examples
-#' \dontrun{
-#' ui <- fluidPage(
-#'   actionButton("expand", "Expand all"),
-#'   actionButton("collapse", "Collapse all"),
-#'   shinyTree("tree")
-#' )
-#' server <- function(input, output, session) {
-#'   output$tree <- renderTree(list(a = list(b = list(c = ""))))
-#'   observeEvent(input$expand, expandTree(session, "tree"))
-#'   observeEvent(input$collapse, collapseTree(session, "tree"))
-#' }
+#' if (interactive()) {
+#'   library(shiny)
+#'   ui <- fluidPage(
+#'     actionButton("expand", "Expand all"),
+#'     actionButton("collapse", "Collapse all"),
+#'     shinyTree("tree")
+#'   )
+#'   server <- function(input, output, session) {
+#'     output$tree <- renderTree(list(a = list(b = list(c = ""))))
+#'     observeEvent(input$expand, expandTree(session, "tree"))
+#'     observeEvent(input$collapse, collapseTree(session, "tree"))
+#'   }
+#'   shinyApp(ui, server)
 #' }
 #' @seealso \code{\link{updateTree}}
 #' @export
