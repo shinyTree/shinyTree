@@ -30,3 +30,37 @@ test_that("the 27-lazy example loads, searches and fetches only what it needs (#
     "JSON.stringify(Array.from(document.querySelectorAll('#files > ul > li > a')).map(function(a){ return a.textContent; }))"))
   expect_true(all(c("examples", "www", "DESCRIPTION") %in% top))
 })
+
+test_that("27-lazy: a branch is fetched when it is opened, and the tree is an input", {
+  app <- example_app("27-lazy")
+  withr::defer(app$stop())
+  ## A new browser profile, so no state is remembered: only the top level is
+  ## fetched to start with.
+  ex_wait(app, "stTop('numbers').length === 10")
+  wait_output(app, "numbers_fetched", "^10 of")
+  ## Not fetched until opened: the first group has no children yet.
+  expect_false(ex_js(app, "stTree('numbers').is_loaded(stNode('numbers', '1-100000'))"))
+
+  ex_js(app, "stTree('numbers').open_node(stNode('numbers', '1-100000'))")
+  ex_wait(app, "stKids('numbers', '1-100000').length === 10")
+  expect_equal(ex_js(app, "stKids('numbers', '1-100000')[0]"), "1-10000")
+  wait_output(app, "numbers_fetched", "^20 of")
+
+  ## Opening down to a leaf and ticking it reaches the server.
+  for (node in c("1-10000", "1-1000", "1-100", "1-10")) {
+    ex_js(app, sprintf("stTree('numbers').open_node(stNode('numbers', '%s'))", node))
+    ex_wait(app, sprintf("stKids('numbers', '%s').length === 10", node))
+  }
+  ex_wait(app, "stAnchor('numbers', '7') !== null")
+  app$click(selector = node_checkbox(app, "numbers", "7"))
+  expect_match(wait_output(app, "numbers_selected", "^7\\s*$"), "7")
+
+  ## The folder tree: a folder's children are its files.
+  app$run_js("$('a[data-value=\"Files\"]').tab('show')")
+  ex_wait(app, "stNode('files', 'examples') !== null")
+  ex_js(app, "stTree('files').open_node(stNode('files', 'examples'))")
+  ex_wait(app, "stKids('files', 'examples').indexOf('27-lazy') >= 0")
+  app$click(selector = node_anchor(app, "files", "DESCRIPTION"))
+  expect_match(wait_output(app, "files_selected", "DESCRIPTION"), "^DESCRIPTION")
+  expect_no_js_errors(app)
+})

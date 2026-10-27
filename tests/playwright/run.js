@@ -72,7 +72,8 @@ function waitForHttp(url, timeoutMs = 45000) {
 
 async function withApp(appName, fn) {
   const port = await freePort();
-  const appDir = path.join(APPS, appName);
+  // A test app's name, or an absolute path, e.g. to an installed example.
+  const appDir = path.isAbsolute(appName) ? appName : path.join(APPS, appName);
   const libPaths = process.env.SHINYTREE_LIB
     ? `.libPaths(c(${JSON.stringify(process.env.SHINYTREE_LIB)}, .libPaths())); `
     : '';
@@ -685,6 +686,67 @@ async function testDeletingLastNodeReported() {
   });
 }
 
+// The installed copy of an example, as R would run it.
+function exampleDir(name) {
+  const lib = process.env.SHINYTREE_LIB ? `.libPaths(c(${JSON.stringify(process.env.SHINYTREE_LIB)}, .libPaths())); ` : '';
+  return require('child_process').execFileSync('Rscript', ['-e',
+    `${lib}cat(system.file("examples", ${JSON.stringify(name)}, package = "shinyTree"))`]).toString().trim();
+}
+
+async function testExample26State() {
+  console.log('26-state: the tree comes back as the user left it, or as the code says');
+  await withApp(exampleDir('26-state'), async (page) => {
+    const nodeIn = (id, text) => page.evaluate(([id, text]) => {
+      const t = $.jstree.reference(document.getElementById(id));
+      return Object.keys(t._model.data).find((k) => k !== '#' && t.get_node(k).text === text) || null;
+    }, [id, text]);
+    const look = (id) => page.evaluate((id) => {
+      const t = $.jstree.reference(document.getElementById(id));
+      const find = (x) => Object.keys(t._model.data).find((k) => k !== '#' && t.get_node(k).text === x);
+      return {
+        europe: t.is_open(find('Europe')), asia: t.is_open(find('Asia')),
+        selected: t.get_selected().map((k) => t.get_node(k).text).sort().join(',')
+      };
+    }, id);
+    const ready = async () => {
+      await page.waitForFunction(() => window.Shiny && Shiny.shinyapp && Shiny.shinyapp.isConnected());
+      await page.waitForFunction(() => ['saved', 'code'].every((id) => {
+        const el = document.getElementById(id); return el && el.querySelectorAll('li').length > 0;
+      }));
+      await page.waitForTimeout(500);  // the state is restored after the tree arrives
+    };
+    await page.evaluate(() => localStorage.clear());
+    await page.reload(); await ready();
+    for (const id of ['saved', 'code']) {
+      const s = await look(id);
+      ok(s.europe && !s.asia && s.selected === 'Paris', `${id}: first visit shows the app's own stopened and stselected (got ${JSON.stringify(s)})`);
+    }
+    await waitText(page, 'selected', /Europe \/ France \/ Paris/);
+
+    // The user closes Europe, opens Asia and Japan, and picks Tokyo instead.
+    for (const id of ['saved', 'code']) {
+      await page.evaluate((id) => {
+        const t = $.jstree.reference(document.getElementById(id));
+        const find = (x) => Object.keys(t._model.data).find((k) => k !== '#' && t.get_node(k).text === x);
+        t.deselect_all(); t.close_node(find('Europe')); t.open_node(find('Asia'), false, 0); t.open_node(find('Japan'), false, 0);
+      }, id);
+      const tokyo = await nodeIn(id, 'Tokyo');
+      await page.click(`[id="${id}"] [id="${tokyo}_anchor"]`);
+    }
+    await waitText(page, 'selected', /Asia \/ Japan \/ Tokyo/);
+    await page.waitForTimeout(500);  // saved after the change settles
+
+    await page.reload(); await ready();
+    let s = await look('saved');
+    ok(!s.europe && s.asia && s.selected === 'Tokyo', `saved: the user's changes win after a reload (got ${JSON.stringify(s)})`);
+    await waitText(page, 'selected', /Asia \/ Japan \/ Tokyo/);
+    ok(!/Paris/.test(await page.textContent('#selected')), 'and the server sees the restored selection, not the app\'s');
+    s = await look('code');
+    ok(s.europe && s.asia && s.selected === 'Paris,Tokyo', `code: the app's Europe and Paris stay, the rest is restored around them (got ${JSON.stringify(s)})`);
+    await page.evaluate(() => localStorage.clear());
+  });
+}
+
 (async () => {
   await testModalReopen();
   await testRepeatedReopen();
@@ -711,6 +773,7 @@ async function testDeletingLastNodeReported() {
   await testIdNeedingEscape();
   await testMessagesBeforeTreeExists();
   await testDeletingLastNodeReported();
+  await testExample26State();
 
   console.log(`\n${assertions - failures}/${assertions} assertions passed`);
   if (failures > 0) {
